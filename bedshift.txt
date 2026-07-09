@@ -1,803 +1,1207 @@
-
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
-import { styled } from '@mui/system';
-import { Checkbox, Modal, Box, Grid, Container, CircularProgress } from '@mui/material';
-//import BedroomChildOutlinedIcon from '@mui/icons-material/BedroomChildOutlined';
-import ProgressSteps from "./BedShiftprogress";
-import { AccountCircle, Email, Lock, Search, SelectAllSharp } from '@mui/icons-material';
-import {
-  Typography,
-  Card,
-  CardContent,
-  Avatar,
-  TextField,
-  Button,
-  InputLabel,
-  Select,
-  Paper,
-  MenuItem,
-} from '@mui/material';
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-
-import axios from "axios";
-//import { getempidbasedbeddetails, getempidbasedbeddetailsForFloor, getempidbaseddatacontrols } from "../Apiconfig/apifetchfordormitory";
-//import { OverallfetchBedshiftingreport, fetchBedshiftingreport, fetchCheckinreport } from "../Apiconfig/apiforreports";
-//import { createbedshiftingrequest } from "../Apiconfig/apifordormitory";
-import { createformlog, enginshowflowsforbedshift, viewSignFlowforbedshift } from "../Apiconfig/apiforSigninflows";
-import BedShiftingModal from "./BedShiftingModal";
-import { getuserAccount, iwxPost } from "../EncryptDecrypt/Encryptfile";
-
-
-
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  label: {
-    marginRight: theme.spacing(1),
-    flexBasis: '15%'
-  },
-}));
-
-function BedShifting() {
-  const account = getuserAccount()
-  const [data, setData] = useState([]);
-  const [dormName, setdormName] = useState([])
-  const [empNumber, setEmpNumber] = useState("");
-  const [employee, setEmployee] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [reson, setreason] = useState("")
-  const [dormdata, setdormdata] = useState([])
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedBedss, setSelectedBeds] = useState([]);
-  // const [selectedBed, setSelectedBed] = useState(null);
-  //const[errorMessagee,setErrorMessagee]=useState(null)
-  const [bedshiftingdata, setbedshiftdata] = useState([])
-  const [filterdata, setfilterdata] = useState([])
-  const [shiftedbed, setshiftedbed] = useState('')
-  const [shiftedroom, setshiftedroom] = useState('')
-  const [shiftedfloor, setshiftedfloor] = useState('')
-  const [disable, setDisable] = useState(false);
-  const [formCode, setformCode] = useState('')
-  const [strID, setstrID] = useState('')
-  const [selectedFloor, setSelectedFloor] = useState(1);
-  const [tableflow, settableflow] = useState('')
-  const [engflowshow, setengflowshow] = useState('')
-  const [getformcode, setgetformcode] = useState('')
-  const [error, setError] = useState('')
-  const [getaccessdormsforshift, setaccessdormsforshift] = useState([])
-  // const [dormdataFloor ,setdormdatafloor] = useState([])
-  const [dormid, setdormid] = useState('')
-  // Step 1: State for selected floor
-  const classes = useStyles();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [buttonloading, setbuttonloadin] = useState(false)
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-
-  useEffect(() => {
-    const fetchdata = async () => {
-      const headers = {
-        apiID: 'ffff-1743481319542-1020912129-2275',
-        userKey: '10A33A67A312E649D907BBC927995B8A'
-      }
-      const params = {
-        Func: "UserManagement-Get_user_dormcontrol_new",
-        EmpId: getuserAccount()
-      }
-      const response = await iwxPost(params, { headers: headers }, true)
-
-      // console.log(response)
-      const findshiftingdorms = response.List.filter((dorm) => (
-        dorm.BedShifting === 'Y' && dorm.DormDelFlag === 0
-      ))
-      // console.log(findshiftingdorms)
-      setaccessdormsforshift(findshiftingdorms)
-    }
-    fetchdata()
-  }, [account])
-
-
-
-
-
-  const handleOpen = () => {
-    setModalOpen(true);
-  }
-  const handleClose = () => {
-    setModalOpen(false);
-
-  }
-
-  useEffect(() => {
-    setEmployee(null);
-    setErrorMessage(null);
-    setdormName([]);
-    setreason("");
-    setError('')
-    //setSelectedBed(null);
-    setSelectedBeds([]);
-    //   setbedshiftdata([]);
-    //  setshiftedbed('')
-    //  setshiftedfloor('')
-    //  setshiftedroom('')
-    setDisable(false)
-    setfilterdata([]);
-
-  }, [empNumber]);
-
-
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await OverallfetchBedshiftingreport(account);
-  //       setbedshiftdata(response);
-  //      // console.log(response)
-  //     } catch (error) {
-  //       console.error('Error fetching dormdata:', error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [employee]);
-
-  // useEffect(() => {
-  // //  console.log("Updated reson value:", reson);
-  // }, [reson]);
-
-  useEffect(() => {
-    if (empNumber) {
-      const fetchData = async () => {
-        try {
-          //   console.log(empNumber)
-          const params = {
-            EmpId: getuserAccount(),
-            EmployeeId: empNumber,
-            DormId: '',
-            StartDate: '',
-            EndDate: '',
-            StartPage: 1,
-            PageSize: 999999,
-            Func: "Reports-Bed_shift_report_new"
-          };
-
-          const res = await iwxPost(
-            params,
-            {
-              headers: {
-                apiID: 'ffff-1743478474863-1020912129-2197',
-                userKey: '10A33A67A312E649D907BBC927995B8A'
-              }
-            },
-            true
-          );
-          const response = res.List
-
-          //   const response = await OverallfetchBedshiftingreport(account,empNumber);
-          // console.log(response)
-          //  console.log(empNumber)
-          const filterdata = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1)
-          // console.log(filterdata)
-          setgetformcode(filterdata?.FormCode)
-
-          // const filterdata1 = response.data.Data.find((dorm)=>dorm.EMPLOYEE_ID === empNumber &&  dorm.FORM_STATUS === 1)
-
-          // setgetformcode(filterdata?.FORM_CODE)
-          //    console.log(filterdata)
-          //     console.log(employee)
-          setfilterdata(filterdata)
-          if (employee && employee[0].CheckInFormStatus === 4 && filterdata?.FormStatus === 1) {
-            //  setdormName(filterdata.SHIFTING_DORM)
-            setreason(filterdata.Reason)
-            // setDisable(true);
-
-            // getSignFlow()
-
-          }
-
-          else {
-            setDisable(false);
-          }
-
-        }
-        catch (error) {
-
-        }
-      }
-
-      fetchData()
-    }
-  }, [empNumber, employee])
-
-  const getEngineShowFlows = async () => {
-
-    try {
-      const response = await enginshowflowsforbedshift(account, empNumber)
-
-      //   console.log(response)
-      setformCode(response[0].strFormCode)
-      setstrID(response[0].strID)
-      //settableflow(response.data[0].FLOWTABLE)
-    } catch (error) {
-      console.error("An error occurred:", error);
-      throw error;
-    }
-  }
-
-
-
-  const engFormCreateLog = async () => {
-
-    try {
-      const response = await createformlog(strID)
-      //  console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getSignFlow = async () => {
-    try {
-      const response = await viewSignFlowforbedshift(getformcode, account);
-
-      //    console.log(response.data);
-      setengflowshow(response[0].ENGFLOWSHOW);
-      settableflow(response[0].ENGFLOWTABLE);
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  };
-
-
-
-  // const handleDormChange =(e) =>{
-  // setdormName(e.target.value)
-  // }
-  const handleresonChange = (e) => {
-    setreason(e.target.value)
-  }
-
-
-
-  //const bedShiftingDataArray = Object.values(bedshiftingdata || {});
-
-
-  const handleFind = async () => {
-    setError('')
-    const empid = empNumber
-
-    try {
-      const params = {
-        EmployeeId: empid,
-        Site: "",
-        CheckinType: "",
-        StartDate: '',
-        EndDate: '',
-        DormId: '',
-        EmpId: getuserAccount(),
-        StartPage: 1,
-        PageSize: 999999999999,
-        Func: "Reports-Checkin_report_New"
-      };
-      const response = await iwxPost(
-        params,
-        { headers: { apiID: 'ffff-1743477890381-1020912129-2182', userKey: '10A33A67A312E649D907BBC927995B8A' } },
-        true
-      );
-      //  console.log(params)
-      //  const response = await axios.post("https://microservice.abgind.foxconn.com/india/gateway",params,{headers});
-      const res = response.List
-      // console.log(res)
-      const foundnew = res.filter((item) =>
-        getaccessdormsforshift.map((i) => i.DormId).includes(item.DormId)
-      );
-
-      if (res.length > 0 && foundnew.length === 0) {
-        setErrorMessage(`You don't have an access to shift the emp from ${res[0].DormName}.`);
-        return
-      }
-      //console.log(foundnew)
-      const foundEmployee = foundnew;
-      setdormid(foundnew[0]?.DormId)
-      // Modify this based on your API response structure
-      //console.log(foundEmployee)
-      if (foundEmployee && foundEmployee.length > 0) {
-        //  const employeeData = foundEmployee[0];
-
-        const employeefilter = foundEmployee.filter((item) => item.EmployeeId === empNumber && (item.CheckInFormStatus === 0 ||
-          item.CheckInFormStatus === 3 || item.CheckInFormStatus === 4
-
-        ))
-
-        if (employeefilter.length === 0) {
-
-          // Handle the case when no matching employees are found
-          setDisable(true);
-          setEmployee(null);
-          setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
-        } else {
-          const employeeData = employeefilter[0]
-          const checkinempid = employeeData.EmployeeId
-          // Check if the employee ID exists in the bedshifting data
-
-          // const bedshiftingEmployee = bedShiftingDataArray.some(
-          // item => item.EMPLOYEE_ID === checkinempid && item.FORM_STATUS === 1
-          // );
-          //const filterdata = bedShiftingDataArray.find((dorm)=>dorm.EMPLOYEE_ID === empNumber )
-          //console.log(filterdata)
-          if (filterdata) {
-            setreason(filterdata.Reason)
-            //setSelectedBed(`${filterdata.CURRENT_FLOOR_NUMBER}-${filterdata.CURRENT_ROOM_NUMBER}-${filterdata.CURRENT_BED_NUMBER}`);
-            //console.log(selectedBed)
-            setshiftedbed(filterdata.ShiftedBedNumber)
-            setshiftedroom(filterdata.ShiftedRoomNumber)
-            setshiftedfloor(filterdata.ShiftedFloorNumber)
-            setDisable(true);
-            setfilterdata(filterdata)
-          }
-          //  if (bedshiftingEmployee) {
-          //           // Check if FormStatus is 1 in the bedshifting API response
-          //           //setEmployee(null);
-          //             setErrorMessage(`This ${empNumber} is already requested  for bed shifting.`);
-          //   } 
-
-          //          // const bedshifting = bedshiftingdata.find((item) => item.FORM_STATUS === 1);
-
-          //      else  
-          if (employeeData.CheckInFormStatus === 0) {
-
-            setEmployee(employeefilter);
-            getEngineShowFlows()
-            setErrorMessage(null);
-          }
-          else if (employeeData.CheckInFormStatus === 1) {
-            setEmployee(null);
-            setErrorMessage(`Employee with ID ${empNumber} is already checkout from  the dorm.`);
-          } else if (employeeData.CheckInFormStatus === 2) {
-            setEmployee(null);
-            setErrorMessage(`Employee with ID ${empNumber} is already Shifted from  the dorm.`);
-          } else if (employeeData.CheckInFormStatus === 3) {
-            setEmployee(null);
-            setErrorMessage(`Employee with ID ${empNumber} is already Requested  for  the dorm Shifting.`);
-          } else if (employeeData.CheckInFormStatus === 4) {
-            setEmployee(employeefilter);
-            getSignFlow()
-            getEngineShowFlows()
-          }
-
-        }
-      } else {
-        setEmployee(null);
-
-        setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
-      }
-
-
-    } catch (error) {
-      console.log(error)
-    }
-
-
-  };
-
-
-
-
-  const handleSubmit = async (e) => {
-
-    e.preventDefault()
-    handleOpenDialog()
-
-
-  }
-
-
-  const handleConfirmSubmit = async () => {
-
-    handleCloseDialog()
-    setbuttonloadin(true)
-    const selectedBed = selectedBedss[0];
-
-    const [floorNumber, roomNumber, bedNumber] = selectedBed.split("-");
-    const selectedBedData = dormdata.find((data) =>
-      data.FloorNumber.toString() === floorNumber &&
-      data.RoomNumber.toString() === roomNumber &&
-      data.BedNumber.toString() === bedNumber
-    );
-    const headers = {
-      apiID: 'ffff-1743483007859-1020912129-2300',
-      userKey: '10A33A67A312E649D907BBC927995B8A'
-    }
-    // console.log(selectedBedData)
-    const payload = {
-      EmployeeId: employee[0].EmployeeId,
-      EmployeeName: employee[0].EmployeeName,
-      Department: employee[0].Department,
-      CurrentDormId: employee[0].DormId,
-      CurrentRoomId: employee[0].RoomId,
-      CurrentBedId: employee[0].BedId,
-      CurrentDorm: employee[0].DormName,
-      CurrentFloorNumber: employee[0].FloorNumber,
-      CurrentRoomNumber: employee[0].RoomNumber,
-      CurrentBedNumber: employee[0].BedNumber,
-      ShiftedDormId: dormdata[0]?.DormId,
-      ShiftedFloorNumber: floorNumber,
-      ShiftedRoomNumber: roomNumber,
-      ShiftedBedNumber: bedNumber,
-      ShiftedBedId: selectedBedData.Id,
-      ShiftedRoomId: selectedBedData.RoomId,
-      BedType: selectedBedData.BedType,
-      CheckInId: employee[0].Id,
-      Reason: reson,
-      CurrentFloorId: employee[0].FloorId,
-      ShiftedFloorId: selectedBedData.FloorId,
-      //  DORM_NAME:employee[0].DORM_NAME,
-      FormCode: formCode,
-      ShiftedBy: account,
-      Func: 'Dormitory-Insert_bed_shift_new'
-    }
-    setError("");
-    console.log(payload)
-    try {
-      const response = await iwxPost(payload, { headers: headers }, true)
-      //   createbedshiftingrequest(payload)
-
-      console.log(response);
-      engFormCreateLog()
-      if (response.IsOK === '1') {
-        window.alert(response.Msg);
-        // window.location.reload()
-        setbuttonloadin(false)
-        setEmployee(null)
-        setEmpNumber('')
-
-      } else {
-        setError(response.Msg)
-        setEmployee(null)
-        setSelectedBeds([])
-        setreason('')
-        setbuttonloadin(false)
-      }
-
-    } catch (error) {
-      setError("An error occurred while submitting the form.");
-      console.error(error);
-      setbuttonloadin(false)
-    }
-    //  console.log(payload)
-
-  }
-  //console.log(employee)
-  // console.log(error)
-  // useEffect(() => {
-  //   setError("");
-
-  // }, [reson]);
-  const renderSelectedBedData = (selectedBeds, uniqueDorms, dormdata) => {
-    //  console.log(selectedBeds);
-    //console.log(uniqueDorms)
-    setSelectedBeds(selectedBeds)
-    setdormName(uniqueDorms)
-    setdormdata(dormdata)
-
-  }
-  return (
-    <>
-
-      <Container maxWidth="sm">
-        <Paper elevation={3} style={{ padding: 20 }}>
-
-          <Typography variant="h5" align="center" gutterBottom>
-            Bed Shifting Form
-          </Typography> <br />
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'flex', gap: 10 }}>
-
-              <TextField
-                label="Employee Number"
-                variant="outlined"
-                value={empNumber}
-                fullWidth
-                margin='normal'
-                onChange={(e) => setEmpNumber(e.target.value)}
-              />
-              <Button variant="contained" color="primary" disabled={!empNumber} onClick={handleFind} style={{ height: '50px', marginTop: '20px' }}><Search /></Button>
-            </div>
-
-            {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-
-
-
-
-
-
-            <TextField
-              label="Employee Name"
-              variant="outlined"
-              value={employee ? employee[0].EmployeeName : ''}
-              fullWidth
-              margin="normal"
-
-              InputProps={{
-                readOnly: true,
-                //  style: { background: '#f0f0f0' },
-              }}
-            />
-
-            <TextField
-              label='Department'
-              variant="outlined"
-              fullWidth
-              margin='normal'
-              value={employee ? employee[0].Department : ''}
-              InputProps={{
-                readOnly: true,
-                //  style: { background: '#f0f0f0' },
-              }}
-            />
-
-
-
-
-            <div style={{ display: 'flex', gap: 10 }}>
-
-              <TextField
-                label='Current Dorm'
-                type="text"
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                value={employee ? employee[0].DormName : ''}
-                InputProps={{
-                  readOnly: true,
-                  //  style: { background: '#f0f0f0' },
-                }}
-              />
-              <TextField
-                label='Floor'
-                fullWidth
-                margin="normal"
-                type="text"
-                variant="outlined"
-                value={employee ? employee[0].FloorNumber : ''}
-                InputProps={{
-                  readOnly: true,
-                  //  style: { background: '#f0f0f0' },
-                }}
-              />
-              <TextField
-                label='Room'
-                fullWidth
-                margin="normal"
-                type="text"
-                variant="outlined"
-                value={employee ? employee[0].RoomNumber : ''}
-                InputProps={{
-                  readOnly: true,
-                  //  style: { background: '#f0f0f0' },
-                }}
-              />
-              <TextField
-                label=' Bed'
-                type="text"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={employee ? employee[0].BedNumber : ''}
-                InputProps={{
-                  readOnly: true,
-                  //  style: { background: '#f0f0f0' },
-                }}
-              />
-            </div>
-            <br />
-            <div className={classes.root}>
-              <div className={classes.label}>Reason:</div>
-              <TextField value={reson} required
-                multiline
-                label='Reason'
-                // ref={reasonInputRef}  
-                aria-label="empty textarea" onChange={handleresonChange} disabled={disable} />
-
-            </div>
-            <br /> <br />
-            <div className={classes.root}>
-              <br />
-
-              <div className={classes.label} disabled={disable}>Shifting Bed:</div>
-              {employee && employee[0].CheckInFormStatus === 0 && (
-                <Button onClick={handleOpen} disabled={disable}>Available</Button>
-              )}
-            </div>
-            {selectedBedss.length > 0 && (
-              <div>
-                <Typography variant="h6">Selected Bed Data:</Typography>
-
-                {selectedBedss.map((selectedBed) => { // Assuming selectedBedss is an array
-                  const [floorNumber, roomNumber, bedNumber] = selectedBed.split("-");
-                  //  console.log(floorNumber, roomNumber, bedNumber);
-                  //console.log(dormName)
-                  return (
-                    <div key={selectedBed}>
-                      <div style={{ display: 'flex', gap: 10 }}>
-                        {/* {console.log(dormName)} */}
-                        <TextField
-                          label='Dorm Name'
-                          type="text"
-                          variant="outlined"
-                          fullWidth
-                          margin="normal"
-                          value={dormName[0] || ''}
-                          InputProps={{
-                            readOnly: true,
-                            //  style: { background: '#f0f0f0' },
-                          }}
-                        />
-                        <TextField
-                          label='shiftedfloor'
-                          type="text"
-                          variant="outlined"
-                          fullWidth
-                          margin="normal"
-                          value={floorNumber}
-                          InputProps={{
-                            readOnly: true,
-                            //  style: { background: '#f0f0f0' },
-                          }}
-                        />
-                        <TextField
-                          label='shiftedroom'
-                          type="text"
-                          variant="outlined"
-                          fullWidth
-                          margin="normal"
-                          value={roomNumber}
-                          InputProps={{
-                            readOnly: true,
-                            //  style: { background: '#f0f0f0' },
-                          }}
-                        />
-                        <TextField
-                          label='shiftedbed'
-                          type="text"
-                          variant="outlined"
-                          fullWidth
-                          margin="normal"
-                          value={bedNumber}
-                          InputProps={{
-                            readOnly: true,
-                            //  style: { background: '#f0f0f0' },
-                          }}
-                        />
-                      </div>
-
-                      <div className={classes.root}>
-                        <Button variant="contained" type='submit'>
-                          Submit
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {employee && employee[0].CheckInFormStatus === 4 && filterdata?.FormStatus === 1 && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <TextField
-                  label='shiftedfloor'
-                  type="text"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={shiftedfloor}
-                  InputProps={{
-                    readOnly: true,
-                    //  style: { background: '#f0f0f0' },
-                  }}
-
-
-                />
-                <TextField
-                  label='shiftedroom'
-                  type="text"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={shiftedroom}
-                  InputProps={{
-                    readOnly: true,
-                    //  style: { background: '#f0f0f0' },
-                  }}
-                />
-                <TextField
-                  label='shiftedbed'
-                  type="text"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={shiftedbed}
-                  InputProps={{
-                    readOnly: true,
-                    //  style: { background: '#f0f0f0' },
-                  }}
-                />
-              </div>
-            )}
-            {/* {filterdata && filterdata.FORM_STATUS &&(
-   <ProgressSteps  formStatus={filterdata.FORM_STATUS} />
-)} */}
-
-            <br />
-            <div className={classes.root}>
-              {error && (
-                <Typography variant="body2" color="error" component="p">
-                  {error}
-                </Typography>
-              )}
-            </div>
-          </form>
-          <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
-
-            {employee && employee[0].CheckInFormStatus === 4 && filterdata?.FormStatus === 1 && (
-              <ProgressSteps account={account} engflowshow={engflowshow} tableflow={tableflow} />
-            )}
-          </Box>
-          {modalOpen && (
-
-            <BedShiftingModal
-              dormid={dormid}
-              modalopen={modalOpen}
-              //account={account}
-              // bedShiftingDataArray={bedShiftingDataArray}
-              onClose={handleClose}
-              afterselectbed={renderSelectedBedData}
-
-            />
-          )}
-
-
-          <Dialog open={openDialog} onClose={handleCloseDialog}>
-            <DialogTitle>Confirm Submission</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to Shift the Bed?<br />
-
-              </DialogContentText>
-
-
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDialog} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleConfirmSubmit} color="primary" disabled={buttonloading}>
-                {buttonloading ? <CircularProgress /> : 'Confirm'}
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Paper>
-      </Container>
-    </>
-  );
-}
-
-export default BedShifting;
+CREATE OR REPLACE PACKAGE BODY DMS.DORM_REPORTS
+AS
+-- Package body
+
+  PROCEDURE CHECK_IN_REPORT(
+    V_EMP_ID IN VARCHAR2,
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_DORM_ID IN NUMBER,
+    V_SITE IN NUMBER,
+    V_CHECKIN_TYPE IN VARCHAR2,
+    V_START_DATE IN VARCHAR2,
+    V_END_DATE IN VARCHAR2,
+    L_START_PAGE IN VARCHAR2,
+    L_PAGE_SIZE IN VARCHAR2,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2,
+    P_CURSOR OUT SYS_REFCURSOR
+  ) IS
+  BEGIN
+    IF V_CHECKIN_TYPE IS NOT NULL THEN
+      -- Logic when V_CHECKIN_TYPE is not null
+      OPEN P_CURSOR FOR
+        SELECT
+          RN,
+          ROWSCOUNT,
+          DORM_ID,
+          EMP_ID,
+          ID,
+          CHECK_IN_DORM_ID,
+          FLOOR_ID,
+          ROOM_ID,
+          BED_ID,
+          EMPLOYEE_ID,
+          FATHER_NAME,
+          MOTHER_NAME,
+          AGE,
+          GENDER,
+          PHONE_NUMBER,
+          EMERGENCY_NUMBER,
+          REASON,
+          STATUS,
+          CHECK_IN_DATE,
+          CHECK_IN_BY,
+          DORM_NAME,
+          FLOOR_NUMBER,
+          ROOM_NUMBER,
+          BED_NUMBER,
+          EMPLOYEE_NAME,
+          CHECK_IN_FORM_STATUS,
+          DEPARTMENT,
+          BED_TYPE,
+          CHECK_OUT_DATE,
+          EMPLOYEE_STATUS,
+          PERMANENTADDRESS,
+          PERMANENTDISTRICT,
+          PERMANENTSTATE,
+          PERMANENTCOUNTRY,
+          PROJECT,
+          EMERGENCY_CONTECT_PERSON,
+          CHECK_OUT_BY,
+          DOJ,
+          DORM_LOCATION,
+          ROOM_TYPE,
+          AADHAR_NO,
+          SAPARATION_DATE,
+          CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE
+        FROM (
+          SELECT
+            ROW_NUMBER() OVER (ORDER BY C.CHECK_IN_DATE DESC) AS RN,
+            COUNT(1) OVER () AS ROWSCOUNT,
+            D.DORM_ID,
+            D.EMP_ID,
+            C.ID,
+            C.DORM_ID AS CHECK_IN_DORM_ID,
+            C.FLOOR_ID,
+            C.ROOM_ID,
+            C.BED_ID,
+            C.EMPLOYEE_ID,
+            C.FATHER_NAME,
+            C.MOTHER_NAME,
+            C.AGE,
+            C.GENDER,
+            C.PHONE_NUMBER,
+            C.EMERGENCY_NUMBER,
+            C.REASON,
+            C.STATUS,
+            TO_CHAR(C.CHECK_IN_DATE, 'DD-MM-YYYY HH24:MI:SS') AS CHECK_IN_DATE,
+            C.CHECK_IN_BY,
+            C.DORM_NAME,
+            C.FLOOR_NUMBER,
+            C.ROOM_NUMBER,
+            C.BED_NUMBER,
+            C.EMPLOYEE_NAME,
+            C.CHECK_IN_FORM_STATUS,
+            C.DEPARTMENT,
+            C.BED_TYPE,
+            C.CHECK_OUT_DATE,
+            C.EMPLOYEE_STATUS,
+            C.PERMANENTADDRESS,
+            C.PERMANENTDISTRICT,
+            C.PERMANENTSTATE,
+            C.PERMANENTCOUNTRY,
+            C.PROJECT,
+            C.EMERGENCY_CONTECT_PERSON,
+            C.CHECK_OUT_BY,
+            C.DOJ,
+            DC.DORM_LOCATION,
+            C.ROOM_TYPE,
+            C.AADHAR_NO,
+            DC.SITE,
+            C.SAPARATION_DATE
+          FROM
+            DMS.C_CHECK_IN_T C
+            LEFT JOIN DMS.C_DATA_CONTROL_T D ON C.DORM_ID = D.DORM_ID
+            LEFT JOIN DMS.C_DORM_CREATION_T DC ON DC.ID = C.DORM_ID AND DC.DEL_FLAG = 0
+          WHERE
+            TRUNC(C.CHECK_IN_DATE) <= TO_DATE(V_START_DATE, 'DD-MM-YYYY')
+            AND (TRUNC(C.CHECK_OUT_DATE) > TO_DATE(V_START_DATE, 'DD-MM-YYYY') OR C.CHECK_OUT_DATE IS NULL)
+            AND (TRUNC(C.DORM_SHIFTED_DATE) > TO_DATE(V_START_DATE, 'DD-MM-YYYY') OR C.DORM_SHIFTED_DATE IS NULL)
+            AND D.EMP_ID = V_EMP_ID
+            AND C.DORM_ID = NVL(V_DORM_ID, C.DORM_ID)
+            AND C.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID, C.EMPLOYEE_ID)
+        --    AND DC.SITE = NVL(V_SITE, DC.SITE)
+        --    AND C.CHECK_IN_FORM_STATUS IN (0, 3, 4)
+          ORDER BY C.CHECK_IN_DATE DESC
+        )
+        WHERE
+          RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+          AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
+         V_RES := '1';
+	V_RESULT := 'Success';
+    ELSE
+      -- Logic when V_CHECKIN_TYPE is null (use the original procedure logic)
+      OPEN P_CURSOR FOR
+        SELECT
+          RN,
+          ROWSCOUNT,
+          DORM_ID,
+          EMP_ID,
+          ID,
+          CHECK_IN_DORM_ID,
+          FLOOR_ID,
+          ROOM_ID,
+          BED_ID,
+          EMPLOYEE_ID,
+          FATHER_NAME,
+          MOTHER_NAME,
+          AGE,
+          GENDER,
+          PHONE_NUMBER,
+          EMERGENCY_NUMBER,
+          REASON,
+          STATUS,
+          CHECK_IN_DATE,
+          CHECK_IN_BY,
+          DORM_NAME,
+          FLOOR_NUMBER,
+          ROOM_NUMBER,
+          BED_NUMBER,
+          EMPLOYEE_NAME,
+          CHECK_IN_FORM_STATUS,
+          DEPARTMENT,
+          BED_TYPE,
+          CHECK_OUT_DATE,
+          EMPLOYEE_STATUS,
+          PERMANENTADDRESS,
+          PERMANENTDISTRICT,
+          PERMANENTSTATE,
+          PERMANENTCOUNTRY,
+          PROJECT,
+          EMERGENCY_CONTECT_PERSON,
+          CHECK_OUT_BY,
+          DOJ,
+          DORM_LOCATION,
+          ROOM_TYPE,
+          AADHAR_NO,
+          SAPARATION_DATE,
+          CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE
+        FROM (
+          SELECT
+            ROW_NUMBER() OVER (ORDER BY C.CHECK_IN_DATE DESC) AS RN,
+            COUNT(1) OVER () AS ROWSCOUNT,
+            D.DORM_ID,           
+            D.EMP_ID,
+            C.ID,
+            C.DORM_ID AS CHECK_IN_DORM_ID,
+            C.FLOOR_ID,
+            C.ROOM_ID,
+            C.BED_ID,
+            C.EMPLOYEE_ID,
+            C.FATHER_NAME,
+            C.MOTHER_NAME,
+            C.AGE,
+            C.GENDER,
+            C.PHONE_NUMBER,
+            C.EMERGENCY_NUMBER,
+            C.REASON,
+            C.STATUS,
+            TO_CHAR(C.CHECK_IN_DATE, 'DD-MM-YYYY HH24:MI:SS') AS CHECK_IN_DATE,
+            C.CHECK_IN_BY,
+            C.DORM_NAME,
+            C.FLOOR_NUMBER,
+            C.ROOM_NUMBER,
+            C.BED_NUMBER,
+            C.EMPLOYEE_NAME,
+            C.CHECK_IN_FORM_STATUS,
+            C.DEPARTMENT,
+            C.BED_TYPE,
+            C.CHECK_OUT_DATE,
+            C.EMPLOYEE_STATUS,
+            C.PERMANENTADDRESS,
+            C.PERMANENTDISTRICT,
+            C.PERMANENTSTATE,
+            C.PERMANENTCOUNTRY,
+            C.PROJECT,
+            C.EMERGENCY_CONTECT_PERSON,
+            C.CHECK_OUT_BY,
+            C.DOJ,
+            DC.DORM_LOCATION,
+            C.ROOM_TYPE,
+            C.AADHAR_NO,
+            DC.SITE,
+            C.SAPARATION_DATE
+          FROM
+            DMS.C_CHECK_IN_T C
+            LEFT JOIN DMS.C_DATA_CONTROL_T D ON C.DORM_ID = D.DORM_ID
+            LEFT JOIN DMS.C_DORM_CREATION_T DC ON DC.ID = C.DORM_ID AND DC.DEL_FLAG = 0
+          WHERE
+            D.EMP_ID = V_EMP_ID
+            AND DC.SITE = NVL(V_SITE, DC.SITE)
+            AND C.DORM_ID = NVL(V_DORM_ID, C.DORM_ID)
+            AND C.CHECK_IN_FORM_STATUS IN (0, 3, 4)
+            AND C.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID, C.EMPLOYEE_ID)
+            AND C.CHECK_IN_DATE >= NVL(TO_DATE(V_START_DATE, 'DD-MM-YYYY'), C.CHECK_IN_DATE)
+            AND C.CHECK_IN_DATE <= NVL(TO_DATE(V_END_DATE, 'DD-MM-YYYY') + INTERVAL '1' DAY, C.CHECK_IN_DATE)
+          ORDER BY C.CHECK_IN_DATE DESC
+        )
+        WHERE
+          RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+          AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
+         V_RES := '1';
+	V_RESULT := 'Success';
+    END IF;
+  END CHECK_IN_REPORT;
+ 
+  PROCEDURE CHECK_OUT_REPORT(
+    V_EMP_ID IN VARCHAR2,
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_DORM_ID IN NUMBER,
+    V_SITE IN NUMBER,
+   -- V_CHECKIN_TYPE IN VARCHAR2,
+    V_START_DATE IN VARCHAR2,
+    V_END_DATE IN VARCHAR2,
+    L_START_PAGE IN VARCHAR2,
+    L_PAGE_SIZE IN VARCHAR2,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2,
+    P_CURSOR OUT SYS_REFCURSOR
+  ) IS
+ 
+ BEGIN
+	 OPEN P_CURSOR FOR 
+	 
+	 SELECT
+    RN,
+    ROWCOUNT,
+    ID,
+    DORM_ID,
+    FLOOR_ID,
+    ROOM_ID,
+    BED_ID,
+    EMPLOYEE_ID,
+    FATHER_NAME,
+    MOTHER_NAME,
+    AGE,
+    GENDER,
+    PHONE_NUMBER,
+    EMERGENCY_NUMBER, 
+    REASON,
+    STATUS,
+    CHECK_IN_DATE,
+    CHECK_IN_BY,
+    DORM_NAME,
+    FLOOR_NUMBER,
+    ROOM_NUMBER,
+    BED_NUMBER,
+    EMPLOYEE_NAME,
+    CHECK_IN_FORM_STATUS,
+    DEPARTMENT,
+    BED_TYPE,
+    CHECK_OUT_DATE,
+    EMPLOYEE_STATUS,
+    PERMANENTADDRESS,
+    PERMANENTDISTRICT,
+    PERMANENTSTATE,
+    PERMANENTCOUNTRY,
+    PROJECT,
+    EMERGENCY_CONTECT_PERSON,
+    CHECK_OUT_BY,
+    DOJ,
+    DORM_LOCATION,
+    ROOM_TYPE,
+    AADHAR_NO,
+    SAPARATION_DATE,
+       CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE
+FROM  
+    (
+    SELECT
+        ROW_NUMBER() OVER(ORDER BY C.CHECK_OUT_DATE DESC) AS RN,
+        COUNT(1) OVER() AS ROWCOUNT,
+        C.ID,
+        C.DORM_ID,
+        C.FLOOR_ID,
+        C.ROOM_ID,
+        C.BED_ID,
+        C.EMPLOYEE_ID,
+        C.FATHER_NAME,
+        C.MOTHER_NAME,
+        C.AGE,
+        C.GENDER,
+        C.PHONE_NUMBER,
+        C.EMERGENCY_NUMBER,
+        C.REASON,
+        C.STATUS,
+        C.CHECK_IN_DATE,
+        C.CHECK_IN_BY,
+        C.DORM_NAME,
+        C.FLOOR_NUMBER,
+        C.ROOM_NUMBER,
+        C.BED_NUMBER,
+        C.EMPLOYEE_NAME,
+        C.CHECK_IN_FORM_STATUS,
+        C.DEPARTMENT,
+        C.BED_TYPE,
+       TO_CHAR( C.CHECK_OUT_DATE,'DD-MM-YYYY HH24:MM:SS') AS CHECK_OUT_DATE,
+        C.EMPLOYEE_STATUS,
+        C.PERMANENTADDRESS,
+        C.PERMANENTDISTRICT,
+        C.PERMANENTSTATE,
+        C.PERMANENTCOUNTRY,
+        C.PROJECT,
+        C.EMERGENCY_CONTECT_PERSON,
+        C.CHECK_OUT_BY,
+        C.DOJ,
+        DC.DORM_LOCATION,
+        C.ROOM_TYPE,
+        C.AADHAR_NO,
+        C.SAPARATION_DATE,
+        DC.SITE
+    FROM
+        DMS.C_CHECK_IN_T C
+    INNER JOIN 
+        DMS.C_DATA_CONTROL_T D ON
+        C.DORM_ID = D.DORM_ID
+    INNER JOIN DMS.C_DORM_CREATION_T DC ON
+        DC.ID=C.DORM_ID AND DC.DEL_FLAG =0
+    WHERE
+        D.EMP_ID = V_EMP_ID
+        AND C.CHECK_IN_FORM_STATUS = 1
+        AND DC.SITE = NVL(V_SITE,DC.SITE)
+        AND C.DORM_ID = NVL(V_DORM_ID, C.DORM_ID)
+        AND C.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID, C.EMPLOYEE_ID)
+        AND C.CHECK_OUT_DATE >= NVL(TO_DATE(V_START_DATE, 'DD-MM-YYYY'), C.CHECK_OUT_DATE)
+        AND C.CHECK_OUT_DATE <= NVL(TO_DATE(V_END_DATE, 'DD-MM-YYYY') + INTERVAL '1' DAY, C.CHECK_OUT_DATE       )  ORDER BY C.CHECK_OUT_DATE DESC )
+        WHERE RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+        AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE  ;
+       V_RES := '1';
+	V_RESULT := 'Success';
+ 
+ END;
+ 
+PROCEDURE GET_OCCUPANCY_VACANCY_SUMMART(
+ V_DORM_ID IN NUMBER,
+ V_SITE IN NUMBER,
+ V_EMP_ID IN VARCHAR2,
+ V_INPUT_DATE IN VARCHAR2,
+ L_START_PAGE IN VARCHAR2,
+ L_PAGE_SIZE IN VARCHAR2,
+ V_RES OUT VARCHAR2,
+ V_RESULT OUT VARCHAR2,
+ P_CURSOR OUT SYS_REFCURSOR
+)IS 
+BEGIN
+    IF V_INPUT_DATE IS NOT NULL AND V_EMP_ID IS NOT NULL 
+    THEN 
+        OPEN P_CURSOR FOR
+     SELECT 
+      DORM_NAME,
+            DORM_LOCATION,
+            VACANT_ROOM_CAPACITY,
+            OVERALL_DORM_CAPACITY,
+            OVERALL_FLOOR_CAPACITY,
+            OCCUPIED_FLOOR_CAPACITY,
+            VACANT_FLOOR_CAPACITY,
+            SUM_ROOM_CAPACITY,
+            OCCUPIED_ROOM_CAPACITY,
+            SUM_OF_BED_CAPACITY,
+            OCCUPIED_BED_CAPACITY,
+            VACANT_BED_CAPACITY,
+          OCCUPIED_BED_RATIO,
+           VACANT_BED_RATIO,
+            RN,
+            ROWCOUNT,
+            CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE
+     
+     
+     FROM (
+  SELECT
+     S.DORM_NAME,
+       S.  DORM_LOCATION,
+       DC.SITE,
+          OVERALL_DORM_CAPACITY AS OVERALL_DORM_CAPACITY,
+          OVERALL_FLOOR_CAPACITY AS OVERALL_FLOOR_CAPACITY,
+          OCCUPIED_FLOOR_CAPACITY AS OCCUPIED_FLOOR_CAPACITY,
+          VACANT_FLOOR_CAPACITY AS VACANT_FLOOR_CAPACITY,
+          SUM_ROOM_CAPACITY AS SUM_ROOM_CAPACITY,
+          OCCUPIED_ROOM_CAPACITY AS OCCUPIED_ROOM_CAPACITY,
+          VACANT_ROOM_CAPACITY AS VACANT_ROOM_CAPACITY,
+          SUM_OF_BED_CAPACITY AS SUM_OF_BED_CAPACITY,
+          OCCUPIED_BED_CAPACITY AS OCCUPIED_BED_CAPACITY,
+          VACANT_BED_CAPACITY AS VACANT_BED_CAPACITY,
+        --  OCCUPIED_BED_RATIO AS OCCUPIED_BED_RATIO,
+       --   VACANT_BED_RATIO AS VACANT_BED_RATIO,
+          ROUND(OCCUPIED_BED_RATIO, 2) AS OCCUPIED_BED_RATIO,
+           ROUND(VACANT_BED_RATIO, 2) AS VACANT_BED_RATIO,
+
+            ROW_NUMBER() OVER (ORDER BY S.WORK_DATE DESC) AS RN,
+                COUNT(1) OVER () AS ROWCOUNT
+  FROM
+    DMS.C_SUMMARY_REPORT_T S
+          INNER JOIN DMS.C_DATA_CONTROL_T D ON S.DORM_ID = D.DORM_ID
+    JOIN DMS.C_DORM_CREATION_T DC ON DC.ID  = S.DORM_ID 
+  WHERE
+    WORK_DATE = TO_DATE(V_INPUT_DATE, 'DD-MM-YYYY')
+    AND S.DORM_ID = NVL(V_DORM_ID, S.DORM_ID)
+    AND D.EMP_ID = V_EMP_ID
+   AND DC.SITE =NVL(V_SITE,DC.SITE)
+) 
+
+       WHERE        RN > (TO_NUMBER(L_START_PAGE) - 1) * TO_NUMBER(L_PAGE_SIZE)
+            AND RN <= (TO_NUMBER(L_START_PAGE) - 1) * TO_NUMBER(L_PAGE_SIZE) + TO_NUMBER(L_PAGE_SIZE);   
+        V_RES := '1';
+        V_RESULT := 'Success';
+    ELSE
+        OPEN P_CURSOR FOR
+        SELECT
+            DORM_NAME,
+            CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE,
+            DORM_LOCATION,
+            VACANT_ROOM_CAPACITY,
+            OVERALL_DORM_CAPACITY,
+            OVERALL_FLOOR_CAPACITY,
+            OCCUPIED_FLOOR_CAPACITY,
+            VACANT_FLOOR_CAPACITY,
+            SUM_ROOM_CAPACITY,
+            OCCUPIED_ROOM_CAPACITY,
+            SUM_OF_BED_CAPACITY,
+            OCCUPIED_BED_CAPACITY,
+            VACANT_BED_CAPACITY,
+            OCCUPIED_BED_RATIO,
+            VACANT_BED_RATIO,
+            RN,
+            ROWCOUNT
+        FROM (
+            SELECT
+                D.DORM_NAME,
+                D.SITE,
+                D.DORM_LOCATION,
+                COUNT(DISTINCT CASE WHEN B.CREATE_BED_FORM_STATUS NOT IN(1,3) THEN R.ID END) AS VACANT_ROOM_CAPACITY,
+                D.DORM_CAPACITY AS OVERALL_DORM_CAPACITY,
+                D.FLOOR_CAPACITY AS OVERALL_FLOOR_CAPACITY,
+                COUNT(DISTINCT CASE WHEN B.CREATE_BED_FORM_STATUS = 1 THEN B.FLOOR_ID END) AS OCCUPIED_FLOOR_CAPACITY,
+                COUNT(DISTINCT CASE WHEN F.CREATE_FLOOR_FORM_STATUS != 3 THEN F.ID END) AS VACANT_FLOOR_CAPACITY,
+                (SELECT SUM(F2.ROOM_CAPACITY) FROM DMS.C_FLOOR_CREATION_T F2 WHERE F2.DORM_ID = D.ID) AS SUM_ROOM_CAPACITY,
+                (SELECT SUM(F2.ROOM_CAPACITY) FROM DMS.C_FLOOR_CREATION_T F2 WHERE F2.DORM_ID = D.ID) -  
+                COUNT(DISTINCT CASE WHEN B.CREATE_BED_FORM_STATUS NOT IN(1,3) THEN R.ID END) AS OCCUPIED_ROOM_CAPACITY,
+                NVL((SELECT SUM(R2.BED_CAPACITY) FROM DMS.C_ROOM_CREATION_T R2 WHERE R2.DORM_ID = D.ID), 0) AS SUM_OF_BED_CAPACITY,
+                COUNT(CASE WHEN B.CREATE_BED_FORM_STATUS = 1 THEN 1 END) AS OCCUPIED_BED_CAPACITY,
+                COUNT(CASE WHEN B.CREATE_BED_FORM_STATUS = 0 THEN 1 END) AS VACANT_BED_CAPACITY,
+                -- Fixed Occupied Bed Ratio
+                CASE 
+                    WHEN MAX(D.DORM_CAPACITY) > 0 
+                    THEN ROUND(
+                           (COUNT(DISTINCT CASE WHEN B.CREATE_BED_FORM_STATUS = 1 THEN B.ID END) / 
+                           TO_NUMBER(MAX(D.DORM_CAPACITY))) * 100, 
+                         2
+                         )
+                    ELSE 0 
+                END AS OCCUPIED_BED_RATIO,
+                -- Fixed Vacant Bed Ratio
+                CASE 
+                    WHEN MAX(D.DORM_CAPACITY) > 0 
+                    THEN ROUND(
+                           ((TO_NUMBER(MAX(D.DORM_CAPACITY)) - 
+                            COUNT(DISTINCT CASE WHEN B.CREATE_BED_FORM_STATUS = 1 THEN B.ID END)) / 
+                           TO_NUMBER(MAX(D.DORM_CAPACITY))) * 100, 
+                         2
+                         )
+                    ELSE 0 
+                END AS VACANT_BED_RATIO,
+                ROW_NUMBER() OVER (ORDER BY D.CREATED_DATE DESC) AS RN,
+                COUNT(1) OVER () AS ROWCOUNT
+            FROM
+                DMS.C_DORM_CREATION_T D
+                LEFT JOIN DMS.C_FLOOR_CREATION_T F ON D.ID = F.DORM_ID AND F.DEL_FLAG = 0
+                LEFT JOIN DMS.C_ROOM_CREATION_T R ON F.ID = R.FLOOR_ID AND R.DEL_FLAG = 0
+                LEFT JOIN DMS.C_BED_CREATION_T B ON R.ID = B.ROOM_ID AND B.DEL_FLAG = 0
+                INNER JOIN DMS.C_DATA_CONTROL_T DC ON DC.DORM_ID = D.ID
+            WHERE
+                DC.EMP_ID = V_EMP_ID
+                AND D.ID = NVL(V_DORM_ID, D.ID)
+                AND D.SITE= NVL(V_SITE,D.SITE)
+                AND D.DEL_FLAG = 0
+            GROUP BY
+                D.DORM_NAME,
+                D.DORM_LOCATION,
+                D.DORM_CAPACITY,
+                D.FLOOR_CAPACITY,
+                D.ID,
+                D.CREATED_DATE,
+                D.SITE
+            ORDER BY D.CREATED_DATE DESC
+        )
+        WHERE 
+            RN > (TO_NUMBER(L_START_PAGE) - 1) * TO_NUMBER(L_PAGE_SIZE)
+            AND RN <= (TO_NUMBER(L_START_PAGE) - 1) * TO_NUMBER(L_PAGE_SIZE) + TO_NUMBER(L_PAGE_SIZE);
+            
+        V_RES := '1';
+        V_RESULT := 'Success';
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        V_RES := '0';
+        V_RESULT := 'Error: ' || SQLERRM;
+END;
+     
+PROCEDURE GET_DORM_LIVE_HEAD_COUNT(
+  V_EMP_ID IN VARCHAR2,
+  V_SITE IN NUMBER,
+  V_DORM_ID IN NUMBER,
+  L_START_PAGE IN VARCHAR2,
+  L_PAGE_SIZE IN VARCHAR2,
+  V_RES OUT VARCHAR2,
+  V_RESULT OUT VARCHAR2,
+  P_CURSOR OUT SYS_REFCURSOR
+) IS
+BEGIN 
+   OPEN P_CURSOR FOR  
+   SELECT  
+     RN,
+     ROWCOUNT,
+     DORM_NAME,
+     OVERALL_DORM_CAPACITY,
+     OVERALL_CHECK_IN_COUNT,
+     CURRENT_CL_EMPLOYEES,
+     CURRENT_HH_EMPLOYEES,
+     NEW_JOINERS,
+     RESIGNED_TODAY,
+     ABSCOND,
+     DORM_SHIFTED_TODAY,
+     GAP,
+        CASE 
+                WHEN SITE = 69941 THEN 'FXCN' 
+                WHEN SITE = 95326 THEN 'FXBL' 
+                ELSE TO_CHAR(SITE) -- Optional ELSE to handle other cases
+            END AS SITE,
+     CASE WHEN OVERALL_DORM_CAPACITY > 0 
+          THEN ROUND((OVERALL_CHECK_IN_COUNT / OVERALL_DORM_CAPACITY) * 100, 2)
+          ELSE 0 
+     END AS PERCENTAGE
+   FROM (
+     SELECT
+       ROW_NUMBER() OVER (ORDER BY D.CREATED_DATE DESC) AS RN,
+       D.SITE,
+       COUNT(1) OVER () AS ROWCOUNT, 
+       D.DORM_NAME,
+       D.DORM_CAPACITY AS OVERALL_DORM_CAPACITY,
+       COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS IN (0, 3, 4) THEN 1 END) AS OVERALL_CHECK_IN_COUNT,
+    COUNT(CASE 
+         WHEN C.CHECK_IN_FORM_STATUS IN (0, 3, 4) 
+              AND (C.EMPLOYEE_ID LIKE 'CL%' OR C.EMPLOYEE_ID LIKE 'SU%') 
+         THEN 1 
+     END) AS CURRENT_CL_EMPLOYEES,
+    COUNT(CASE 
+         WHEN C.CHECK_IN_FORM_STATUS IN (0, 3, 4) 
+              AND NOT (C.EMPLOYEE_ID LIKE 'CL%' OR C.EMPLOYEE_ID LIKE 'SU%') 
+         THEN 1 
+     END) AS CURRENT_HH_EMPLOYEES,
+       COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS = 0 AND TRUNC(C.CHECK_IN_DATE) = TRUNC(SYSDATE - 1) THEN 1 END) AS NEW_JOINERS,
+       COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS = 1 AND TRUNC(C.CHECK_OUT_DATE) = TRUNC(SYSDATE - 1) AND C.EMPLOYEE_STATUS LIKE '%Resigned%' THEN 1 END) AS RESIGNED_TODAY,
+       COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS = 1 AND TRUNC(C.CHECK_OUT_DATE) = TRUNC(SYSDATE - 1) AND C.EMPLOYEE_STATUS LIKE '%Terminated%' THEN 1 END) AS ABSCOND,
+       COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS = 2 AND TRUNC(DS.LAST_EDIT_DATE) = TRUNC(SYSDATE - 1) THEN 1 END) AS DORM_SHIFTED_TODAY,
+       (D.DORM_CAPACITY - COUNT(CASE WHEN C.CHECK_IN_FORM_STATUS IN (0, 3, 4) THEN 1 END)) AS GAP
+     FROM
+       DMS.C_DORM_CREATION_T D
+     INNER JOIN
+       DMS.C_DATA_CONTROL_T DC ON D.ID = DC.DORM_ID
+     LEFT JOIN
+       DMS.C_CHECK_IN_T C ON D.ID = C.DORM_ID
+     LEFT JOIN
+       DMS.C_DORM_SHIFTING_T DS ON C.ID = DS.CHECK_IN_ID AND C.CHECK_IN_FORM_STATUS = 2
+     WHERE
+       DC.EMP_ID = V_EMP_ID
+       AND D.ID = NVL(V_DORM_ID, D.ID)
+       AND D.SITE = NVL(V_SITE, D.SITE)
+       AND D.DEL_FLAG = 0
+     GROUP BY
+       D.DORM_NAME,
+       D.DORM_CAPACITY,
+       D.CREATED_DATE,
+       D.SITE
+   ) 
+  WHERE 
+   RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+      AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
+   
+   V_RES := '1';
+   V_RESULT := 'Success';
+EXCEPTION
+  WHEN OTHERS THEN
+    V_RES := '0';
+    V_RESULT := 'Error: ' || SQLERRM;
+END;
+    
+    
+PROCEDURE GET_DORM_SHIFT_REPORT (
+V_EMP_ID IN VARCHAR2,
+V_SITE IN NUMBER,
+V_EMPLOYEE_ID IN VARCHAR2,
+V_DORM_ID IN NUMBER,
+V_START_DATE IN VARCHAR2,
+V_END_DATE IN VARCHAR2,
+L_START_PAGE IN VARCHAR2,
+L_PAGE_SIZE IN VARCHAR2,
+V_RES  OUT VARCHAR2,
+V_RESULT OUT VARCHAR2,
+P_CURSOR OUT SYS_REFCURSOR
+) IS    
+    
+ BEGIN
+	 OPEN P_CURSOR FOR
+	SELECT
+    RN,
+    ROWSCOUNT,
+    ID,
+    EMPLOYEE_ID,
+    EMPLOYEE_NAME,
+   CASE 
+        WHEN SITE = 69941 THEN 'FXCN' 
+        WHEN SITE = 95326 THEN 'FXBL' 
+        ELSE SITE -- Optional ELSE to handle other cases
+    END AS SITE,
+    SITE,
+    DEPARTMENT,
+    CURRENT_DORM,
+    CURRENT_FLOOR,
+    CURRENT_ROOM,
+    CURRENT_BED,
+    SHIFTING_DORM,
+    REASON,
+    MOVED_BY_ID,
+    DORM_SHIFT_FORM_STATUS,
+    FORM_CODE,
+    FORM_ID,
+    FORM_STATUS,
+    DORM_SHIFTED_DATE,
+    LAST_EDIT_BY,
+    LAST_EDIT_DATE,
+    ADD_BY,
+    ADD_BY_DATE,
+    CHECK_IN_ID,
+    CURRENT_DOMR_ID,
+    DORM_SHIFTING_STATUS,
+    SHIFTED_DORM_CODE,
+    BED_ID,
+    DORM_LOCATION
+FROM
+    (
+    SELECT
+        ROW_NUMBER() OVER(ORDER BY DS.DORM_SHIFTED_DATE DESC) AS RN,
+        COUNT(1) OVER () AS ROWSCOUNT,
+        D.DORM_LOCATION,
+        D.SITE,
+        DS.ID,
+        DS.EMPLOYEE_ID,
+        DS.EMPLOYEE_NAME,
+        DS.DEPARTMENT,
+        DS.CURRENT_DORM,
+        DS.CURRENT_FLOOR,
+        DS.CURRENT_ROOM,
+        DS.CURRENT_BED,
+        DS.SHIFTING_DORM,
+        DS.REASON,
+        DS.MOVED_BY_ID,
+        DS.DORM_SHIFT_FORM_STATUS,
+        DS.FORM_CODE,
+        DS.FORM_ID,
+        DS.FORM_STATUS,
+        TO_CHAR( DS.DORM_SHIFTED_DATE,'DD-MM-YYYY HH24:MI:SS') AS DORM_SHIFTED_DATE,
+        DS.LAST_EDIT_BY,
+         TO_CHAR( DS.LAST_EDIT_DATE,'DD-MM-YYYY HH24:MM:SS') AS LAST_EDIT_DATE,
+        DS.ADD_BY,
+        DS.ADD_BY_DATE,
+        DS.CHECK_IN_ID,
+        DS.CURRENT_DOMR_ID,
+        DS.DORM_SHIFTING_STATUS,
+        DS.SHIFTED_DORM_CODE,
+        DS.BED_ID
+    FROM
+        DMS.C_DORM_SHIFTING_T DS
+    LEFT JOIN 
+        C_DORM_CREATION_T D ON
+        DS.CURRENT_DOMR_ID = D.ID AND D.DEL_FLAG=0
+    LEFT JOIN 
+        DMS.C_DATA_CONTROL_T DC ON
+        DS.CURRENT_DOMR_ID = DC.DORM_ID
+    WHERE
+        DC.EMP_ID = V_EMP_ID
+        AND D.SITE = NVL(V_SITE,D.SITE)
+        AND DS.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID, DS.EMPLOYEE_ID)
+        AND DS.CURRENT_DOMR_ID = NVL(V_DORM_ID, DS.CURRENT_DOMR_ID)
+        AND DS.DORM_SHIFTED_DATE >= NVL(TO_DATE(V_START_DATE, 'DD-MM-YYYY'), DS.DORM_SHIFTED_DATE)
+        AND DS.DORM_SHIFTED_DATE <= NVL(TO_DATE(V_END_DATE, 'DD-MM-YYYY') + INTERVAL '1' DAY, DS.DORM_SHIFTED_DATE) ORDER BY DS.DORM_SHIFTED_DATE DESC)
+WHERE RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+             AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE  ;
+	   V_RES := '1';
+	V_RESULT := 'Success';
+	 END ;
+    
+	
+   
+	
+PROCEDURE GET_BED_SHIFT_REPORT(
+    V_EMP_ID IN VARCHAR2,
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_DORM_ID IN NUMBER,
+    V_START_DATE IN VARCHAR2,
+    V_END_DATE IN VARCHAR2,
+    L_START_PAGE IN VARCHAR2,
+    L_PAGE_SIZE IN VARCHAR2,
+    V_RES  OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2,
+    P_CURSOR OUT SYS_REFCURSOR
+) IS
+BEGIN
+    OPEN P_CURSOR FOR
+    SELECT
+        ID,
+        RN,
+        ROWSCOUNT,
+        EMPLOYEE_ID,
+        EMPLOYEE_NAME,
+        DEPARTMENT,
+        CURRENT_BED_NUMBER,
+        CURRENT_FLOOR_NUMBER,
+        CURRENT_ROOM_NUMBER,
+        SHIFTED_BED_NUMBER,
+        SHIFTED_ROOM_NUMBER,
+        SHIFTED_FLOOR_NUMBER,
+        REASON,
+        SHIFTED_BY,
+        SHIFTED_DATE,
+        FORM_ID,
+        FORM_CODE,
+        FORM_STATUS,
+        SHIFTED_DORM_ID,
+        FLOOR_ID,
+        SHIFTED_BED_ID,
+        BED_SHIFTING_STATUS,
+        SHIFTED_ROOM_ID,
+        BED_TYPE,
+        CURRENT_DORM_ID,
+        CURRENT_ROOM_ID,
+        CURRENT_BED_ID,
+        CURRENT_DORM,
+        CHECK_IN_ID,
+        STATUS,
+        CURRENT_FLOOR_ID,
+        SHIFTED_FLOOR_ID,
+        LAST_EDIT_BY,
+        LAST_EDIT_DATE
+    FROM
+    (
+        SELECT
+            BS.ID,
+            ROW_NUMBER() OVER(ORDER BY BS.SHIFTED_DATE DESC) AS RN,
+            COUNT(1) OVER () AS ROWSCOUNT,
+            EMPLOYEE_ID,
+            EMPLOYEE_NAME,
+            DEPARTMENT,
+            CURRENT_BED_NUMBER,
+            CURRENT_FLOOR_NUMBER,
+            CURRENT_ROOM_NUMBER,
+            SHIFTED_BED_NUMBER,
+            SHIFTED_ROOM_NUMBER,
+            SHIFTED_FLOOR_NUMBER,
+            BS.REASON,
+            SHIFTED_BY,
+            TO_CHAR(BS.SHIFTED_DATE,'DD-MM-YYYY HH24:MI:SS') AS SHIFTED_DATE,
+            FORM_ID,
+            FORM_CODE,
+            FORM_STATUS,
+            SHIFTED_DORM_ID,
+            FLOOR_ID,
+            SHIFTED_BED_ID,
+            BED_SHIFTING_STATUS,
+            SHIFTED_ROOM_ID,
+            BED_TYPE,
+            CURRENT_DORM_ID,
+            CURRENT_ROOM_ID,
+            CURRENT_BED_ID,
+            CURRENT_DORM,
+            CHECK_IN_ID,
+            BS.STATUS,
+            CURRENT_FLOOR_ID,
+            SHIFTED_FLOOR_ID,
+            BS.LAST_EDIT_BY AS LAST_EDIT_BY,
+            TO_CHAR(BS.LAST_EDIT_DATE,'DD-MM-YYYY HH24:MI:SS') AS LAST_EDIT_DATE
+        FROM
+            DMS.C_DATA_CONTROL_T DC
+        INNER JOIN DMS.C_BED_SHIFTING_T BS 
+            ON DC.DORM_ID = BS.CURRENT_DORM_ID
+        WHERE
+            DC.DORM_ID = NVL(V_DORM_ID, DC.DORM_ID)
+            AND BS.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID, BS.EMPLOYEE_ID)
+            AND DC.EMP_ID = V_EMP_ID
+            -- ✅ Correct date filter
+            AND (V_START_DATE IS NULL OR TRUNC(BS.SHIFTED_DATE) >= TO_DATE(V_START_DATE,'DD-MM-YYYY'))
+            AND (V_END_DATE   IS NULL OR TRUNC(BS.SHIFTED_DATE) < TO_DATE(V_END_DATE,'DD-MM-YYYY') + 1)
+    )
+    WHERE RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+      AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
+
+    V_RES := '1';
+    V_RESULT := 'Success';
+END;
+
+
+
+PROCEDURE GET_DORM_BULK_SHIFT_REPORT(
+ V_EMP_ID IN VARCHAR2,
+V_EMPLOYEE_ID IN VARCHAR2,
+V_CURRENT_DORM_ID IN NUMBER,
+V_START_DATE IN VARCHAR2,
+V_END_DATE IN VARCHAR2,
+L_START_PAGE IN VARCHAR2,
+L_PAGE_SIZE IN VARCHAR2,
+V_RES  OUT VARCHAR2,
+V_RESULT OUT VARCHAR2,
+P_CURSOR OUT SYS_REFCURSOR
+) IS
+BEGIN
+	OPEN P_CURSOR FOR
+	
+	 SELECT 
+            RN,
+            ROWSCOUNT,
+            TEMP.ID,
+            EMPLOYEE_ID,
+            CDI.DORM_NAME AS CURRENT_DORM_NAME,
+            CDI.FLOOR_NUMBER AS CURRENT_FLOOR_NUMBER,
+            CDI.ROOM_NUMBER AS CURRENT_ROOM_NUMBER,
+            CDI.BED_NUMBER AS CURRENT_BED_NUMBER,
+            SDI.DORM_NAME AS SHIFTING_DORM_NAME,
+            SDI.FLOOR_NUMBER AS SHIFTING_FLOOR_NUMBER,
+            SDI.ROOM_NUMBER AS SHIFTING_ROOM_NUMBER,
+            SDI.BED_NUMBER AS SHIFTING_BED_NUMBER,
+            TEMP.REASON,
+            TEMP.SHIFTED_BY,
+            TEMP.SHIFTED_DATE,
+            TEMP.CREATED_DATE 
+        FROM (
+            SELECT
+            ROW_NUMBER () OVER (ORDER BY B.SHIFTED_DATE DESC) AS RN,
+            COUNT(B.ID) OVER () AS ROWSCOUNT,
+            B.ID,
+            B.EMPLOYEE_ID,
+            B.CURRENT_DORM_ID,
+            B.CURRENT_FLOOR_ID,
+            B.CURRENT_ROOM_ID,
+            B.CURRENT_BED_ID,
+            B.SHIFTING_DORM_ID,
+            B.SHIFTING_FLOOR_ID,
+            B.SHIFTING_ROOM_ID,
+            B.SHIFTING_BED_ID,
+            B.REASON,
+            B.SHIFTED_BY,
+            TO_CHAR(B.SHIFTED_DATE,'DD-MM-YYYY HH24:MI:SS') AS SHIFTED_DATE,
+            TO_CHAR(B.CREATED_DATE,'DD-MM-YYYY HH24:MI:SS') AS CREATED_DATE
+           FROM
+          DMS.C_DATA_CONTROL_T DC
+      INNER JOIN 
+            DMS.C_BULK_SHIFTING_T B ON DC.DORM_ID  = B.CURRENT_DORM_ID
+        WHERE 
+            1=1
+            AND DC.EMP_ID  = V_EMP_ID
+            AND (SHIFTED_DATE >= TO_DATE(V_START_DATE, 'DD-MM-YYYY') OR V_START_DATE IS NULL)
+            AND (SHIFTED_DATE <= TO_DATE(V_END_DATE, 'DD-MM-YYYY') + 1 OR V_END_DATE IS NULL)
+            AND B.EMPLOYEE_ID = NVL(V_EMPLOYEE_ID,B.EMPLOYEE_ID)
+            AND B.CURRENT_DORM_ID = NVL (V_CURRENT_DORM_ID,B.CURRENT_DORM_ID)
+        ) TEMP
+        JOIN 
+            DMS.C_BED_CREATION_T CDI ON CDI.ID = TEMP.CURRENT_BED_ID AND CDI.DEL_FLAG=0
+        JOIN 
+            DMS.C_BED_CREATION_T SDI ON SDI.ID = TEMP.SHIFTING_BED_ID AND SDI.DEL_FLAG=0
+        WHERE 
+            RN > (L_START_PAGE - 1) * L_PAGE_SIZE
+            AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
+
+   V_RES := '1';
+	V_RESULT := 'Success';
+END;
+
+
+
+PROCEDURE GET_DASHBOARD_RESPORT(
+V_EMP_ID IN VARCHAR2,
+V_SITE IN NUMBER,
+V_RES OUT VARCHAR2,
+V_RESULT OUT VARCHAR2,
+P_CURSOR OUT SYS_REFCURSOR
+
+)IS
+BEGIN
+	OPEN P_CURSOR FOR
+SELECT
+  SITE,
+  FLOOR_CAPACITY,
+DORM_NAME,
+DORM_ADDRESS,
+DORM_ID,
+DORM_CODE,
+DORM_LOCATION AS LOCATION,
+DORM_CAPACITY AS CAPACITY_OF_DORM,
+FILE_NAME,
+MIMETYPE,
+IMG_SIZE,
+IMG_PATH,
+DORM_FLAG AS DORM_DEL_FLAG,
+DATA_CONTROL_DEL_FLAG AS USER_DEL_FLAG,
+BED_COUNT AS "BED_COUNT",
+FLOOR_COUNT AS "FLOORCOUNT",
+ROOM_COUNT AS "ROOMCOUNT",
+OCCUPIED_COUNT_BED AS "OCCUPIED_COUNT_BED",
+VACANT_COUNT_BED AS "VACANT_COUNT_BED",
+OCCUPIED_BED_RATIO AS "OCCUPIED_BED_RATIO",
+VACANT_BED_RATIO AS "VACANT_BED_RATIO"
+FROM (
+  SELECT
+      DC.SITE,
+      DC.FLOOR_CAPACITY,
+      DC.DORM_NAME,
+      DC.DORM_ADDRESS,
+      D.DORM_ID,
+      DC.DORM_CODE,
+      DC.DORM_LOCATION,
+      DC.DORM_CAPACITY,
+      DC.FILE_NAME,
+      DC.MIMETYPE,
+      DC.IMG_SIZE,
+      DC.IMG_PATH,
+      DC.CREATE_DORM_FORM_STATUS AS DORM_FLAG,
+      D.DEL_FLAG AS DATA_CONTROL_DEL_FLAG,
+      DC.DORM_CAPACITY AS BED_COUNT,
+      F.FLOOR_COUNT,
+      R.ROOM_COUNT,
+      B.OCCUPIED_COUNT_BED,
+      DC.DORM_CAPACITY - B.OCCUPIED_COUNT_BED AS VACANT_COUNT_BED,
+      ROUND((B.OCCUPIED_COUNT_BED / DC.DORM_CAPACITY) * 100, 2) AS OCCUPIED_BED_RATIO,
+      ROUND(((DC.DORM_CAPACITY - B.OCCUPIED_COUNT_BED) / DC.DORM_CAPACITY) * 100, 2) AS VACANT_BED_RATIO
+  FROM
+      DMS.C_DATA_CONTROL_T D
+  JOIN DMS.C_DORM_CREATION_T DC ON D.DORM_ID = DC.ID AND DC.DEL_FLAG =0
+  LEFT JOIN (
+      SELECT F.DORM_ID, COUNT(DISTINCT F.ID) AS FLOOR_COUNT
+      FROM DMS.C_FLOOR_CREATION_T F WHERE F.DEL_FLAG=0
+      GROUP BY F.DORM_ID
+  ) F ON DC.ID = F.DORM_ID
+  LEFT JOIN (
+      SELECT R.DORM_ID, COUNT(DISTINCT R.ID) AS ROOM_COUNT
+      FROM DMS.C_ROOM_CREATION_T R WHERE R.DEL_FLAG =0
+      GROUP BY R.DORM_ID 
+  ) R ON DC.ID = R.DORM_ID
+  LEFT JOIN (
+      SELECT
+          B.DORM_ID,
+          COUNT(DISTINCT B.ID) AS OCCUPIED_COUNT_BED
+      FROM DMS.C_BED_CREATION_T B
+      WHERE B.CREATE_BED_FORM_STATUS = 1 AND B.DEL_FLAG =0
+      GROUP BY B.DORM_ID
+  ) B ON DC.ID = B.DORM_ID
+  WHERE
+      D.DEL_FLAG = 0
+      AND D.EMP_ID = V_EMP_ID
+      AND DC.SITE = NVL(V_SITE,DC.SITE)
+  ORDER BY DC.CREATED_DATE DESC	);
+ 
+ 
+ V_RES:='1';
+ V_RESULT :='Success';
+
+END ;
+
+
+PROCEDURE GET_DASHBOARD_POPUP (
+V_DORM_ID IN  NUMBER,
+V_RES OUT  VARCHAR2,
+V_RESULT OUT VARCHAR2,
+P_CURSOR OUT SYS_REFCURSOR
+
+)IS
+BEGIN
+	OPEN P_CURSOR FOR
+ SELECT 
+    d.DORM_NAME,
+    d.DORM_LOCATION,
+    d.DORM_CAPACITY,
+    d.DORM_ADDRESS,
+    d.FLOOR_CAPACITY,
+    COUNT(f.ID) AS CREATED_FLOOR_COUNT,
+    LISTAGG(f.FLOOR_NUMBER, ', ') WITHIN GROUP (ORDER BY f.FLOOR_NUMBER) AS CREATED_FLOOR_NUMBERS,
+    (SELECT SUM(f.ROOM_CAPACITY) FROM DMS.C_FLOOR_CREATION_T f WHERE f.DORM_ID = d.ID AND f.DEL_FLAG =0) AS SUM_ROOM_CAPACITY,
+    f.ID AS FLOOR_ID,
+    f.FLOOR_NUMBER,
+    f.ROOM_CAPACITY AS FLOOR_BASED_ROOM_CAPACITY,
+    COUNT(r.ID) AS FLOOR_BASED_ROOM_COUNT,
+    LISTAGG(r.ROOM_NUMBER, ', ') WITHIN GROUP (ORDER BY r.ROOM_NUMBER) AS FLOOR_BASED_ROOM_NUMBERS,
+    r.ID AS ROOM_ID,
+    r.ROOM_NUMBER, 
+    r.BED_CAPACITY AS ROOM_ID_BASED_BED_CAPACITY,
+    LISTAGG(b.BED_NUMBER, ', ') WITHIN GROUP (ORDER BY b.BED_NUMBER) AS ROOM_ID_BASED_BED_NUMBERS,
+  
+    r.BED_CAPACITY - COUNT(CASE WHEN b.CREATE_BED_FORM_STATUS = 1 THEN b.ID END) AS AVAILABLE_BEDS,
+    COUNT(CASE WHEN b.CREATE_BED_FORM_STATUS = 1 THEN b.ID END) AS BOOKED_BEDS
+FROM DMS.C_DORM_CREATION_T d
+LEFT JOIN DMS.C_FLOOR_CREATION_T f ON d.ID = f.DORM_ID AND f.DEL_FLAG=0
+LEFT JOIN DMS.C_ROOM_CREATION_T r ON f.ID = r.FLOOR_ID AND r.DEL_FLAG=0 AND r.CREATE_ROOM_FORM_STATUS IN (0, 1, 3,4)
+LEFT JOIN DMS.C_BED_CREATION_T b ON r.ID = b.ROOM_ID AND b.DEL_FLAG =0   AND b.CREATE_BED_FORM_STATUS IN (0, 1, 3,4)
+WHERE d.ID = V_DORM_ID AND d.DEL_FLAG=0
+    --  AND f.FLOOR_NUMBER  =V_FLOOR_NO
+GROUP BY
+    d.ID,
+    d.DORM_NAME,
+    d.DORM_LOCATION,
+    d.DORM_CAPACITY,
+    d.FLOOR_CAPACITY,
+    f.ID,
+    f.FLOOR_NUMBER,
+    f.ROOM_CAPACITY, 
+    r.ID,
+    r.BED_CAPACITY,
+    r.ROOM_NUMBER,
+    d.DORM_ADDRESS 
+ORDER BY d.ID, f.ID, r.ROOM_NUMBER;
+V_RES :='1';
+V_RESULT :='Success';
+END ;
+
+ PROCEDURE GET_LAYOUT_DORM_FLOOR_BED (
+    V_DORM_ID IN NUMBER,
+    V_FLOOR_NUMBER IN NUMBER,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2,
+    P_CURSOR OUT SYS_REFCURSOR
+) IS
+BEGIN
+    -- Check if both inputs are not NULL
+    IF V_DORM_ID IS NOT NULL AND V_FLOOR_NUMBER IS NOT NULL THEN
+        OPEN P_CURSOR FOR 
+        SELECT DISTINCT 
+            BC.*, 
+            D.CREATE_DORM_FORM_STATUS AS DORM_DEL_FLAG,
+            FC.CREATE_FLOOR_FORM_STATUS AS FLOOR_DEL_FLAG,
+            R.CREATE_ROOM_FORM_STATUS AS ROOM_DEL_FLAG
+        FROM DMS.C_FLOOR_CREATION_T FC
+        INNER JOIN DMS.C_BED_CREATION_T BC ON FC.ID = BC.FLOOR_ID AND BC.DEL_FLAG = 0
+        INNER JOIN DMS.C_ROOM_CREATION_T R ON R.ID = BC.ROOM_ID AND R.DEL_FLAG = 0
+        INNER JOIN DMS.C_DORM_CREATION_T D ON D.ID = BC.DORM_ID AND D.DEL_FLAG = 0
+        WHERE FC.FLOOR_NUMBER = V_FLOOR_NUMBER
+        AND FC.DORM_ID = V_DORM_ID
+        AND FC.DEL_FLAG = 0
+        ORDER BY BC.BED_NUMBER, BC.ROOM_NUMBER, BC.FLOOR_NUMBER;
+        
+    ELSE
+        OPEN P_CURSOR FOR 
+        SELECT DISTINCT 
+            BC.FLOOR_NUMBER,
+            BC.FLOOR_ID
+        FROM DMS.C_BED_CREATION_T BC
+        WHERE BC.DORM_ID = V_DORM_ID AND BC.DEL_FLAG =0
+        ORDER BY BC.FLOOR_NUMBER ;
+    END IF;
+
+    -- Set output variables after query execution
+    V_RES := '1';
+    V_RESULT := 'Success';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        V_RES := '0';
+        V_RESULT := 'Error: ' || SQLERRM;
+END;
+
+--PROCEDURE GET_FILTERDORM_DORMSHIFT (
+--    V_DORM_ID IN NUMBER,
+--    V_RES OUT VARCHAR2,
+--    V_RESULT OUT VARCHAR2,
+--    P_CURSOR OUT SYS_REFCURSOR
+--) IS
+--V_SITE NUMBER;
+--BEGIN
+--	
+--	SELECT SITE INTO V_SITE  FROM DMS.C_DORM_CREATION_T WHERE ID = V_DORM_ID;
+--OPEN P_CURSOR FOR 
+--    -- Check if both inputs are not NULL
+--   SELECT
+--          D.*,
+--              D.DORM_CAPACITY AS "Bed_Count",
+--              booked_beds,
+--              COALESCE(((D.DORM_CAPACITY - booked_beds) / D.DORM_CAPACITY) * 100, 100) 
+--              AS "Count_Vacancy_Ratio"
+--          FROM DMS.C_DORM_CREATION_T D
+--          LEFT JOIN (
+--              SELECT DORM_NAME, COUNT(*) AS COUNT_BEDS, DORM_ID
+--              FROM DMS.C_BED_CREATION_T B WHERE B.DEL_FLAG =0
+--              GROUP BY DORM_NAME, DORM_ID
+--          ) B ON D.ID = B.DORM_ID
+--          LEFT JOIN ( 
+--              SELECT DORM_ID, COUNT(*) AS booked_beds
+--              FROM DMS.C_BED_CREATION_T
+--              WHERE CREATE_BED_FORM_STATUS = 1 AND DEL_FLAG =0
+--              GROUP BY DORM_ID
+--          ) DelFlag0 ON D.ID = DelFlag0.DORM_ID
+--          WHERE D.ID NOT IN (V_DORM_ID) AND D.DEL_FLAG = '0';
+--    -- Set output variables after query execution
+--    V_RES := '1';
+--    V_RESULT := 'Success';
+--
+--EXCEPTION
+--    WHEN OTHERS THEN
+--        V_RES := '0';
+--        V_RESULT := 'Error: ' || SQLERRM;
+--END;
+PROCEDURE GET_FILTERDORM_DORMSHIFT (
+    V_DORM_ID IN NUMBER,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2,
+    P_CURSOR OUT SYS_REFCURSOR
+) IS
+V_SITE NUMBER;
+BEGIN
+    SELECT SITE INTO V_SITE FROM DMS.C_DORM_CREATION_T WHERE ID = V_DORM_ID;
+    
+    OPEN P_CURSOR FOR 
+        SELECT
+            D.*,
+            D.DORM_CAPACITY AS "Bed_Count",
+            booked_beds,
+            CASE 
+                WHEN D.DORM_CAPACITY = 0 THEN 100
+                WHEN booked_beds IS NULL THEN 100
+                ELSE ROUND(((D.DORM_CAPACITY - NVL(booked_beds, 0)) / D.DORM_CAPACITY) * 100, 2)
+            END AS "Count_Vacancy_Ratio"
+        FROM DMS.C_DORM_CREATION_T D
+        LEFT JOIN (
+            SELECT DORM_NAME, COUNT(*) AS COUNT_BEDS, DORM_ID
+            FROM DMS.C_BED_CREATION_T B 
+            WHERE B.DEL_FLAG = 0
+            GROUP BY DORM_NAME, DORM_ID
+        ) B ON D.ID = B.DORM_ID
+        LEFT JOIN ( 
+            SELECT DORM_ID, COUNT(*) AS booked_beds
+            FROM DMS.C_BED_CREATION_T
+            WHERE CREATE_BED_FORM_STATUS = 1 AND DEL_FLAG = 0
+            GROUP BY DORM_ID
+        ) DelFlag0 ON D.ID = DelFlag0.DORM_ID
+        WHERE D.ID NOT IN (V_DORM_ID) AND D.DEL_FLAG = '0';
+    
+    V_RES := '1';
+    V_RESULT := 'Success';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        V_RES := '0';
+        V_RESULT := 'Error: ' || SQLERRM;
+END;
+END DORM_REPORTS;
