@@ -1,218 +1,112 @@
 import axios from "axios";
 import { fetchempbasicinfo } from "./apiforloginandempdetails";
-const apiURL = 'https://microservice.abgind.foxconn.com/india/gateway'
-const userKey = 'C44F773FD87E7E41174D6A58B162B049'
 
-//api for get EngineShowflows for dormShifting
+const apiURL = "https://microservice.abgind.foxconn.com/india/gateway";
+const userKey = "C44F773FD87E7E41174D6A58B162B049";
 
-export const enginshowflowsfordormshift = async (empNumber, roledata,EmployeeID) => {
-    const res1 = roledata.some((item) => item.RoleName === 'GA_ADMIN' || item.ROLE_NAME === 'RoleName')
-    const site =await fetchempbasicinfo(EmployeeID)
-    console.log("employeesite",site)
-    //console.log(res1)
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    // const params={
-    // contentType:'application/json;charset="UTF-8"',
+/* ======================================================
+   ENGINE SHOW FLOW - DORM SHIFT
+====================================================== */
 
+export const enginshowflowsfordormshift = async (
+  empNumber,
+  roledata,
+  employeeId
+) => {
+  const headers = {
+    apiID: "ffff-1652233446907-17229253125-0373",
+    userKey: userKey,
+  };
 
-    //     inputString:`strFormID="9890"&strFormCode=""&strFormStatus=""&strIsFix="N&strProcessValues=${roledata[0].rolename === 'GA_ADMIN' ? "95360" : "95359"}
-    //    &strFactorValue="56688"&strDeptID=""&strEmpNo=${empNumber}&strAssigns=""&strUser=${empNumber}`
+  const isGAAdmin = roledata.some(
+    (item) =>
+      item.RoleName === "GA_ADMIN" ||
+      item.ROLE_NAME === "GA_ADMIN"
+  );
 
-    // }
+  const empInfo = await fetchempbasicinfo(employeeId);
 
+  const factorValue =
+    empInfo?.[0]?.Site === "FXBL"
+      ? 56689
+      : 56688;
 
+  console.log("Employee Info :", empInfo);
+  console.log("Factor Value :", factorValue);
 
-const factorValue =
-    site?.[0]?.Site === "FXCN"
-        ? 56688
-        : site?.[0]?.Site === "FXBL"
-        ? 56689
-        : 56688;
-
-console.log("Employee Site :", site?.[0]?.Site);
-console.log("Factor Value :", factorValue);
-
-const payload = {
+  const payload = {
     contentType: 'application/json; charset="UTF-8"',
     inputString:
-        `strFormID=9890` +
-        `&strFormCode=` +
-        `&strFormStatus=` +
-        `&strIsFix=N` +
-        `&strProcessValues=${res1 ? 95360 : 95359}` +
-        `&strFactorValue=${factorValue}` +
-        `&strDeptID=` +
-        `&strEmpNo=${empNumber}` +
-        `&strAssigns=` +
-        `&strUser=${empNumber}`
+      `strFormID=9890` +
+      `&strFormCode=` +
+      `&strFormStatus=` +
+      `&strIsFix=N` +
+      `&strProcessValues=${isGAAdmin ? 95360 : 95359}` +
+      `&strFactorValue=${factorValue}` +
+      `&strDeptID=` +
+      `&strEmpNo=${empNumber}` +
+      `&strAssigns=` +
+      `&strUser=${empNumber}`,
+  };
+
+  console.log("Engine Payload");
+  console.log(payload);
+
+  const response = await axios.post(apiURL, payload, {
+    headers,
+  });
+
+  console.log("Engine Response");
+  console.log(response.data);
+
+  return response.data;
 };
 
-console.log("Employee site",site)
-    console.log("Engineflow", payload)
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-        console.log("Engineflow")
-        console.log(response.data)
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
+/* ======================================================
+   VIEW SIGN FLOW
+====================================================== */
 
+export const viewSignFlowfordormshift = async (
+  formCode,
+  empNumber,
+  employeeId
+) => {
+  const headers = {
+    apiID: "ffff-1652233446907-17229253125-0373",
+    userKey: userKey,
+  };
 
-/// api for view signin flow 
-export const viewSignFlowfordormshift = async (getformcode, empNumber) => {
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
+  const empInfo = await fetchempbasicinfo(employeeId);
 
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9890&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56689&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-        // strFormID: 9890,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
-    };
-    
-    console.log("viewsignflow", payload)
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-        console.log("viewsignflow")
-        console.log(response.data)
+  const factorValue =
+    empInfo?.[0]?.Site === "FXBL"
+      ? 56689
+      : 56688;
 
+  const payload = {
+    contentType: 'application/json; charset="UTF-8"',
+    inputString:
+      `strFormID=9890` +
+      `&strFormCode=${formCode}` +
+      `&strFormStatus=2` +
+      `&strIsFix=Y` +
+      `&strProcessValues=` +
+      `&strFactorValue=${factorValue}` +
+      `&strDeptID=` +
+      `&strEmpNo=${empNumber}` +
+      `&strAssigns=` +
+      `&strUser=${empNumber}`,
+  };
 
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
+  console.log("View Sign Flow Payload");
+  console.log(payload);
 
-/// api for create form log 
+  const response = await axios.post(apiURL, payload, {
+    headers,
+  });
 
-export const createformlog = async (strID) => {
-    const headers = {
-        apiID: 'ffff-1652233900345-17229253125-0377',
-        userKey: '4D0239E133AD024F0BDFEFD75580CA05'
-    }
-    const params = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strID=${strID}`
-    };
-    try {
-        const response = await axios.post(apiURL, params, { headers })
+  console.log("View Sign Flow Response");
+  console.log(response.data);
 
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
-
-//// api getenginflow for bed shift 
-
-export const enginshowflowsforbedshift = async (empNumber, EmployeeID) => {
-
-    const site = await fetchempbasicinfo(EmployeeID)
-    //console.log(site)
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-
-
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=&strFormStatus=&strIsFix=Y&strProcessValues=&strFactorValue=${site ? site[0].SiteId : 56688}&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-
-        // strFormID :9891,
-        // strFormCode:"",
-        // strFormStatus:"",
-        // strIsFix :"Y",
-        // strProcessValues :'',
-        // strFactorValue:56688,
-        // strDeptID:'',
-        // strEmpNo:empNumber,
-        // strAssigns:"",
-        // strUser:empNumber
-    }
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
-
-
-
-/// api for view signin flow 
-export const viewSignFlowforbedshift = async (getformcode, empNumber) => {
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-
-        // strFormID: 9891,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
-    };
-
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
-
-export const viewSignFlowforDormExitEform = async (getformcode, empNumber) => {
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9937&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-
-        // strFormID: 9891,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
-    };
-
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
+  return response.data;
+};
