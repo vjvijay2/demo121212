@@ -190,24 +190,28 @@ function DormShifting() {
     }
   };
 
-  const getSignFlow = async (formCode, employeeId) => {
-    try {
-      const response = await viewSignFlowfordormshift(
-        formCode,
-        account,
-        employeeId
-      );
+const getSignFlow = async (formCode) => {
+  try {
+    if (!formCode) return;
 
-      console.log("View Sign Flow Response", response);
+    const response = await viewSignFlowfordormshift(
+      formCode,
+      account
+    );
 
-      setengflowshow(response[0].ENGFLOWSHOW);
-      settableflow(response[0].ENGFLOWTABLE);
+    console.log("View Sign Flow Response", response);
 
-    } catch (error) {
-      console.log(error);
+    if (response && response.length > 0) {
+      setengflowshow(response[0].ENGFLOWSHOW || "");
+      settableflow(response[0].ENGFLOWTABLE || "");
+
+      console.log("ENGFLOWSHOW Length:", response[0].ENGFLOWSHOW?.length);
+      console.log("ENGFLOWTABLE Length:", response[0].ENGFLOWTABLE?.length);
     }
-  };
-
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   useEffect(() => {
     const fetchdata = async () => {
