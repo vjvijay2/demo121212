@@ -1,71 +1,723 @@
+import React, { useState, useEffect } from "react";
+import { makeStyles } from '@material-ui/core/styles';
+import { TextareaAutosize } from '@mui/base/TextareaAutosize';
+import { styled } from '@mui/system';
+// import LinearProgress from '@mui/material/LinearProgress';
+import ProgressSteps from "./Dormshiftprogress";
+import { AccountCircle, Email, Lock, Search } from '@mui/icons-material';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
-.Signing{
-    margin: 0 0 0 15px;
+import {
+  Typography,
+  TextField,
+  Button,
+  InputLabel,
+  Select,
+  Box,
+  MenuItem,
+  Container, Paper,
+  Grid,
+  Drawer,
+  Toolbar,
+  Autocomplete,
+  CircularProgress,
+} from '@mui/material';
+// import axios from "axios";
+// import { isDisabled } from "@testing-library/user-event/dist/utils";
+// import { readFile } from "xlsx";
+// import { createdormShiftingrequest } from "../../Apiconfig/apifordormitory";
+import { createformlog, enginshowflowsfordormshift, viewSignFlowfordormshift } from "../../Apiconfig/apiforSigninflows";
+// import { fetchalluserdetails } from "../../Apiconfig/apiforusermanagement";
+import { fetchallSiteDetails } from "../../Apiconfig/apifetchfordormitory";
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchDataforUser } from "../../../Redux/Actions";
+import { getuserAccount, iwxPost } from "../../EncryptDecrypt/Encryptfile";
+//import { fetchCheckinreport, fetchDormShiftingreport } from "../../Apiconfig/apiforreports";
+
+const blue = {
+  100: '#DAECFF',
+  200: '#b6daff',
+  400: '#3399FF',
+  500: '#007FFF',
+  600: '#0072E5',
+  900: '#003A75',
+};
+
+const grey = {
+  50: '#f6f8fa',
+  100: '#eaeef2',
+  200: '#d0d7de',
+  300: '#afb8c1',
+  400: '#8c959f',
+  500: '#6e7781',
+  600: '#57606a',
+  700: '#424a53',
+  800: '#32383f',
+  900: '#24292f',
+};
+
+const StyledTextarea = styled(TextareaAutosize)(
+  ({ theme }) => `
+  width: 320px;
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 12px;
+  border-radius: 12px 12px 0 12px;
+  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
+  box-shadow: 0px 2px 24px ${theme.palette.mode === 'dark' ? blue[900] : blue[100]};
+
+  &:hover {
+    border-color: ${blue[400]};
   }
 
-  
-.hsome{
-    display: none;
-}
-.star{
-   /* background: url( "../../../../public/images/useform.jpg" ) no-repeat top left; 
-   background-position: 'top left';
-   width: '50%'; 
-   height: '50%', */
+  &:focus {
+    border-color: ${blue[400]};
+    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
+  }
 
-}
-.huizong{
-     /* background: url( "../../../../assets/huizong.png" ) no-repeat top left; */
-}
-.keji{
-     /* background: url( "../../../../assets/keji.png" ) no-repeat top left; */
-}
-.buji{
-    /* background: url( "../../../../assets/buji.png" ) no-repeat top left; */
-}
-.liuchengbiao{
-     width: 850px;
-    height:100%;
-    margin-top:5px;
-}
-.liuchengbiao ul{
-    list-style: none;
-}
-.liuchengbiao ul li{
-  float: left;
-    width: 150px;
-    padding-top:80px;  
-    text-align:left;
-    min-height:90px;
-    display: inline-block;
-    vertical-align: top;
+  &:focus-visible {
+    outline: 0;
+  }
+`,
+);
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  label: {
+    marginRight: theme.spacing(1),
+    flexBasis: '15%'
+  },
+}));
+
+function DormShifting() {
+  const account = getuserAccount();
+  const [data, setData] = useState([]);
+  const [dormName, setdormName] = useState(null);
+  const [empNumber, setEmpNumber] = useState("");
+  const [employee, setEmployee] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [reson, setreason] = useState("");
+  const [disable, setDisable] = useState(false);
+  const [filterdata, setfilterdata] = useState([]);
+  const [roledata, setroledata] = useState([]);
+  const [formCode, setformCode] = useState('');
+  const [strID, setstrID] = useState('');
+  const [error, setError] = useState("");
+  const [tableflow, settableflow] = useState('');
+  const [engflowshow, setengflowshow] = useState('');
+  const [getformcode, setgetformcode] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [shifteddormcode, setshifeteddormcode] = useState('');
+  const [getaccessdormsforshift, setaccessdormsforshift] = useState([]);
+  const [opentextfield, setopentestfield] = useState(false);
+  const [buttonloading, setbuttonloadin] = useState(false);
+  const [getSitenamearray, setsitenamearray] = useState([]);
+
+  const classes = useStyles();
+
+  const fetchSiteData = async () => {
+    try {
+      const res = await fetchallSiteDetails();
+      console.log("fetchsitedata", res)
+      setsitenamearray(res);
+    } catch (error) {
+      console.error('Error fetching site data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSiteData();
+  }, []);
+
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      const headers = {
+        apiID: 'ffff-1743482300704-1020912129-2290',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+      const params = {
+        EmpId: getuserAccount(),
+        Func: 'UserManagement-Get_role_based_empid_new'
+      };
+      try {
+        const response = await iwxPost(params, { headers: headers }, true);
+        setroledata(response.List);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchdata();
+  }, []);
+
+  const handleempnumberchange = (e) => {
+    setdormName(null);
+    setopentestfield(false);
+    setData([]);
+    setEmpNumber(e.target.value);
+  };
+  const getEngineShowFlows = async (employeeId) => {
+    try {
+      const response = await enginshowflowsfordormshift(
+        account,
+        roledata,
+        employeeId
+      );
+
+      setformCode(response[0].strFormCode);
+      setstrID(response[0].strID);
+
+      return response;
+
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const getSignFlow = async (formCode, employeeId) => {
+    try {
+      const response = await viewSignFlowfordormshift(
+        formCode,
+        account,
+        employeeId
+      );
+
+      console.log("View Sign Flow Response", response);
+
+      setengflowshow(response[0].ENGFLOWSHOW);
+      settableflow(response[0].ENGFLOWTABLE);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      const headers = {
+        apiID: 'ffff-1743481319542-1020912129-2275',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+      const params = {
+        Func: "UserManagement-Get_user_dormcontrol_new",
+        EmpId: getuserAccount()
+      };
+      const response = await iwxPost(params, { headers: headers }, true);
+      const findshiftingdorms = response.List.filter((dorm) => (
+        dorm.DormShifting === 'Y' && dorm.DormDelFlag === 0
+      ));
+      setaccessdormsforshift(findshiftingdorms);
+    };
+    fetchdata();
+  }, []);
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      if (employee && employee.length > 0) {
+        const headers = {
+          apiID: 'ffff-1743478942841-1020912129-2209',
+          userKey: '10A33A67A312E649D907BBC927995B8A'
+        };
+        const params = {
+          Func: "Reports-FilterDorm_for_domshift_new",
+          DormId: employee[0].DormId
+        };
+        try {
+          const response = await iwxPost(params, { headers: headers }, true);
+          const filterbasesitedorms = getSitenamearray.flatMap((item) => response.List.filter((it) => item.Id.toString() === it.Site));
+          const findactivedorms = filterbasesitedorms.filter((item) => item.CreateDormFormStatus === 0);
+          setData(findactivedorms);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    fetchdata();
+  }, [employee]);
+
+  useEffect(() => {
+    if (empNumber) {
+      const fetchdata = async () => {
+        try {
+          const response = await fetchDormShiftingreport();
+          console.log("====Response=====")
+          console.log(response)
+          response.forEach(item => {
+            console.log(
+              "Emp:", item.EmployeeId,
+              "Status:", item.FormStatus,
+              "formcode", item.FormCode
+            )
+          })
+          const filterdata = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
+          console.log("matchedreordds", filterdata)
+          setgetformcode(filterdata?.FormCode);
+          const filterdata1 = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
+          setfilterdata(filterdata1);
+          console.log("=====Dormshift report==")
+          console.log(filterdata)
+          console.log("Formcode:", filterdata?.FormCode)
+
+          if (employee && employee[0].CheckInFormStatus === 3 && filterdata1?.FormStatus === 1) {
+            setopentestfield(true);
+            setdormName(filterdata.ShiftingDorm);
+            setreason(filterdata.Reason);
+            setDisable(true);
+          } else if (!empNumber) {
+            setDisable(true);
+          } else {
+            setDisable(false);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchdata();
+    }
+  }, [empNumber, employee]);
+
+  const fetchDormShiftingreport = async () => {
+    const params = {
+      EmpId: getuserAccount(),
+      EmployeeId: empNumber,
+      Site: '',
+      DormId: '',
+      StartDate: '',
+      EndDate: '',
+      StartPage: 1,
+      PageSize: 9999999999,
+      Func: "Reports-Dorm_shift_report_new"
+    };
+    try {
+      const response = await iwxPost(
+
+        params,
+        {
+          headers: {
+            apiID: 'ffff-1743478394455-1020912129-2194',
+            userKey: '10A33A67A312E649D907BBC927995B8A'
+          }
+        },
+        true
+      );
+      console.log("Request params", params)
+      console.log("Api response", response)
+
+      return response.List;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    setEmployee(null);
+    setErrorMessage(null);
+    setdormName(null);
+    setreason("");
+    setError('');
+    setDisable(false);
+    setfilterdata([]);
+  }, [empNumber]);
+
+  const handleDormChange = (e, value) => {
+    setdormName(value);
+    if (value) {
+      setshifeteddormcode(value?.DormCode);
+    }
+  };
+
+  const handleresonChange = (e) => setreason(e.target.value);
+
+  const handleFind = async () => {
+    setError('');
+    const empid = empNumber;
+    try {
+
+      const params = {
+        EmployeeId: empid,
+        Site: "",
+        CheckinType: "",
+        StartDate: '',
+        EndDate: '',
+        DormId: '',
+        EmpId: getuserAccount(),
+        StartPage: 1,
+        PageSize: 999999999999,
+        Func: "Reports-Checkin_report_New"
+      };
+      const response = await iwxPost(
+        params,
+        { headers: { apiID: 'ffff-1743477890381-1020912129-2182', userKey: '10A33A67A312E649D907BBC927995B8A' } },
+        true
+      );
+      const res = response.List;
+      const foundnew = res.filter((item) =>
+        getaccessdormsforshift.map((i) => i.DormId).includes(item.DormId)
+      );
+      if (res.length > 0 && foundnew.length === 0) {
+        setErrorMessage(`You don't have an access to shift the emp from ${res[0].DormName}.`);
+        return;
+      }
+      const foundEmployee = foundnew;
+      if (foundEmployee && foundEmployee.length > 0) {
+        const employeefilter = foundEmployee.filter((item) => item.EmployeeId === empNumber && (
+          item.CheckInFormStatus === 0 || item.CheckInFormStatus === 3 || item.CheckInFormStatus === 4
+        ));
+        if (employeefilter.length === 0) {
+          setDisable(true);
+          setEmployee(null);
+          setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
+        } else {
+          const employeeData = employeefilter[0];
+          console.log("employee data", employeeData)
+          if (employeeData.CheckInFormStatus === 0) {
+            setEmployee(employeefilter);
+            setErrorMessage(null);
+          }
+          else if (employeeData.CheckInFormStatus === 1) {
+            setEmployee(null);
+            setDisable(true);
+            setErrorMessage(`Employee with ID ${empNumber} is already checkout from the dorm.`);
+          } else if (employeeData.CheckInFormStatus === 2) {
+            setEmployee(null);
+            setDisable(true);
+            setErrorMessage(`Employee with ID ${empNumber} is already Shifted from the dorm.`);
+          }
+          else if (employeeData.CheckInFormStatus === 3) {
+
+            setEmployee(employeefilter);
+
+            if (filterdata?.FormCode) {
+              await getSignFlow(
+                filterdata.FormCode,
+                employeeData.EmployeeId
+              );
+            }
+
+            setErrorMessage(null);
+
+          }
+          else if (employeeData.CheckInFormStatus === 4) {
+            setEmployee(null);
+            setErrorMessage(`Employee with ID ${empNumber} is already Requested for the Bed Shifting.`);
+          }
+        }
+      } else {
+        setDisable(true);
+        setEmployee(null);
+        setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleOpenDialog();
+  };
+
+  const handleConfirmSubmit = async () => {
+    handleCloseDialog();
+    setbuttonloadin(true);
+
+    if (reson.trim() === "" || dormName === null) {
+      setError("Fill in all fields");
+      setbuttonloadin(false);
+      return;
+    }
+
+    try {
+
+      // Generate Engine Flow ONLY during Submit
+      const flowResponse = await getEngineShowFlows(employee[0].EmployeeId);
+
+      const generatedFormCode = flowResponse[0].strFormCode;
+      const generatedStrID = flowResponse[0].strID;
+
+      const headers = {
+        apiID: 'ffff-1743482865948-1020912129-2296',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+
+      const payload = {
+        EmployeeId: employee[0].EmployeeId,
+        EmployeeName: employee[0].EmployeeName,
+        Department: employee[0].Department,
+
+        CurrentDorm: employee[0].DormName,
+        CurrentFloor: employee[0].FloorNumber,
+        CurrentRoom: employee[0].RoomNumber,
+        CurrentBed: employee[0].BedNumber,
+
+        ShiftingDorm: dormName.DormName,
+        ShiftingDormCode: shifteddormcode,
+        FormCode: generatedFormCode,
+
+        BedId: employee[0].BedId,
+
+        Reason: reson,
+
+        MovedById: getuserAccount(),
+
+        CheckInId: employee[0].Id,
+
+        CurrentDormId: employee[0].DormId,
+
+        Func: "Dormitory-Insert_dorm_shift_new"
+
+      };
+
+      console.log("Insert Payload");
+
+      console.log(payload);
+
+      const response = await iwxPost(
+
+        payload,
+
+        { headers },
+
+        true
+
+      );
+
+      console.log(response);
+
+      if (response.IsOK === "1") {
+
+        await createformlog(generatedStrID);
+
+        window.alert(response.Msg);
+
+        setbuttonloadin(false);
+
+        setEmployee(null);
+
+        setEmpNumber("");
+
+        setdormName(null);
+
+        setreason("");
+
+        setError("");
+
+      } else {
+
+        setbuttonloadin(false);
+
+        setError(response.Msg);
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      setbuttonloadin(false);
+
+      setError("An error occurred while submitting the form.");
+
+    }
+
+  };
+
+
+  return (
+    <>
+      <Container maxWidth="sm">
+        <Paper elevation={3} style={{ padding: 20 }}>
+          <Typography variant="h5" align="center" gutterBottom>
+            Dorm Shifting Form
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <TextField
+                label="Employee Number"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={empNumber}
+                onChange={handleempnumberchange}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!empNumber}
+                onClick={handleFind}
+                style={{ height: '50px', marginTop: '20px' }}
+              >
+                <Search />
+              </Button>
+            </div>
+            {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+            <TextField
+              label="Employee Name"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={employee ? employee[0].EmployeeName : ''}
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+              label='Department'
+              variant="outlined"
+              fullWidth
+              margin='normal'
+              value={employee ? employee[0].Department : ''}
+              InputProps={{ readOnly: true }}
+            />
+            <div style={{ display: 'flex', gap: 10 }}>
+              <TextField
+                label='Current Dorm'
+                type="text"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={employee ? employee[0].DormName : ''}
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label='Floor'
+                type="text"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={employee ? employee[0].FloorNumber : ''}
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label='Room'
+                type="text"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={employee ? employee[0].RoomNumber : ''}
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label='Bed'
+                type="text"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={employee ? employee[0].BedNumber : ''}
+                InputProps={{ readOnly: true }}
+              />
+            </div>
+            <div className={classes.root}>
+              <div className={classes.label}>Shifting Dorm Name:</div>
+              {opentextfield ? (
+                <TextField value={dormName} />
+              ) : (
+                <Autocomplete
+                  style={{ width: 300 }}
+                  label="Select the dorm"
+                  options={data}
+                  autoHighlight
+                  ListboxProps={{ style: { maxHeight: 200 } }}
+                  getOptionLabel={(dorm) => dorm.DormName ? dorm.DormName : ''}
+                  value={dormName}
+                  onChange={handleDormChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select the dorm"
+                      size='small'
+                      inputProps={{
+                        ...params.inputProps,
+                      }}
+                    />
+                  )}
+                  disableClearable
+                  renderOption={(props, dorm) => {
+                    const formattedRatio = dorm.CountVacancyRatio.toFixed(1);
+                    const displayRatio = formattedRatio.endsWith('.0') ? formattedRatio.slice(0, -2) : formattedRatio;
+                    const isClickable = parseFloat(formattedRatio) !== 0;
+                    if (dorm.CreateDormFormStatus === 1) {
+                      return null;
+                    }
+                    return (
+                      <MenuItem {...props}>
+                        {dorm.DormName} {''}
+                        &nbsp;&nbsp;<span style={{ color: 'red' }}>{displayRatio}% vacant</span>
+                      </MenuItem>
+                    );
+                  }}
+                />
+              )}
+            </div>
+            <br />
+            <div className={classes.root}>
+              <div className={classes.label}>Reason:</div>
+              <TextField
+                required
+                label="Reason"
+                multiline
+                value={reson}
+                aria-label="empty textarea"
+                onChange={handleresonChange}
+                disabled={disable}
+              />
+            </div>
+            <br />
+            <div className={classes.root}>
+              {error && (
+                <Typography variant="body2" color="error" component="p">
+                  {error}
+                </Typography>
+              )}
+            </div>
+            <div className={classes.root}>
+              {employee && employee[0].CheckInFormStatus === 0 && (
+                <Button variant="contained" type="submit" disabled={disable}>
+                  Submit
+                </Button>
+              )}
+            </div>
+          </form>
+          <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+            {engflowshow && tableflow && (
+              <ProgressSteps engflowshow={engflowshow} tableflow={tableflow} />
+            )}
+          </Box>
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle>Confirm Submission</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to Shift the dorm?<br />
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmSubmit} color="primary" disabled={buttonloading}>
+                {buttonloading ? <CircularProgress /> : 'Confirm'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Paper>
+      </Container>
+    </>
+  );
 }
 
-.liuchengbiao ul li h3{   /*padding-right:20px;*/ font-size:12px;}
-.liuchengbiao ul li span{ 
-    /*display:block;*/  /*padding-left:10px;*/
-    height:24px;line-height:24px;
-    overflow-wrap: break-word;
-}
-/* .liuchengbiao ul .end{ background:url("../../../../assets/end.png") no-repeat top center;  width:80px;} */
-
-
-
-.gtab {
-width: 100%;
-line-height: 20px;
-margin-bottom: 10px;
-border: 1px solid #8cc0e7;
-border-collapse: collapse;
-word-break: break-all;
-font-size: 12px;
-color: #000;
-}
-.gtab td {
-padding: 2px;
-border: 1px solid #8cc0e7;
-background-color: #eef4ff;
-white-space: nowrap;
-text-align: left;
-}
-
+export default DormShifting;
