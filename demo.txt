@@ -1,217 +1,6 @@
-import axios from "axios";
-import { fetchempbasicinfo } from "./apiforloginandempdetails";
-const apiURL= 'https://microservice.abgind.foxconn.com/india/gateway'
-const userKey='C44F773FD87E7E41174D6A58B162B049'
-
-//api for get EngineShowflows for dormShifting
-
-export const  enginshowflowsfordormshift = async(empNumber,roledata) =>{
- const res1= roledata.some((item) =>item.RoleName === 'GA_ADMIN' || item.ROLE_NAME ==='RoleName')
-//console.log(res1)
-    const headers={
-        apiID:'ffff-1652233446907-17229253125-0373',
-        userKey:userKey
-    }
-// const params={
-// contentType:'application/json;charset="UTF-8"',
- 
- 
-//     inputString:`strFormID="9890"&strFormCode=""&strFormStatus=""&strIsFix="N&strProcessValues=${roledata[0].rolename === 'GA_ADMIN' ? "95360" : "95359"}
-//    &strFactorValue="56688"&strDeptID=""&strEmpNo=${empNumber}&strAssigns=""&strUser=${empNumber}`
-
-// }
-
-
-const payload={
-
-    contentType: 'application/json; charset="UTF-8"',
-    inputString: `strFormID=9890&strFormCode=&strFormStatus=&strIsFix=N&strProcessValues=${res1 ? 95360 : 95359}&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-    // strFormID :9890,
-    // strFormCode:"",
-    // strFormStatus:"",
-    // strIsFix :"N",
-    // strProcessValues :roledata[0].rolename === 'GA_ADMIN' ? 95360 : 95359,
-    // strFactorValue:56688,
-    // strDeptID:'',
-    // strEmpNo:empNumber,
-    // strAssigns:"",
-    // strUser:empNumber
-}
-console.log(payload)
-    try{
-        const response = await axios.post(apiURL,payload,{headers})
-
-        return response.data
-    }catch(error){
-return error
-    }
-}
-
- 
-/// api for view signin flow 
-export const viewSignFlowfordormshift = async(getformcode,empNumber) =>{
-const headers={
-    apiID:'ffff-1652233446907-17229253125-0373',
-    userKey:userKey
-}
-const payload = {
-
-    contentType: 'application/json; charset="UTF-8"',
-    inputString: `strFormID=9890&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-    // strFormID: 9890,
-    // strFormCode: getformcode,
-    // strFormStatus: 2,
-    // strIsFix: "Y",
-    // strProcessValues: "",
-    // strFactorValue: 56688,
-    // strDeptID: "",
-    // strEmpNo: empNumber,
-    // strAssigns: "",
-    // strUser: empNumber,
-  };
-  console.log("viewsignflow",payload)
-  try{
-    const response = await axios.post(apiURL,payload,{headers})
-
-    return response.data
-}catch(error){
-return error
-}
-}
-
-/// api for create form log 
-
-export const  createformlog = async(strID) =>{
-const headers={
-    apiID:'ffff-1652233900345-17229253125-0377',
-    userKey:'4D0239E133AD024F0BDFEFD75580CA05'
-}
-const params = {
-    contentType: 'application/json; charset="UTF-8"',
-    inputString:`strID=${strID}`
-  };
-  try{
-    const response = await axios.post(apiURL,params,{headers})
-
-    return response.data
-}catch(error){
-return error
-}
-}
-
-//// api getenginflow for bed shift 
-
-export const  enginshowflowsforbedshift = async(empNumber,EmployeeID) =>{
-
-   const site = await  fetchempbasicinfo(EmployeeID)
-//console.log(site)
-    const headers={
-        apiID:'ffff-1652233446907-17229253125-0373',  
-        userKey:userKey
-    }
-    const payload ={
-  
-  
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=&strFormStatus=&strIsFix=Y&strProcessValues=&strFactorValue=${site ?site[0].SiteId:56688}&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-  
-        // strFormID :9891,
-        // strFormCode:"",
-        // strFormStatus:"",
-        // strIsFix :"Y",
-        // strProcessValues :'',
-        // strFactorValue:56688,
-        // strDeptID:'',
-        // strEmpNo:empNumber,
-        // strAssigns:"",
-        // strUser:empNumber
-      }
-    try{
-        const response = await axios.post(apiURL,payload,{headers})
-
-        return response.data
-    }catch(error){
-return error
-    }
-}
-
-
-
-/// api for view signin flow 
-export const viewSignFlowforbedshift = async(getformcode,empNumber) =>{
-    const headers={
-        apiID:'ffff-1652233446907-17229253125-0373',
-        userKey:userKey
-    }
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-      
-        // strFormID: 9891,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
-      };
-      
-      try{
-        const response = await axios.post(apiURL,payload,{headers})
-    
-        return response.data
-    }catch(error){
-    return error
-    }
-    }
-
-    export const viewSignFlowforDormExitEform = async(getformcode,empNumber) =>{
-        const headers={
-            apiID:'ffff-1652233446907-17229253125-0373',
-            userKey:userKey
-        }
-        const payload = {
-            contentType: 'application/json; charset="UTF-8"',
-            inputString: `strFormID=9937&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-          
-            // strFormID: 9891,
-            // strFormCode: getformcode,
-            // strFormStatus: 2,
-            // strIsFix: "Y",
-            // strProcessValues: "",
-            // strFactorValue: 56688,
-            // strDeptID: "",
-            // strEmpNo: empNumber,
-            // strAssigns: "",
-            // strUser: empNumber,
-          };
-          
-          try{
-            const response = await axios.post(apiURL,payload,{headers})
-        
-            return response.data
-        }catch(error){
-        return error
-        }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import {TextareaAutosize} from '@mui/base/TextareaAutosize';
+import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 // import LinearProgress from '@mui/material/LinearProgress';
 import ProgressSteps from "./Dormshiftprogress";
@@ -230,7 +19,7 @@ import {
   Select,
   Box,
   MenuItem,
-  Container,Paper,
+  Container, Paper,
   Grid,
   Drawer,
   Toolbar,
@@ -342,6 +131,7 @@ function DormShifting() {
   const fetchSiteData = async () => {
     try {
       const res = await fetchallSiteDetails();
+      console.log("fetchsitedata", res)
       setsitenamearray(res);
     } catch (error) {
       console.error('Error fetching site data:', error);
@@ -381,10 +171,14 @@ function DormShifting() {
     setData([]);
     setEmpNumber(e.target.value);
   };
-
-  const getEngineShowFlows = async () => {
+  const getEngineShowFlows = async (employeeId) => {
     try {
-      const response = await enginshowflowsfordormshift(account, roledata);
+      const response = await enginshowflowsfordormshift(
+        account,
+        roledata,
+        employeeId
+      );
+
       setformCode(response[0].strFormCode);
       setstrID(response[0].strID);
     } catch (error) {
@@ -459,10 +253,24 @@ function DormShifting() {
       const fetchdata = async () => {
         try {
           const response = await fetchDormShiftingreport();
+          console.log("====Response=====")
+          console.log(response)
+          response.forEach(item => {
+            console.log(
+              "Emp:", item.EmployeeId,
+              "Status:", item.FormStatus,
+              "formcode", item.FormCode
+            )
+          })
           const filterdata = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
+          console.log("matchedreordds", filterdata)
           setgetformcode(filterdata?.FormCode);
           const filterdata1 = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
           setfilterdata(filterdata1);
+          console.log("=====Dormshift report==")
+          console.log(filterdata)
+          console.log("Formcode:", filterdata?.FormCode)
+
           if (employee && employee[0].CheckInFormStatus === 3 && filterdata1?.FormStatus === 1) {
             setopentestfield(true);
             setdormName(filterdata.ShiftingDorm);
@@ -495,6 +303,7 @@ function DormShifting() {
     };
     try {
       const response = await iwxPost(
+
         params,
         {
           headers: {
@@ -504,6 +313,9 @@ function DormShifting() {
         },
         true
       );
+      console.log("Request params", params)
+      console.log("Api response", response)
+
       return response.List;
     } catch (error) {
       console.log(error);
@@ -570,11 +382,13 @@ function DormShifting() {
           setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
         } else {
           const employeeData = employeefilter[0];
+          console.log("employee data", employeeData)
           if (employeeData.CheckInFormStatus === 0) {
             setEmployee(employeefilter);
-            await getEngineShowFlows();
+            await getEngineShowFlows(employeeData.EmployeeId);
             setErrorMessage(null);
-          } else if (employeeData.CheckInFormStatus === 1) {
+          }
+          else if (employeeData.CheckInFormStatus === 1) {
             setEmployee(null);
             setDisable(true);
             setErrorMessage(`Employee with ID ${empNumber} is already checkout from the dorm.`);
@@ -582,12 +396,14 @@ function DormShifting() {
             setEmployee(null);
             setDisable(true);
             setErrorMessage(`Employee with ID ${empNumber} is already Shifted from the dorm.`);
-          } else if (employeeData.CheckInFormStatus === 3) {
+          }
+          else if (employeeData.CheckInFormStatus === 3) {
             setEmployee(employeefilter);
             getSignFlow();
-            await getEngineShowFlows();
+            await getEngineShowFlows(employeeData.EmployeeId);
             setErrorMessage(null);
-          } else if (employeeData.CheckInFormStatus === 4) {
+          }
+          else if (employeeData.CheckInFormStatus === 4) {
             setEmployee(null);
             setErrorMessage(`Employee with ID ${empNumber} is already Requested for the Bed Shifting.`);
           }
@@ -842,537 +658,3 @@ function DormShifting() {
 }
 
 export default DormShifting;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState, useEffect, useCallback } from 'react';
-import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { 
-  Autocomplete, 
-  Box, 
-  Button, 
-  CircularProgress, 
-  Grid, 
-  MenuItem, 
-  Modal, 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TablePagination, 
-  TableRow, 
-  TextField 
-} from '@mui/material';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
-import { Link } from 'react-router-dom';
-import ProgressSteps from '../../Domintory/DormShifting/Dormshiftprogress';
-import { decrypt, iwxKey, getdk, getuserAccount,iwxPost } from '../../EncryptDecrypt/Encryptfile';
-import { fetchallSiteDetails } from '../../Apiconfig/apifetchfordormitory';
-import { viewSignFlowfordormshift } from '../../Apiconfig/apiforSigninflows';
-
-
-const columns = [
-  { id: 'Site', label: 'Site' },
-  { id: 'EmployeeId', label: 'Employee ID' },
-  { id: 'EmployeeName', label: 'Employee Name' },
-  { id: 'Department', label: 'Department' },
-  { id: 'CurrentDorm', label: 'Dorm Name' },
-  { id: 'DormLocation', label: 'Dorm Location' },
-  { id: 'CurrentFloor', label: 'Floor Number' },
-  { id: 'CurrentRoom', label: 'Room Number' },
-  { id: 'CurrentBed', label: 'Bed Number' },
-  { id: 'ShiftingDorm', label: 'Shifting Dorm' },
-  { id: 'Reason', label: 'Reason' },
-  { id: 'MovedById', label: 'Submitted BY' },
-  { id: 'DormShiftedDate', label: 'Submitted Time' },
-  { id: 'DormShiftingStatus', label: 'Status' },
-  { id: 'LastEditBy', label: 'Approved By' },
-  { id: 'LastEditDate', label: 'Approved Date & Time' },
-];
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 800,
-  height: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid rgb(170, 175, 255)',
-  boxShadow: 24,
-  p: 4,
-};
-
-function DormShiftingReport() {
-  const account = getuserAccount();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [empid, setEmpid] = useState('');
-  const [data, setData] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [total, setTotal] = useState(0);
-  const [dorms, setDorms] = useState([]);
-  const [dormName, setDormName] = useState(null);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [tableflow, setTableflow] = useState('');
-  const [engflowshow, setEngflowshow] = useState('');
-  const [dormid, setDormid] = useState('');
-  const [exportButtonLoading, setExportButtonLoading] = useState(false);
-  const [SiteList, setSiteList] = useState([]);
-  const [selectedSite, setSelectedSite] = useState(null);
-
-  useEffect(() => {
-    const fetchsitedata = async () => {
-      const res = await fetchallSiteDetails();
-      setSiteList(res);
-    };
-    fetchsitedata();
-  }, []);
-
-  const handleSelectedSiteChange = (e, value) => {
-    setDorms([]);
-    setDormName(null);
-    setDormid('')
-    setSelectedSite(value);
-  };
-
-  const fetchDormData = useCallback(async () => {
-    if (!selectedSite) return;
-    
-    try {
-      const params = {
-        EmpId: getuserAccount(),
-        Site: selectedSite.Id,
-        Func: 'Reports-Dashboard_report_new'
-      };
-      
-      const response = await iwxPost(
-        params,
-        { 
-          headers: { 
-            apiID: 'ffff-1743478679554-1020912129-2203',
-            userKey: '10A33A67A312E649D907BBC927995B8A' 
-          } 
-        },
-        true
-      );
-      
-      if (response.IsOK === '1') {
-        setDorms(response.List);
-      }
-    } catch (error) {
-      console.error('Error fetching dorm data:', error);
-    }
-  }, [selectedSite]);
-
-  useEffect(() => {
-    fetchDormData();
-  }, [fetchDormData]);
-
-  const handleOpen = (row) => {
-    setSelectedRows(row);
-    setModalOpen(true);
-  };
-
-  const handleClose = () => {
-    setModalOpen(false);
-  };
-
-  const StoreExportName = async (reportname) => {
-    const getloginlogid = sessionStorage.getItem('loginlogID');
-    const decryptloginlog = decrypt(getloginlogid, getdk(iwxKey));
-    try {
-      const headers ={
-            // apiID:'ffff-1709630746197-1020912128-1494',
-            apiID:'ffff-1743483548846-1020912129-2318',
-             userKey:'10A33A67A312E649D907BBC927995B8A'
-           }
-         const params={
-           EmpId : getuserAccount(),
-           ReportName :reportname,
-           LogIn : decryptloginlog,
-           Func:'UserManagement-Insert_report_log_new'
-         }
-         const response =await iwxPost(params,{headers:headers},true)
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleDormChange = (e, value) => {
-    setDormid('')
-    setDormName(value);
-    if (value) {
-      setDormid(value?.DormId);
-    }
-  };
-
-  const handleEmpidChange = (e) => {
-    setEmpid(e.target.value);
-  };
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
-
-  // const handleClear = () => {
-  //   setStartDate(null);
-  //   setEndDate(null);
-  //   setEmpid('');
-  //   setDormid('');
-  //   setData([]);
-  //   setDormName(null);
-  //   setSelectedSite(null);
-  // };
-
-  const handleExport = async () => {
-    if (data.length === 0) return;
-    
-    setExportButtonLoading(true);
-    
-    try {
-      const params = {
-        EmpId: getuserAccount(),
-        Site :selectedSite?.Id || '',
-        EmployeeId: empid || '',
-        DormId: dormid || '',
-        StartDate: startDate ? dayjs(startDate).format('DD-MM-YYYY') : '',
-        EndDate: endDate ? dayjs(endDate).format('DD-MM-YYYY') : '',
-        StartPage: 1, // Using fixed values since resetPage/pg weren't defined
-        PageSize: 999999999999, // Using fixed large value since pageSi wasn't defined
-        Func: "Reports-Dorm_shift_report_new"
-      };
-      
-     // console.log(params);
-  
-      const response = await iwxPost(
-        params,
-        { 
-          headers: { 
-            apiID: 'ffff-1743478394455-1020912129-2194', 
-            userKey: '10A33A67A312E649D907BBC927995B8A' 
-          } 
-        },
-        true
-      );
-  
-      if (response.IsOK === '1') {
-        const res = response.List;
-        
-        const exportData = res.map((row) => ({
-          EMPLOYEE_ID: row.EmployeeId,
-          EMPLOYEE_NAME: row.EmployeeName,
-          DEPARTMENT: row.Department,
-          CURRENT_DORM: row.CurrentDorm,
-          DORM_LOCATION: row.DormLocation,
-          CURRENT_FLOOR: row.CurrentFloor,
-          CURRENT_ROOM: row.CurrentRoom,
-          CURRENT_BED: row.CurrentBed,
-          SHIFTING_DORM: row.ShiftingDorm,
-          REASON: row.Reason,
-          MOVED_BY: row.MovedById,
-          DORM_SHIFTED_DATE: row.DormShiftedDate ,
-          Approved_by: row.LastEditBy,
-          Approved_date: row.LastEditDate,
-          DORM_SHIFTING_STATUS: row.DormShiftingStatus
-        }));
-  
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-  
-        const excelBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
-        
-        const blobData = new Blob(
-          [excelBuffer],
-          { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-        );
-  
-        const url = URL.createObjectURL(blobData);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'dormshiftingreport.xlsx';
-        link.click();
-        URL.revokeObjectURL(url);
-        
-        await StoreExportName(link.download);
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-    } finally {
-      setExportButtonLoading(false);
-    }
-  };
-
-  const handleSearch = async (newPage = null, pageSize = null, resetPage = false) => {
-    try {
-      const pg = newPage !== null ? newPage : page;
-      const pageSi = pageSize !== null ? pageSize : rowsPerPage;
-
-      const params = {
-        EmpId: getuserAccount(),
-        EmployeeId: empid || '',
-        Site :selectedSite?.Id || '',
-        DormId: dormid || '',
-        StartDate: startDate ? dayjs(startDate).format('DD-MM-YYYY') : '',
-        EndDate: endDate ? dayjs(endDate).format('DD-MM-YYYY') : '',
-        StartPage: resetPage ? 1 : pg + 1,
-        PageSize: pageSi,
-        Func: "Reports-Dorm_shift_report_new"
-      };
-//console.log(params)
-      const response = await iwxPost(
-        params,
-        { 
-          headers: { 
-            apiID: 'ffff-1743478394455-1020912129-2194', 
-            userKey: '10A33A67A312E649D907BBC927995B8A' 
-          } 
-        },
-        true
-      );
-
-      if (response.IsOK === '1') {
-        setData(response.List);
-      //  console.log(response.List);
-        setTotal(response.List.length > 0 ? response.List[0].Rowscount : 0);
-        if (resetPage) setPage(0);
-      }
-    } catch (error) {
-      console.error('Error searching data:', error);
-      setData([]);
-    }
-  };
-
-  const handleChangePage = async (event, newPage) => {
-    setPage(newPage);
-    await handleSearch(newPage, null);
-  };
-
-  const handleChangeRowsPerPage = async (event) => {
-    const newRowsPerPage = +event.target.value;
-    setRowsPerPage(newRowsPerPage);
-    setPage(0);
-    await handleSearch(null, newRowsPerPage);
-  };
-
-  const getSignFlow = async () => {
-    try {
-      const response = await viewSignFlowfordormshift(selectedRows.FormCode, selectedRows.EmployeeId);
-      setEngflowshow(response[0].ENGFLOWSHOW);
-      setTableflow(response[0].ENGFLOWTABLE);
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  }; 
-
-  useEffect(() => {
-    if (selectedRows.FormCode) {
-      getSignFlow();
-    }
-  }, [selectedRows]);
-
-  return (
-    <>
-      <h4>DormShifting Report</h4>
-      <Grid container spacing={2} direction="row" sx={{ justifyContent: "flex-end", alignItems: "baseline" }}>
-        <Grid item>
-          <Button 
-            size='medium' 
-            variant="contained" 
-            onClick={() => handleSearch(null, null, true)} 
-            sx={{ textTransform: "none" }}
-          >
-            Search
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button 
-            size='medium' 
-            sx={{ textTransform: "none" }} 
-            variant="contained"
-            disabled={data.length === 0 || exportButtonLoading}
-            onClick={handleExport}
-          >
-            {exportButtonLoading ? <CircularProgress size={24} /> : 'Export'}
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={1} sx={{ mt: 1 }}>
-        <Grid item xs={12} sm={6} md={3} lg={2}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker 
-              label="Start Date"
-              value={startDate}
-              onChange={handleStartDateChange}
-              slotProps={{ textField: { size: 'small', fullWidth: true }}}
-              format="DD-MM-YYYY"
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={2}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={handleEndDateChange}
-              slotProps={{ textField: { size: 'small', fullWidth: true }}}
-              format="DD-MM-YYYY"
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={2}>
-          <TextField
-            type="text"
-            label="Employee Number"
-            value={empid}
-            size='small'
-            onChange={handleEmpidChange}
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={2}>
-          <Autocomplete
-            options={SiteList}
-            autoHighlight
-            ListboxProps={{ style: { maxHeight: 200 } }}
-            getOptionLabel={site => site.BasicCode || ''}
-            isOptionEqualToValue={(option, value) => option.Id === value.Id}
-            value={selectedSite}
-            onChange={handleSelectedSiteChange}
-            renderInput={params => (
-              <TextField {...params} fullWidth label="Site" size='small' />
-            )}
-            renderOption={(props, site) => (
-              <MenuItem {...props}>{site.BasicCode.toString()}</MenuItem>
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={2}>
-          <Autocomplete
-            options={dorms}
-            autoHighlight
-            ListboxProps={{ style: { maxHeight: 200 } }}
-            getOptionLabel={dorm => dorm.DormName || ''}
-            value={dormName}
-            onChange={handleDormChange}
-            renderInput={params => (
-              <TextField 
-                {...params} 
-                label="Select the dorm" 
-                size='small'
-                fullWidth
-              />
-            )}
-            renderOption={(props, dorm) => (
-              <MenuItem 
-                {...props}
-                style={{
-                  color: dorm.DormDelFlag === 2 || dorm.DormDelFlag === 1 ? '#FF0000' : 'initial',
-                  fontWeight: dorm.DormDelFlag === 2 || dorm.DormDelFlag === 1 ? 'bold' : 'normal',
-                }}
-              > 
-                {dorm.DormName} {''}
-                {dorm.DormDelFlag === 2 ? '(blocked)' : dorm.DormDelFlag === 1 ? '(deactivated)' : ''}
-              </MenuItem>
-            )}
-          />
-        </Grid>
-      </Grid>
-
-      <Modal 
-        open={modalOpen}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modalStyle}>
-          <ProgressSteps account={account} engflowshow={engflowshow} tableflow={tableflow} />
-        </Box>
-      </Modal>
-
-      <Paper sx={{ mt: 2 }}>
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align="left"
-                    style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length > 0 ? (
-                data.map((row) => (
-                  <TableRow key={row.Id}>
-                    {columns.map((column) => (
-                      <TableCell key={column.id} align="left">
-                        {column.id === 'DormShiftingStatus' ? 
-                          <Link onClick={() => handleOpen(row)}>{row[column.id]}</Link> : 
-                          row[column.id]}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} align="center">
-                    No data available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={total}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </>
-  );
-}
-
-export default DormShiftingReport;
