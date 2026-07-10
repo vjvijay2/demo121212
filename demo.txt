@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { TextareaAutosize } from '@mui/base/TextareaAutosize';
+import {TextareaAutosize} from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 // import LinearProgress from '@mui/material/LinearProgress';
 import ProgressSteps from "./Dormshiftprogress";
@@ -131,7 +131,6 @@ function DormShifting() {
   const fetchSiteData = async () => {
     try {
       const res = await fetchallSiteDetails();
-      console.log("fetchsitedata", res)
       setsitenamearray(res);
     } catch (error) {
       console.error('Error fetching site data:', error);
@@ -171,47 +170,35 @@ function DormShifting() {
     setData([]);
     setEmpNumber(e.target.value);
   };
-  const getEngineShowFlows = async (employeeId) => {
-    try {
-      const response = await enginshowflowsfordormshift(
-        account,
-        roledata,
-        employeeId
-      );
 
+  const getEngineShowFlows = async () => {
+    try {
+      const response = await enginshowflowsfordormshift(account, roledata);
       setformCode(response[0].strFormCode);
       setstrID(response[0].strID);
-
-      return response;
-
     } catch (error) {
-      console.error(error);
+      console.error("An error occurred:", error);
       throw error;
     }
   };
 
-const getSignFlow = async (formCode) => {
-  try {
-    if (!formCode) return;
-
-    const response = await viewSignFlowfordormshift(
-      formCode,
-      account
-    );
-
-    console.log("View Sign Flow Response", response);
-
-    if (response && response.length > 0) {
-      setengflowshow(response[0].ENGFLOWSHOW || "");
-      settableflow(response[0].ENGFLOWTABLE || "");
-
-      console.log("ENGFLOWSHOW Length:", response[0].ENGFLOWSHOW?.length);
-      console.log("ENGFLOWTABLE Length:", response[0].ENGFLOWTABLE?.length);
+  const getSignFlow = async () => {
+    try {
+      const response = await viewSignFlowfordormshift(getformcode, account);
+      setengflowshow(response[0].ENGFLOWSHOW);
+      settableflow(response[0].ENGFLOWTABLE);
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-};
+  };
+
+  const engFormCreateLog = async () => {
+    try {
+      await createformlog(strID);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -261,24 +248,10 @@ const getSignFlow = async (formCode) => {
       const fetchdata = async () => {
         try {
           const response = await fetchDormShiftingreport();
-          console.log("====Response=====")
-          console.log(response)
-          response.forEach(item => {
-            console.log(
-              "Emp:", item.EmployeeId,
-              "Status:", item.FormStatus,
-              "formcode", item.FormCode
-            )
-          })
           const filterdata = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
-          console.log("matchedreordds", filterdata)
           setgetformcode(filterdata?.FormCode);
           const filterdata1 = response.find((dorm) => dorm.EmployeeId === empNumber && dorm.FormStatus === 1);
           setfilterdata(filterdata1);
-          console.log("=====Dormshift report==")
-          console.log(filterdata)
-          console.log("Formcode:", filterdata?.FormCode)
-
           if (employee && employee[0].CheckInFormStatus === 3 && filterdata1?.FormStatus === 1) {
             setopentestfield(true);
             setdormName(filterdata.ShiftingDorm);
@@ -311,7 +284,6 @@ const getSignFlow = async (formCode) => {
     };
     try {
       const response = await iwxPost(
-
         params,
         {
           headers: {
@@ -321,9 +293,6 @@ const getSignFlow = async (formCode) => {
         },
         true
       );
-      console.log("Request params", params)
-      console.log("Api response", response)
-
       return response.List;
     } catch (error) {
       console.log(error);
@@ -353,7 +322,7 @@ const getSignFlow = async (formCode) => {
     setError('');
     const empid = empNumber;
     try {
-
+      
       const params = {
         EmployeeId: empid,
         Site: "",
@@ -390,12 +359,11 @@ const getSignFlow = async (formCode) => {
           setErrorMessage(`Employee with ID ${empNumber} is not found in the dorm.`);
         } else {
           const employeeData = employeefilter[0];
-          console.log("employee data", employeeData)
           if (employeeData.CheckInFormStatus === 0) {
             setEmployee(employeefilter);
+            await getEngineShowFlows();
             setErrorMessage(null);
-          }
-          else if (employeeData.CheckInFormStatus === 1) {
+          } else if (employeeData.CheckInFormStatus === 1) {
             setEmployee(null);
             setDisable(true);
             setErrorMessage(`Employee with ID ${empNumber} is already checkout from the dorm.`);
@@ -403,22 +371,12 @@ const getSignFlow = async (formCode) => {
             setEmployee(null);
             setDisable(true);
             setErrorMessage(`Employee with ID ${empNumber} is already Shifted from the dorm.`);
-          }
-          else if (employeeData.CheckInFormStatus === 3) {
-
+          } else if (employeeData.CheckInFormStatus === 3) {
             setEmployee(employeefilter);
-
-            if (filterdata?.FormCode) {
-              await getSignFlow(
-                filterdata.FormCode,
-                employeeData.EmployeeId
-              );
-            }
-
+            getSignFlow();
+          
             setErrorMessage(null);
-
-          }
-          else if (employeeData.CheckInFormStatus === 4) {
+          } else if (employeeData.CheckInFormStatus === 4) {
             setEmployee(null);
             setErrorMessage(`Employee with ID ${empNumber} is already Requested for the Bed Shifting.`);
           }
@@ -441,108 +399,56 @@ const getSignFlow = async (formCode) => {
   const handleConfirmSubmit = async () => {
     handleCloseDialog();
     setbuttonloadin(true);
-
     if (reson.trim() === "" || dormName === null) {
       setError("Fill in all fields");
-      setbuttonloadin(false);
       return;
     }
-
+    const headers = {
+      apiID: 'ffff-1743482865948-1020912129-2296',
+      userKey: '10A33A67A312E649D907BBC927995B8A'
+    };
+    const payload = {
+      EmployeeId: employee[0].EmployeeId,
+      EmployeeName: employee[0].EmployeeName,
+      Department: employee[0].Department,
+      CurrentDorm: employee[0].DormName,
+      CurrentFloor: employee[0].FloorNumber,
+      CurrentRoom: employee[0].RoomNumber,
+      CurrentBed: employee[0].BedNumber,
+      ShiftingDorm: dormName.DormName,
+      ShiftingDormCode: shifteddormcode,
+      FormCode: formCode,
+      BedId: employee[0].BedId,
+      Reason: reson,
+      MovedById: getuserAccount(),
+      CheckInId: employee[0].Id,
+      CurrentDormId: employee[0].DormId,
+      Func: 'Dormitory-Insert_dorm_shift_new'
+    };
+    console.log(payload);
+    setError("");
     try {
-
-      // Generate Engine Flow ONLY during Submit
-      const flowResponse = await getEngineShowFlows(employee[0].EmployeeId);
-
-      const generatedFormCode = flowResponse[0].strFormCode;
-      const generatedStrID = flowResponse[0].strID;
-
-      const headers = {
-        apiID: 'ffff-1743482865948-1020912129-2296',
-        userKey: '10A33A67A312E649D907BBC927995B8A'
-      };
-
-      const payload = {
-        EmployeeId: employee[0].EmployeeId,
-        EmployeeName: employee[0].EmployeeName,
-        Department: employee[0].Department,
-
-        CurrentDorm: employee[0].DormName,
-        CurrentFloor: employee[0].FloorNumber,
-        CurrentRoom: employee[0].RoomNumber,
-        CurrentBed: employee[0].BedNumber,
-
-        ShiftingDorm: dormName.DormName,
-        ShiftingDormCode: shifteddormcode,
-        FormCode: generatedFormCode,
-
-        BedId: employee[0].BedId,
-
-        Reason: reson,
-
-        MovedById: getuserAccount(),
-
-        CheckInId: employee[0].Id,
-
-        CurrentDormId: employee[0].DormId,
-
-        Func: "Dormitory-Insert_dorm_shift_new"
-
-      };
-
-      console.log("Insert Payload");
-
-      console.log(payload);
-
-      const response = await iwxPost(
-
-        payload,
-
-        { headers },
-
-        true
-
-      );
-
+      const response = await iwxPost(payload, { headers: headers }, true);
       console.log(response);
-
-      if (response.IsOK === "1") {
-
-        await createformlog(generatedStrID);
-
+      await engFormCreateLog();
+      if (response.IsOK === '1') {
         window.alert(response.Msg);
-
         setbuttonloadin(false);
-
-        setEmployee(null);
-
+        setEmployee("");
         setEmpNumber("");
-
-        setdormName(null);
-
-        setreason("");
-
-        setError("");
-
       } else {
-
-        setbuttonloadin(false);
-
         setError(response.Msg);
-
+        setEmployee(null);
+        setdormName(null);
+        setreason('');
+        setbuttonloadin(false);
       }
-
     } catch (error) {
-
-      console.log(error);
-
-      setbuttonloadin(false);
-
       setError("An error occurred while submitting the form.");
-
+      console.error(error);
+      setbuttonloadin(false);
     }
-
   };
-
 
   return (
     <>
@@ -698,7 +604,7 @@ const getSignFlow = async (formCode) => {
             </div>
           </form>
           <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
-            {engflowshow && tableflow && (
+            {employee && employee[0].CheckInFormStatus === 3 && filterdata?.FormStatus === 1 && (
               <ProgressSteps engflowshow={engflowshow} tableflow={tableflow} />
             )}
           </Box>
