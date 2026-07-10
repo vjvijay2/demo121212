@@ -9,57 +9,56 @@ const userKey = "C44F773FD87E7E41174D6A58B162B049";
 ====================================================== */
 
 export const enginshowflowsfordormshift = async (
-  empNumber,
-  roledata,
-  employeeId
+    empNumber,
+    roledata,
+    employeeId
 ) => {
-  const headers = {
-    apiID: "ffff-1652233446907-17229253125-0373",
-    userKey: userKey,
-  };
+    const headers = {
+        apiID: "ffff-1652233446907-17229253125-0373",
+        userKey: userKey,
+    };
 
-  const isGAAdmin = roledata.some(
-    (item) =>
-      item.RoleName === "GA_ADMIN" ||
-      item.ROLE_NAME === "GA_ADMIN"
-  );
+    const isGAAdmin = roledata.some(
+        (item) =>
+            item.RoleName === "GA_ADMIN" ||
+            item.ROLE_NAME === "GA_ADMIN"
+    );
 
-  const empInfo = await fetchempbasicinfo(employeeId);
+    const empInfo = await fetchempbasicinfo(employeeId);
+    console.log("Employee Info :", empInfo);
+    const factorValue =
+        empInfo?.[0]?.Site === "FXCN"
+            ? 56689
+            : 56688;
 
-  const factorValue =
-    empInfo?.[0]?.Site === "FXBL"
-      ? 56689
-      : 56688;
 
-  console.log("Employee Info :", empInfo);
-  console.log("Factor Value :", factorValue);
+    console.log("Factor Value :", factorValue);
 
-  const payload = {
-    contentType: 'application/json; charset="UTF-8"',
-    inputString:
-      `strFormID=9890` +
-      `&strFormCode=` +
-      `&strFormStatus=` +
-      `&strIsFix=N` +
-      `&strProcessValues=${isGAAdmin ? 95360 : 95359}` +
-      `&strFactorValue=${factorValue}` +
-      `&strDeptID=` +
-      `&strEmpNo=${empNumber}` +
-      `&strAssigns=` +
-      `&strUser=${empNumber}`,
-  };
+    const payload = {
+        contentType: 'application/json; charset="UTF-8"',
+        inputString:
+            `strFormID=9890` +
+            `&strFormCode=` +
+            `&strFormStatus=` +
+            `&strIsFix=N` +
+            `&strProcessValues=${isGAAdmin ? 95360 : 95359}` +
+            `&strFactorValue=${factorValue}` +
+            `&strDeptID=` +
+            `&strEmpNo=${empNumber}` +
+            `&strAssigns=` +
+            `&strUser=${empNumber}`,
+    };
 
-  console.log("Engine Payload");
-  console.log(payload);
+    console.log("Engine Payload",payload.inputString);
 
-  const response = await axios.post(apiURL, payload, {
-    headers,
-  });
 
-  console.log("Engine Response");
-  console.log(response.data);
+    const response = await axios.post(apiURL, payload, {
+        headers,
+    });
 
-  return response.data;
+    console.log("Engine Response",response.data);
+
+    return response.data;
 };
 
 /* ======================================================
@@ -67,50 +66,50 @@ export const enginshowflowsfordormshift = async (
 ====================================================== */
 
 export const viewSignFlowfordormshift = async (
-  formCode,
-  empNumber,
-  employeeId
+    formCode,
+    empNumber,
+    employeeId
 ) => {
-  const headers = {
-    apiID: "ffff-1652233446907-17229253125-0373",
-    userKey: userKey,
-  };
+    const headers = {
+        apiID: "ffff-1652233446907-17229253125-0373",
+        userKey: userKey,
+    };
 
-  const empInfo = await fetchempbasicinfo(employeeId);
+    const empInfo = await fetchempbasicinfo(employeeId);
 
-  const factorValue =
-    empInfo?.[0]?.Site === "FXBL"
-      ? 56689
-      : 56688;
+    const factorValue =
+        empInfo?.[0]?.Site === "FXBL"
+            ? 56689
+            : 56688;
 
-  const payload = {
-    contentType: 'application/json; charset="UTF-8"',
-    inputString:
-      `strFormID=9890` +
-      `&strFormCode=${formCode}` +
-      `&strFormStatus=2` +
-      `&strIsFix=N` +
-      `&strProcessValues=` +
-      `&strFactorValue=${factorValue}` +
-      `&strDeptID=` +
-      `&strEmpNo=${empNumber}` +
-      `&strAssigns=` +
-      `&strUser=${empNumber}`,
-  };
-console.log("formcode",formCode)
+    const payload = {
+        contentType: 'application/json; charset="UTF-8"',
+        inputString:
+            `strFormID=9890` +
+            `&strFormCode=${formCode}` +
+            `&strFormStatus=2` +
+            `&strIsFix=N` +
+            `&strProcessValues=` +
+            `&strFactorValue=${factorValue}` +
+            `&strDeptID=` +
+            `&strEmpNo=${empNumber}` +
+            `&strAssigns=` +
+            `&strUser=${empNumber}`,
+    };
+    console.log("formcode", formCode)
 
-console.log("employeeid",empNumber)
-  console.log("View Sign Flow Payload");
-  console.log(payload);
+    console.log("employeeid", empNumber)
+    console.log("View Sign Flow Payload");
+    console.log(payload);
 
-  const response = await axios.post(apiURL, payload, {
-    headers,
-  });
+    const response = await axios.post(apiURL, payload, {
+        headers,
+    });
 
-  console.log("View Sign Flow Response");
-  console.log(response.data);
+    console.log("View Sign Flow Response");
+    console.log(response.data);
 
-  return response.data;
+    return response.data;
 };
 
 /// api for create form log 
@@ -179,8 +178,7 @@ export const viewSignFlowforbedshift = async (getformcode, empNumber) => {
     }
     const payload = {
         contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=
-        &strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
+        inputString: `strFormID=9891&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
 
         // strFormID: 9891,
         // strFormCode: getformcode,
