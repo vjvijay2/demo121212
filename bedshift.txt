@@ -1,134 +1,749 @@
-<script>
+<!-- <script>
 import axios from "axios";
-import { Button, Loading } from "vant";
-
+import {Button, Loading} from 'vant'
 export default {
   components: {
     "van-button": Button,
-    "van-loading": Loading,
+    "van-loading": Loading
   },
+
+
+
+  data() {
+    return {
+      step: [],
+ itemData : {},
+ loading: true,
+ hasdata: false,
+
+    };
+  },
+  created() {
+    const {shift, routeName, busNumber, driverName, driverNumber } = this.$route.query;
+
+  this.itemData={
+    shift,
+    routeName,
+     busNumber, 
+     driverName,
+      driverNumber
+  }
+  },
+
+  methods: {
+
+    async getrouteinfo() {
+      this.loading =  true
+      const params = {
+        V_SHIFT:this.itemData.shift,
+    V_ROUTE_NAME:this.itemData.routeName,
+    V_WORK_DATE:""
+          };
+          const param = params;
+          const config = {
+            headers: {
+              apiID: "ffff-1701144856798-10208193125-1092",
+              userKey: "10A33A67A312E649D907BBC927995B8A"
+            }
+          };
+          try {
+          const res = await axios.post("https://microservice.idpbgtn.com/india/gateway", param, config);
+           const dataArray = res.data;
+          if (dataArray && dataArray.length > 0) {
+            this.loading = false; 
+this.step = dataArray.map((item, index) => {
+    return {
+      boarding_point: item.BOARDING_POINT,
+      Coordinate: item.COORDINATE,
+      Order: item.ORDER,
+      time: item.TIME,
+    };
+  });
+
+          } else {
+            
+            console.error("No employee data found");
+            this.collapseItems =[];
+          }
+        } catch (error) {
+          this.loading = false; 
+          console.error(error);
+        }
+},
+
+goback(){
+  this.$router.back()
+}
+  },
+  mounted() {
+    setTimeout(() => {
+      this.getrouteinfo();
+    }, 500); 
+  }
+};
+</script>
+
+
+
+
+
+
+<template>
+  <div class="App">
+    <div v-if="loading">
+      <van-loading class="loading-container" type="spinner" size="30px"  color="#1989fa"/>
+    </div>
+    <div v-else>
+      <div v-if="step.length > 0">
+        <div class="header">
+        
+          <van-steps active-icon="play" :active="1" active-color="#1989fa"  v-model="step" >
+            <van-step>{{ step[0].time }}</van-step>
+            <van-step >{{ itemData.shift }}-Shift</van-step>
+            <van-step>{{ step[step.length -1].time }}</van-step>
+          </van-steps>    
+          <div class="route">
+        
+            <div class="title">
+              {{ itemData.routeName }}
+            </div>
+        
+           
+            <div class="text2">
+              <div class="title">
+                FHH
+              </div>
+        
+            </div>
+          </div>
+        </div>
+        <div class="Steps">
+          <van-steps direction="vertical" v-model="step" :active="-1">
+            <van-step v-for="(item, index) in step">
+              <div class="step-content">
+                <h3 :class="{ 'bold-text':  index === 0 || index === step.length - 1 }">{{ item.boarding_point }}</h3>
+                <p>{{ item.time }}</p>
+              </div>
+            </van-step>
+          </van-steps>
+        </div>
+        </div>
+      
+</div>
+
+<div class="card-container">
+              <div class="card-button">
+                <van-button type="info" size="large" @click="goback">GO BACK</van-button>
+              </div>
+            </div>
+</div>
+</template>
+
+     
+
+
+
+<style lang="scss">
+* {
+  box-sizing: border-box;
+}
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Adjust the height as needed */
+}
+
+.bold-text {
+  font-weight: bold;
+  font-size: 18px;
+  color: #1890ff;
+}
+.van-step__circle {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: 3px solid #1989fa;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+.van-step--vertical .van-step__circle-container{
+  z-index: 1;
+}
+.van-step--vertical .van-step__line {
+  top: 16px;
+  left: -16px;
+  width: 2px;
+  height: 100%;
+  background-color: #1989fa !important;
+}
+
+.van-steps--vertical {
+  padding: 0px 0 0 23px;
+}
+
+.step-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.step-content h3,
+.step-content p {
+  margin: 0;
+  padding: 0px 10px;
+}
+
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.header {
+  height: 100px;
+  background-color: #dce9f8;
+}
+
+.header .route {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 10px;
+
+}
+
+.header .route .text2 {
+  text-align: right;
+}
+
+.header .route .text3 {
+  text-align: center;
+}
+
+.header .route .text3 .title {
+  color: #1890ff;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.header .route .text3 .subtitle {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.header .route .title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.header .route .subtitle {
+  font-size: 10px;
+  color: #666;
+  /* Subtitle text color */
+}
+
+.header .details {
+  text-align: center;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #1890ff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1890ff;
+}
+
+button+button {
+  margin-left: 10px;
+}
+
+.Steps {
+  margin-top: 10px;
+  padding-bottom: 30px;
+  margin-left: 10px;
+  z-index: -999;
+}
+
+
+.container {
+  perspective: 1000px;
+  margin-bottom: 30px;
+}
+
+.card-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #fff;
+    }
+
+    .card-button {
+      text-align: center;
+      justify-content: center;
+    }
+
+
+// [class*=van-hairline]::after{
+//   border: none;
+// }
+
+.van-step--horizontal .van-step__title {
+
+  font-size: 17px;
+  color: #1989fa;
+  font-weight: 600;
+
+}
+
+.van-steps--horizontal {
+  padding: 0px 10px 0;
+}
+
+.van-step--horizontal .van-step__line {
+  top: 29px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-top: 2px dotted #1989fa;
+  margin-top: 10px;
+
+}
+
+.van-step--horizontal .van-step__icon {
+  display: block;
+  font-size: 25px;
+  left: -13px;
+  top: 0px;
+}
+
+.van-steps--horizontal .van-steps__items {
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+}
+
+.van-step__line {
+  position: absolute;
+  background-color: #e4e4e4;
+  -webkit-transition: background-color .3s;
+  transition: background-color .3s;
+}
+
+.van-step--horizontal .van-step__circle-container {
+
+  position: absolute;
+  top: 30px;
+  left: -10px;
+  z-index: 1;
+  padding: 0 8px;
+  background-color: #fff0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-top: 10px;
+
+}
+
+.van-steps {
+  overflow: hidden;
+  background-color: #fff0;
+}
+
+p.text {
+  margin: 5px 0;
+}
+
+p.text span {
+  color: rgb(158, 248, 158);
+}</style>  -->
+
+
+
+
+
+
+
+
+
+<script>
+import axios from "axios";
+import { Button, Loading } from 'vant'
+export default {
+  components: {
+    "van-button": Button,
+    "van-loading": Loading
+  },
+
+
 
   data() {
     return {
       step: [],
       itemData: {},
       loading: true,
+      hasdata: false,
       LastPoint: {},
+
     };
   },
+  created() {
+    const { shift, routeName, busNumber, driverName, driverNumber } = this.$route.query;
 
-  mounted() {
-    this.waitForRoute();
-  },
-
-  watch: {
-    "$route.query": {
-      handler() {
-        this.waitForRoute();
-      },
-      deep: true
+    this.itemData = {
+      shift,
+      routeName,
+      busNumber,
+      driverName,
+      driverNumber
     }
   },
 
   methods: {
 
-    async waitForRoute() {
-
-      if (this.itemData.shift) return;
-
-      while (
-        !this.$route.query.shift ||
-        !this.$route.query.routeName
-      ) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-
-      this.loadData();
-    },
-
-    loadData() {
-
-      const {
-        shift,
-        routeName,
-        busNumber,
-        driverName,
-        driverNumber
-      } = this.$route.query;
-
-      this.itemData = {
-        shift,
-        routeName,
-        busNumber,
-        driverName,
-        driverNumber
-      };
-
-      this.getrouteinfo();
-
-    },
-
     async getrouteinfo() {
-
-      this.loading = true;
-
+      this.loading = true
       const params = {
         V_SHIFT: this.itemData.shift,
         V_ROUTE_NAME: this.itemData.routeName,
         V_WORK_DATE: ""
       };
-
+      const param = params;
       const config = {
         headers: {
           apiID: "ffff-1701144856798-10208193125-1092",
           userKey: "10A33A67A312E649D907BBC927995B8A"
         }
       };
-
       try {
-
-        const res = await axios.post(
-          "https://microservice.abgind.foxconn.com/india/gateway",
-          params,
-          config
-        );
-
-        const dataArray = res.data || [];
-
-        if (dataArray.length > 0) {
-
-          this.LastPoint = dataArray[dataArray.length - 1];
-
-          this.step = dataArray.map(item => ({
-            boarding_point: item.BOARDING_POINT,
-            Coordinate: item.COORDINATE,
-            Order: item.ORDER,
-            time: item.TIME
-          }));
+        const res = await axios.post("https://microservice.abgind.foxconn.com/india/gateway", param, config);
+        const dataArray = res.data;
+        this.LastPoint = dataArray[dataArray.length - 1];
+        console.log(this.LastPoint);
+        console.log(dataArray);
+        if (dataArray && dataArray.length > 0) {
+          this.loading = false;
+          this.step = dataArray.map((item, index) => {
+            return {
+              boarding_point: item.BOARDING_POINT,
+              Coordinate: item.COORDINATE,
+              Order: item.ORDER,
+              time: item.TIME,
+            };
+          });
 
         } else {
 
-          this.step = [];
-          this.LastPoint = {};
-
+          console.error("No employee data found");
+          this.collapseItems = [];
         }
-
-      } catch (err) {
-
-        console.log(err);
-
-      } finally {
-
+      } catch (error) {
         this.loading = false;
-
+        console.error(error);
       }
-
     },
 
     goback() {
-      this.$router.back();
+      this.$router.back()
     }
-
+  },
+  mounted() {
+    setTimeout(() => {
+      this.getrouteinfo();
+    }, 500);
   }
 };
 </script>
+
+
+
+
+
+
+<template>
+  <div class="App">
+    <div v-if="loading">
+      <van-loading class="loading-container" type="spinner" size="30px" color="#1989fa" />
+    </div>
+    <div v-else>
+      <div v-if="step.length > 0">
+        <div class="header">
+
+          <van-steps active-icon="play" :active="1" active-color="#1989fa" v-model="step">
+            <van-step>{{ step[0].time }}</van-step>
+            <van-step>{{ itemData.shift }}-Shift</van-step>
+            <van-step>{{ step[step.length - 1].time }}</van-step>
+          </van-steps>
+          <div class="route">
+
+            <div class="title">
+              {{ itemData.routeName }}
+            </div>
+
+
+            <div class="text2">
+              <div class="title">
+                {{ this.LastPoint.BOARDING_POINT }}
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="Steps">
+          <van-steps direction="vertical" v-model="step" :active="-1">
+            <van-step v-for="(item, index) in step">
+              <div class="step-content">
+                <h3 :class="{ 'bold-text': index === 0 || index === step.length - 1 }">{{ item.boarding_point }}</h3>
+                <p>{{ item.time }}</p>
+              </div>
+            </van-step>
+          </van-steps>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card-container">
+      <div class="card-button">
+        <van-button type="info" size="large" @click="goback">GO BACK</van-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+
+
+
+<style lang="scss">
+* {
+  box-sizing: border-box;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* Adjust the height as needed */
+}
+
+.bold-text {
+  font-weight: bold;
+  font-size: 18px;
+  color: #1890ff;
+}
+
+.van-step__circle {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: 3px solid #1989fa;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+.van-step--vertical .van-step__circle-container {
+  z-index: 1;
+}
+
+.van-step--vertical .van-step__line {
+  top: 16px;
+  left: -16px;
+  width: 2px;
+  height: 100%;
+  background-color: #1989fa !important;
+}
+
+.van-steps--vertical {
+  padding: 0px 0 0 23px;
+}
+
+.step-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.step-content h3,
+.step-content p {
+  margin: 0;
+  padding: 0px 10px;
+}
+
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.header {
+  height: 100px;
+  background-color: #dce9f8;
+}
+
+.header .route {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 10px;
+
+}
+
+.header .route .text2 {
+  text-align: right;
+}
+
+.header .route .text3 {
+  text-align: center;
+}
+
+.header .route .text3 .title {
+  color: #1890ff;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.header .route .text3 .subtitle {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.header .route .title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.header .route .subtitle {
+  font-size: 10px;
+  color: #666;
+  /* Subtitle text color */
+}
+
+.header .details {
+  text-align: center;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #1890ff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1890ff;
+}
+
+button+button {
+  margin-left: 10px;
+}
+
+.Steps {
+  margin-top: 10px;
+  padding-bottom: 30px;
+  margin-left: 10px;
+  z-index: -999;
+}
+
+
+.container {
+  perspective: 1000px;
+  margin-bottom: 30px;
+}
+
+.card-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+}
+
+.card-button {
+  text-align: center;
+  justify-content: center;
+}
+
+
+// [class*=van-hairline]::after{
+//   border: none;
+// }
+
+.van-step--horizontal .van-step__title {
+
+  font-size: 17px;
+  color: #1989fa;
+  font-weight: 600;
+
+}
+
+.van-steps--horizontal {
+  padding: 0px 10px 0;
+}
+
+.van-step--horizontal .van-step__line {
+  top: 29px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-top: 2px dotted #1989fa;
+  margin-top: 10px;
+
+}
+
+.van-step--horizontal .van-step__icon {
+  display: block;
+  font-size: 25px;
+  left: -13px;
+  top: 0px;
+}
+
+.van-steps--horizontal .van-steps__items {
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+}
+
+.van-step__line {
+  position: absolute;
+  background-color: #e4e4e4;
+  -webkit-transition: background-color .3s;
+  transition: background-color .3s;
+}
+
+.van-step--horizontal .van-step__circle-container {
+
+  position: absolute;
+  top: 30px;
+  left: -10px;
+  z-index: 1;
+  padding: 0 8px;
+  background-color: #fff0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-top: 10px;
+
+}
+
+.van-steps {
+  overflow: hidden;
+  background-color: #fff0;
+}
+
+p.text {
+  margin: 5px 0;
+}
+
+p.text span {
+  color: rgb(158, 248, 158);
+}
+</style>
