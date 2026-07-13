@@ -431,7 +431,7 @@ methods: {
       driverNumber
     };
 
-
+this.getrouteinfo();
   },
 
   async getrouteinfo() {
