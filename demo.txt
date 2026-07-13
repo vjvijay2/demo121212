@@ -394,71 +394,88 @@ export default {
     };
   },
   created() {
-    const { shift, routeName, busNumber, driverName, driverNumber } = this.$route.query;
+    this.loadData();
+  },
 
-    this.itemData = {
-      shift,
-      routeName,
-      busNumber,
-      driverName,
-      driverNumber
+  watch: {
+    '$route'(to) {
+      this.loadData();
     }
   },
 
   methods: {
+    loadData() {
+      const {
+        shift,
+        routeName,
+        busNumber,
+        driverName,
+        driverNumber
+      } = this.$route.query;
 
-    async getrouteinfo() {
-      this.loading = true
-      const params = {
-        V_SHIFT: this.itemData.shift,
-        V_ROUTE_NAME: this.itemData.routeName,
-        V_WORK_DATE: ""
+      this.itemData = {
+        shift,
+        routeName,
+        busNumber,
+        driverName,
+        driverNumber
       };
-      const param = params;
-      const config = {
-        headers: {
-          apiID: "ffff-1701144856798-10208193125-1092",
-          userKey: "10A33A67A312E649D907BBC927995B8A"
-        }
-      };
-      try {
-        const res = await axios.post("https://microservice.abgind.foxconn.com/india/gateway", param, config);
-        const dataArray = res.data;
-        this.LastPoint = dataArray[dataArray.length - 1];
-        console.log(this.LastPoint);
-        console.log(dataArray);
-        if (dataArray && dataArray.length > 0) {
-          this.loading = false;
-          this.step = dataArray.map((item, index) => {
-            return {
-              boarding_point: item.BOARDING_POINT,
-              Coordinate: item.COORDINATE,
-              Order: item.ORDER,
-              time: item.TIME,
-            };
-          });
 
-        } else {
-
-          console.error("No employee data found");
-          this.collapseItems = [];
-        }
-      } catch (error) {
-        this.loading = false;
-        console.error(error);
+      if (shift && routeName) {
+        this.getrouteinfo();
       }
     },
 
-    goback() {
-      this.$router.back()
-    }
-  },
-  mounted() {
-    setTimeout(() => {
-      this.getrouteinfo();
-    }, 500);
-  }
-};
+    methods: {
+
+      async getrouteinfo() {
+        this.loading = true
+        const params = {
+          V_SHIFT: this.itemData.shift,
+          V_ROUTE_NAME: this.itemData.routeName,
+          V_WORK_DATE: ""
+        };
+        const param = params;
+        const config = {
+          headers: {
+            apiID: "ffff-1701144856798-10208193125-1092",
+            userKey: "10A33A67A312E649D907BBC927995B8A"
+          }
+        };
+        try {
+          const res = await axios.post("https://microservice.abgind.foxconn.com/india/gateway", param, config);
+          const dataArray = res.data;
+          this.LastPoint = dataArray[dataArray.length - 1];
+          console.log(this.LastPoint);
+          console.log(dataArray);
+          if (dataArray && dataArray.length > 0) {
+            this.loading = false;
+            this.step = dataArray.map((item, index) => {
+              return {
+                boarding_point: item.BOARDING_POINT,
+                Coordinate: item.COORDINATE,
+                Order: item.ORDER,
+                time: item.TIME,
+              };
+            });
+
+          } else {
+
+            console.error("No employee data found");
+            this.collapseItems = [];
+          }
+        } catch (error) {
+          this.loading = false;
+          console.error(error);
+        }
+      },
+
+      goback() {
+        this.$router.back()
+      }
+    },
+
+  }};
 </script>
 
 
