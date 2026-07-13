@@ -1,9 +1,71 @@
+import Vue from "vue";
+import VueAwesomeSwiper from "vue-awesome-swiper";
 
-DormShifting.js:132 {data: Array(1), status: 200, statusText: 'OK', headers: AxiosHeaders, config: {…}, …}config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}data: Array(1)0: ENGFLOWLOG: ""ENGFLOWSHOW: "<div class='hcont'><div class='hsome'><ul class='xplab'><li id='Li1' class='lab_link_new'><a href='javascript:void(0)' onclick='lkbInfoClick(1)'><span>WorkFlow</span></a></li></ul></div><div id='div_VerifyProcess'><div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create a Form</h3><span>Submitter</span></li><li class='buji'><h3>ER</h3><span>HH0002991<br>Santhakumar Krishnan</span></li><li class='buji'><h3>HR</h3><span><br></span></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div></div><div id='WorkFlowDetail' style='display: none'></div></div><script type='text/javascript'>function lkbInfoClick(type) {if (type == '1') { document.getElementById('Li1').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = '';document.getElementById('WorkFlowDetail').style.display = 'none';} else if (type == '2') { document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = 'none';document.getElementById('WorkFlowDetail').style.display = '';}}</script>"ENGFLOWTABLE: "<div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create a Form</h3><span>Submitter</span></li><li class='buji'><h3>ER</h3><span>HH0002991<br>Santhakumar Krishnan</span></li><li class='buji'><h3>HR</h3><span><br></span></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div>"ERRO: ""FLOWLOG: ""FLOWSHOW: "<div class='hcont'><div class='hsome'><ul class='xplab'><li id='Li1' class='lab_link_new'><a href='javascript:void(0)' onclick='lkbInfoClick(1)'><span>Sign Off Process</span></a></li></ul></div><div id='div_VerifyProcess'><div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li><li class='buji'><h3>ER</h3><span>HH0002991<br>Santhakumar Krishnan</span></li><li class='buji'><h3>HR</h3><span><br></span></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div></div><div id='WorkFlowDetail' style='display: none'></div></div><script type='text/javascript'>function lkbInfoClick(type) {if (type == '1') { document.getElementById('Li1').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = '';document.getElementById('WorkFlowDetail').style.display = 'none';} else if (type == '2') { document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = 'none';document.getElementById('WorkFlowDetail').style.display = '';}}</script>"FLOWTABLE: "<div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li><li class='buji'><h3>ER</h3><span>HH0002991<br>Santhakumar Krishnan</span></li><li class='buji'><h3>HR</h3><span><br></span></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div>"PROCESSID: "3903"SIGNID: "689619:202,689617:183,,"strErrResult: ""strFormCode: "WF9890260710623196"strID: "-260710623196"[[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)headers: AxiosHeaders {access-control-allow-credentials: 'true', access-control-allow-origin: 'http://localhost:3002', access-control-expose-headers: 'authorization,authorization_token,content-type,*,$$id,authorization-api,apiid,accept,token,userkey', cache-control: 'private, max-age=0', content-length: '3851', …}request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}status: 200statusText: "OK"[[Prototype]]: Object
-DormShifting.js:462 Engine processId: 3903
-DormShifting.js:463 Engine formCode: WF9890260710623196
-DormShifting.js:464 Engine strID: -260710623196
-DormShifting.js:167 viewsignflo {data: Array(1), status: 200, statusText: 'OK', headers: AxiosHeaders, config: {…}, …}config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}data: Array(1)0: ENGFLOWLOG: ""ENGFLOWSHOW: "<div class='hcont'><div class='hsome'><ul class='xplab'><li id='Li1' class='lab_link_new'><a href='javascript:void(0)' onclick='lkbInfoClick(1)'><span>WorkFlow</span></a></li></ul></div><div id='div_VerifyProcess'><div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create a Form</h3><span>Submitter</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div></div><div id='WorkFlowDetail' style='display: none'></div></div><script type='text/javascript'>function lkbInfoClick(type) {if (type == '1') { document.getElementById('Li1').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = '';document.getElementById('WorkFlowDetail').style.display = 'none';} else if (type == '2') { document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = 'none';document.getElementById('WorkFlowDetail').style.display = '';}}</script>"ENGFLOWTABLE: "<div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create a Form</h3><span>Submitter</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div>"ERRO: ""FLOWLOG: ""FLOWSHOW: "<div class='hcont'><div class='hsome'><ul class='xplab'><li id='Li1' class='lab_link_new'><a href='javascript:void(0)' onclick='lkbInfoClick(1)'><span>Sign Off Process</span></a></li></ul></div><div id='div_VerifyProcess'><div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div></div><div id='WorkFlowDetail' style='display: none'></div></div><script type='text/javascript'>function lkbInfoClick(type) {if (type == '1') { document.getElementById('Li1').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = '';document.getElementById('WorkFlowDetail').style.display = 'none';} else if (type == '2') { document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = 'none';document.getElementById('WorkFlowDetail').style.display = '';}}</script>"FLOWTABLE: "<div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div>"PROCESSID: ""SIGNID: ""strErrResult: ""strFormCode: "WF9890260710623196"strID: ""[[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)headers: AxiosHeaders {access-control-allow-credentials: 'true', access-control-allow-origin: 'http://localhost:3002', access-control-expose-headers: 'authorization,authorization_token,content-type,*,$$id,authorization-api,apiid,accept,token,userkey', cache-control: 'private, max-age=0', content-length: '3315', …}request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}status: 200statusText: "OK"[[Prototype]]: Object
-DormShifting.js:473 View processId: 
-DormShifting.js:474 View flowShow: <div class='hcont'><div class='hsome'><ul class='xplab'><li id='Li1' class='lab_link_new'><a href='javascript:void(0)' onclick='lkbInfoClick(1)'><span>Sign Off Process</span></a></li></ul></div><div id='div_VerifyProcess'><div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div></div><div id='WorkFlowDetail' style='display: none'></div></div><script type='text/javascript'>function lkbInfoClick(type) {if (type == '1') { document.getElementById('Li1').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = '';document.getElementById('WorkFlowDetail').style.display = 'none';} else if (type == '2') { document.getElementById('Li1').className='lab_link_new';document.getElementById('Li2').className='lab_active_new';document.getElementById('Li2').className='lab_link_new';document.getElementById('Li1').className='lab_active_new';document.getElementById('div_VerifyProcess').style.display = 'none';document.getElementById('WorkFlowDetail').style.display = '';}}</script>
-DormShifting.js:475 View flowTable: <div  class='liuchengbiao' style='overflow:visible'><ul><li class='star'><h3>Create Form</h3><span>Creator</span></li></li><li class='end'><h3>Closed</h3><span>Finished</span></li><div style='clear:both'></div></ul></div>
+import http from '@/utils/request.js'
+
+import * as callNative from "../../../utils/jsAndNative.js";
+
+Vue.prototype.$http=http;
+Vue.prototype.$callNative = callNative;
+
+import App from "./App.vue";
+
+import "swiper/css/swiper.css";
+import { Swipe, SwipeItem } from "vant";
+import { Cell, CellGroup,Loading, Form, Field, Checkbox, CheckboxGroup, Popup, Collapse, CollapseItem, Tabs, Tab, Search, Step, Steps, NavBar } from "vant";
+
+
+Vue.use(Step);
+Vue.use(Steps);
+Vue.use(Cell);
+Vue.use(CellGroup);
+Vue.use(Loading);
+Vue.use(Form);
+Vue.use(Field);
+Vue.use(Checkbox);
+Vue.use(CheckboxGroup);
+Vue.use(Popup);
+Vue.use(Collapse);
+Vue.use(CollapseItem);
+Vue.use(Tabs);
+Vue.use(Tab);
+Vue.use(Search);
+Vue.use(NavBar);
+
+
+import { Icon, Message, Table, DatePicker, Select, Radio, Card, List, Input, Button, Empty} from "ant-design-vue";
+Vue.component(Icon.name, Icon);
+Vue.use(Table).use(DatePicker).use(Select).use(Radio);
+
+Vue.use(VueAwesomeSwiper);
+Vue.use(Swipe).use(SwipeItem);
+Vue.use(Card);
+Vue.use(List);
+Vue.use(Input);
+Vue.use(Select);
+Vue.use(Button);
+Vue.use(Empty);
+
+
+import CryptoJS from "crypto-js";
+
+Vue.use(CryptoJS);
+
+import router from './router.js'
+
+router.beforeEach((to,from,next) =>{
+  if(to.meta.title){
+     document.title= to.meta.title
+  }
+   next();
+ })
+
+
+
+Vue.prototype.$message = Message;
+Vue.config.productionTip = false;
+
+new Vue({
+  router,
+  render: (h) => h(App),
+}).$mount("#app");
