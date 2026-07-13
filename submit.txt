@@ -211,25 +211,24 @@ export default {
     },
 
 
-handleClick(item) {
-  const query = {
-    shift: this.activeTab,
-    routeName:encodeURIComponent(item.ROUTE_NAME),
-    busNumber: item.Busno,
-    driverName: item.drivername,
-    driverNumber: item.contactno,
-    page: "true"
-  };
 
-  this.$nextTick(() => {
+    handleClick(item) {
+      this.details_data = item;
+      this.$router.push({
+        path: `/routes`,           // ← Routes page
+        query: {
+          shift: this.activeTab,           // Current shift (A/B/C/G/GN/GD/S)
+          routeName: item.ROUTE_NAME,      // Route name
+          busNumber: item.Busno,           // Bus number
+          driverName: item.drivername,     // Driver name
+          driverNumber: item.contactno,    // Driver contact
+          page: true
+        }
+      }).then(() => {
+        this.$router.go()  // ← Forces page refresh
+      });
+    },
 
-    this.$router.push({
-      path: "/routes",
-      query
-    }).catch(()=>{});
-  });
-  console.log("route query",this.$router.query)
-},
 
     getEmpNoByAPP() {
       // this.empId = "HH0013772";
