@@ -1,232 +1,78 @@
-import axios from "axios";
-import { fetchempbasicinfo } from "./apiforloginandempdetails";
+methods: {
 
-const apiURL = "https://microservice.abgind.foxconn.com/india/gateway";
-const userKey = "C44F773FD87E7E41174D6A58B162B049";
+  loadData() {
+    const {
+      shift,
+      routeName,
+      busNumber,
+      driverName,
+      driverNumber
+    } = this.$route.query;
 
-/* ======================================================
-   ENGINE SHOW FLOW - DORM SHIFT
-====================================================== */
-
-export const enginshowflowsfordormshift = async (
-    empNumber,
-    roledata,
-    employeeId
-) => {
-    const headers = {
-        apiID: "ffff-1652233446907-17229253125-0373",
-        userKey: userKey,
+    this.itemData = {
+      shift,
+      routeName,
+      busNumber,
+      driverName,
+      driverNumber
     };
 
-    const isGAAdmin = roledata.some(
-        (item) =>
-            item.RoleName === "GA_ADMIN" ||
-            item.ROLE_NAME === "GA_ADMIN"
-    );
-
-    const empInfo = await fetchempbasicinfo(employeeId);
-    console.log("Employee Info :", empInfo);
-    const factorValue =
-        empInfo?.[0]?.Site === "FXCN"
-            ? 56689
-            : 56688;
-
-
-    console.log("Factor Value :", factorValue);
-
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString:
-            `strFormID=9890` +
-            `&strFormCode=` +
-            `&strFormStatus=` +
-            `&strIsFix=N` +
-            `&strProcessValues=${isGAAdmin ? 95360 : 95359}` +
-            `&strFactorValue=${factorValue}` +
-            `&strDeptID=` +
-            `&strEmpNo=${empNumber}` +
-            `&strAssigns=` +
-            `&strUser=${empNumber}`,
-    };
-
-    console.log("Engine Payload",payload.inputString);
-
-
-    const response = await axios.post(apiURL, payload, {
-        headers,
-    });
-
-    console.log("Engine Response",response.data);
-
-    return response.data;
-};
-
-/* ======================================================
-   VIEW SIGN FLOW
-====================================================== */
-
-export const viewSignFlowfordormshift = async (
-    formCode,
-    empNumber,
-    employeeId
-) => {
-    const headers = {
-        apiID: "ffff-1652233446907-17229253125-0373",
-        userKey: userKey,
-    };
-
-    const empInfo = await fetchempbasicinfo(employeeId);
-
-    const factorValue =
-        empInfo?.[0]?.Site === "FXBL"
-            ? 56689
-            : 56688;
-
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString:
-            `strFormID=9890` +
-            `&strFormCode=${formCode}` +
-            `&strFormStatus=2` +
-            `&strIsFix=N` +
-            `&strProcessValues=` +
-            `&strFactorValue=${factorValue}` +
-            `&strDeptID=` +
-            `&strEmpNo=${empNumber}` +
-            `&strAssigns=` +
-            `&strUser=${empNumber}`,
-    };
-    console.log("formcode", formCode)
-
-    console.log("employeeid", empNumber)
-    console.log("View Sign Flow Payload");
-    console.log(payload);
-
-    const response = await axios.post(apiURL, payload, {
-        headers,
-    });
-
-    console.log("View Sign Flow Response");
-    console.log(response.data);
-
-    return response.data;
-};
-
-/// api for create form log 
-
-export const createformlog = async (strID) => {
-    const headers = {
-        apiID: 'ffff-1652233900345-17229253125-0377',
-        userKey: '4D0239E133AD024F0BDFEFD75580CA05'
+    if (shift && routeName) {
+      this.getrouteinfo();
     }
+  },
+
+  async getrouteinfo() {
+    this.loading = true;
+
     const params = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strID=${strID}`
+      V_SHIFT: this.itemData.shift,
+      V_ROUTE_NAME: this.itemData.routeName,
+      V_WORK_DATE: ""
     };
-    try {
-        const response = await axios.post(apiURL, params, { headers })
 
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
-
-//// api getenginflow for bed shift 
-
-export const enginshowflowsforbedshift = async (empNumber, EmployeeID) => {
-
-    const site = await fetchempbasicinfo(EmployeeID)
-    //console.log(site)
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-
-
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=&strFormStatus=&strIsFix=Y&strProcessValues=&strFactorValue=${site ? site[0].SiteId : 56688}&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-
-        // strFormID :9891,
-        // strFormCode:"",
-        // strFormStatus:"",
-        // strIsFix :"Y",
-        // strProcessValues :'',
-        // strFactorValue:56688,
-        // strDeptID:'',
-        // strEmpNo:empNumber,
-        // strAssigns:"",
-        // strUser:empNumber
-    }
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-
-        return response.data
-    } catch (error) {
-        return error
-    }
-}
-
-
-
-/// api for view signin flow 
-export const viewSignFlowforbedshift = async (getformcode, empNumber) => {
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9891&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
-
-        // strFormID: 9891,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
+    const config = {
+      headers: {
+        apiID: "ffff-1701144856798-10208193125-1092",
+        userKey: "10A33A67A312E649D907BBC927995B8A"
+      }
     };
 
     try {
-        const response = await axios.post(apiURL, payload, { headers })
+      const res = await axios.post(
+        "https://microservice.abgind.foxconn.com/india/gateway",
+        params,
+        config
+      );
 
-        return response.data
-    } catch (error) {
-        return error
+      const dataArray = res.data;
+
+      if (Array.isArray(dataArray) && dataArray.length > 0) {
+
+        this.LastPoint = dataArray[dataArray.length - 1];
+
+        this.step = dataArray.map(item => ({
+          boarding_point: item.BOARDING_POINT,
+          Coordinate: item.COORDINATE,
+          Order: item.ORDER,
+          time: item.TIME
+        }));
+
+      } else {
+        this.LastPoint = {};
+        this.step = [];
+        console.log("No employee data found");
+      }
+
+    } catch (e) {
+      console.log(e);
+    } finally {
+      this.loading = false;
     }
-}
+  },
 
-export const viewSignFlowforDormExitEform = async (getformcode, empNumber) => {
-    const headers = {
-        apiID: 'ffff-1652233446907-17229253125-0373',
-        userKey: userKey
-    }
-    const payload = {
-        contentType: 'application/json; charset="UTF-8"',
-        inputString: `strFormID=9937&strFormCode=${getformcode}&strFormStatus=2&strIsFix=Y&strProcessValues=&strFactorValue=56688&strDeptID=&strEmpNo=${empNumber}&strAssigns=&strUser=${empNumber}`
+  goback() {
+    this.$router.back();
+  }
 
-        // strFormID: 9891,
-        // strFormCode: getformcode,
-        // strFormStatus: 2,
-        // strIsFix: "Y",
-        // strProcessValues: "",
-        // strFactorValue: 56688,
-        // strDeptID: "",
-        // strEmpNo: empNumber,
-        // strAssigns: "",
-        // strUser: empNumber,
-    };
-
-    try {
-        const response = await axios.post(apiURL, payload, { headers })
-
-        return response.data
-    } catch (error) {
-        return error
-    }
 }
