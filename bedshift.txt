@@ -1,215 +1,134 @@
+<script>
 import axios from "axios";
-let CryptoJS = require("crypto-js");
-let key = "eaa34f53daf201e309e15d079eec15d5";
-let key2 = "facd81g656fcd8p7a7lkh6dfa81gf4ik";
-let apiID = "";
-let userKey = "10A33A67A312E649D907BBC927995B8A";
-let userKeyTest = 'E9785F13CCEAFB251A6AB147AFD24336';
+import { Button, Loading } from "vant";
 
-let security = {
-  cfg: {
-    iv: CryptoJS.enc.Hex.parse("0000000000000000"),
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  },
-  encrypt: function (str, key) {
-    var k = CryptoJS.enc.Utf8.parse(key);
-    return CryptoJS.AES.encrypt(str, k, this.cfg).toString();
-  },
-  decrypt: function (str, key) {
-    // console.log("decrypt", str);
-    // console.log("key", key);
-    var k = CryptoJS.enc.Utf8.parse(key); 
-    return CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(str, k, this.cfg));
-  }, 
-};
-
-// 设置默认请求接口地址
-axios.defaults.baseURL = "https://microservice.abgind.foxconn.com/india/gateway";
-// 多项目配置接口请求对象
-let baseUrlObj = {
-  //正式機內網網址
-  "iwx":"https://microservice.abgind.foxconn.com/india/gateway"
-};
-
-function encrypt(str, key) {
-  return security.encrypt(str, key);
-}
-function decrypt(str, key) {
-  return security.decrypt(str, key);
-}
-
-// 爱万象post参数处理
-function dealPostParams(data = {}) {
-
-  let params = "";
-  let res = null;
-  for (const key in data) {
-
-    data[key] = data[key].replace("=", "%3D");
-    data[key] = data[key].replace("&", "%26");
-    params += `${key}=${data[key]}&`;
-  }
-  params = params.substring(0, params.length - 1);
-  res = {
-    inputString: params,
-  };
-   //console.log('paramsparams',res)
-  return res;
-}
-
-// 爱万象post参数处理 - 加密
-function iwxDealPostBodyEncrypt(data = {}, key) {
-  let res = null;
-  let o = encrypt(
-    JSON.stringify({ Os: "", DeviceId: "Utility", AppVer: "0" }),
-    key
-  );
-  let s = "";
-
-  s = encrypt(JSON.stringify(data), key);
-
-  res = {
-    s: s,
-    o: o,
-  };
-  return res;
-}
-
-
-// 拦截请求 和 响应
-axios.interceptors.request.use(
-  (config) => {
-    config.data = JSON.stringify(config.data);
-    config.headers['Content-Type'] = 'application/json; charset="utf-8"';
-
-    if (apiID != "" && userKey != "") {
-      config.headers.apiID = apiID;
-      config.headers.userKey = userKey;
-    }
-    // config.timeout = "2000"
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-axios.interceptors.response.use(
-  (response) => {
-    // console.log(response)
-    return response.data;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// 封装请求函数
 export default {
-   userKeyTest : 'E9785F13CCEAFB251A6AB147AFD24336',
-   key2 : "facd81g656fcd8p7a7lkh6dfa81gf4ik",
-    userKey : "10A33A67A312E649D907BBC927995B8A",
-      USER_TN :   "10A33A67A312E649D907BBC927995B8A",
+  components: {
+    "van-button": Button,
+    "van-loading": Loading,
+  },
 
-  iwxPosts2({ body = {}, isEncrypt, encryptKey, config = {} }) {
-    let url = baseUrlObj["iwx"];
-    apiID = config.headers.apiID;
-    userKey = config.headers.userKey;
-     console.log(apiID, body, config, isEncrypt)
-    let bodyIwx = isEncrypt
-      ? iwxDealPostBodyEncrypt(body, encryptKey)
-      : dealPostParams(body);
-      // console.log("bodyIwx-iwxPosts", bodyIwx);
-    return new Promise((resolve, reject) => {
-      axios.post(url, bodyIwx, config).then(
-        (data) => {
-          //  console.log("data", data);
-          apiID = apiID;
-          userKey = userKey;
-          let res = isEncrypt
-          ? JSON.parse(security.decrypt(data.r, encryptKey))
-          : data;
-          resolve(res);
-          // console.log(res);
-        },
-        (err) => {
-          reject(err);
-        
+  data() {
+    return {
+      step: [],
+      itemData: {},
+      loading: true,
+      LastPoint: {},
+    };
+  },
+
+  mounted() {
+    this.waitForRoute();
+  },
+
+  watch: {
+    "$route.query": {
+      handler() {
+        this.waitForRoute();
+      },
+      deep: true
+    }
+  },
+
+  methods: {
+
+    async waitForRoute() {
+
+      if (this.itemData.shift) return;
+
+      while (
+        !this.$route.query.shift ||
+        !this.$route.query.routeName
+      ) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      this.loadData();
+    },
+
+    loadData() {
+
+      const {
+        shift,
+        routeName,
+        busNumber,
+        driverName,
+        driverNumber
+      } = this.$route.query;
+
+      this.itemData = {
+        shift,
+        routeName,
+        busNumber,
+        driverName,
+        driverNumber
+      };
+
+      this.getrouteinfo();
+
+    },
+
+    async getrouteinfo() {
+
+      this.loading = true;
+
+      const params = {
+        V_SHIFT: this.itemData.shift,
+        V_ROUTE_NAME: this.itemData.routeName,
+        V_WORK_DATE: ""
+      };
+
+      const config = {
+        headers: {
+          apiID: "ffff-1701144856798-10208193125-1092",
+          userKey: "10A33A67A312E649D907BBC927995B8A"
         }
-      );
-    }).catch((reason) => {
-      return reason;
-    });
-  },
+      };
 
-  iwxPosts1({ body ={}, isEncrypt, encryptKey, config={} }) {
-   console.log("bodyIwx-iwxPosts", body);
-    let url = "http://10.208.193.125:8086/gateway/manager";
-    apiID = config.headers.apiID;
-    userKey = config.headers.userKey;
-    let bodyIwx = isEncrypt
-      ? iwxDealPostBodyEncrypt(body, encryptKey)
-      : dealPostParams(body);
-    return new Promise((resolve, reject) => {
-      axios.post(url, bodyIwx, config).then(
-        (data) => {
-           console.log("data", config);
-          apiID = "";
-          userKey = "";
-          let res = isEncrypt
-          ? JSON.parse(security.decrypt(data.r, encryptKey))
-          : data;
-         resolve(res);
-        },
-        (err) => {
-          reject(err);
+      try {
+
+        const res = await axios.post(
+          "https://microservice.abgind.foxconn.com/india/gateway",
+          params,
+          config
+        );
+
+        const dataArray = res.data || [];
+
+        if (dataArray.length > 0) {
+
+          this.LastPoint = dataArray[dataArray.length - 1];
+
+          this.step = dataArray.map(item => ({
+            boarding_point: item.BOARDING_POINT,
+            Coordinate: item.COORDINATE,
+            Order: item.ORDER,
+            time: item.TIME
+          }));
+
+        } else {
+
+          this.step = [];
+          this.LastPoint = {};
+
         }
-      );
-    }).catch((reason) => {
-      return reason;
-    });
-  },
 
+      } catch (err) {
 
+        console.log(err);
 
+      } finally {
 
-  //  iwxPostNew({params, config}) {
+        this.loading = false;
 
-  //   let url = "http://10.208.193.125:8086/gateway/manager"
-  //   apiID = config.headers.apiID;
-  //   userKey = config.headers.userKey;
-  //   const param =  params;
-  //   // const param = params;
-  //   console.log("data",config)
-  //   return new Promise((resolve, reject) => {
-  //     axios.post(url, param, config).then((data) => {
-  //       apiID = "";
-  //       userKey = "";
-  //         let res = data;
-  //         resolve(res);
-  //         console.log(res);
-  //       },
-  //       (err) => {
-  //         console.log(err)
-  //         reject(err);
-  //       }
-  //     );
-  //   }).catch((reason) => {
-  //     console.log(reason)
-  //   });
-  // },
+      }
 
+    },
 
+    goback() {
+      this.$router.back();
+    }
 
-
-
-  encryptStrKey2(str) {
-    return security.encrypt(str, key2);
-  },
-
-  decryptByKey2(str) {
-    console.log("decryptByKey2", security.decrypt(str, key2));
-    return security.decrypt(str, key2);
-  },
+  }
 };
-
+</script>
