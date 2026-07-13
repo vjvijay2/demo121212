@@ -1,681 +1,458 @@
-<!-- <script>
-import axios from "axios";
-import {Button, Loading} from 'vant'
-export default {
-  components: {
-    "van-button": Button,
-    "van-loading": Loading
-  },
-
-
-
-  data() {
-    return {
-      step: [],
- itemData : {},
- loading: true,
- hasdata: false,
-
-    };
-  },
-  created() {
-    const {shift, routeName, busNumber, driverName, driverNumber } = this.$route.query;
-
-  this.itemData={
-    shift,
-    routeName,
-     busNumber, 
-     driverName,
-      driverNumber
-  }
-  },
-
-  methods: {
-
-    async getrouteinfo() {
-      this.loading =  true
-      const params = {
-        V_SHIFT:this.itemData.shift,
-    V_ROUTE_NAME:this.itemData.routeName,
-    V_WORK_DATE:""
-          };
-          const param = params;
-          const config = {
-            headers: {
-              apiID: "ffff-1701144856798-10208193125-1092",
-              userKey: "10A33A67A312E649D907BBC927995B8A"
-            }
-          };
-          try {
-          const res = await axios.post("https://microservice.idpbgtn.com/india/gateway", param, config);
-           const dataArray = res.data;
-          if (dataArray && dataArray.length > 0) {
-            this.loading = false; 
-this.step = dataArray.map((item, index) => {
-    return {
-      boarding_point: item.BOARDING_POINT,
-      Coordinate: item.COORDINATE,
-      Order: item.ORDER,
-      time: item.TIME,
-    };
-  });
-
-          } else {
-            
-            console.error("No employee data found");
-            this.collapseItems =[];
-          }
-        } catch (error) {
-          this.loading = false; 
-          console.error(error);
-        }
-},
-
-goback(){
-  this.$router.back()
-}
-  },
-  mounted() {
-    setTimeout(() => {
-      this.getrouteinfo();
-    }, 500); 
-  }
-};
-</script>
-
-
-
-
-
-
 <template>
   <div class="App">
-    <div v-if="loading">
-      <van-loading class="loading-container" type="spinner" size="30px"  color="#1989fa"/>
-    </div>
-    <div v-else>
-      <div v-if="step.length > 0">
-        <div class="header">
-        
-          <van-steps active-icon="play" :active="1" active-color="#1989fa"  v-model="step" >
-            <van-step>{{ step[0].time }}</van-step>
-            <van-step >{{ itemData.shift }}-Shift</van-step>
-            <van-step>{{ step[step.length -1].time }}</van-step>
-          </van-steps>    
-          <div class="route">
-        
-            <div class="title">
-              {{ itemData.routeName }}
-            </div>
-        
-           
-            <div class="text2">
-              <div class="title">
-                FHH
-              </div>
-        
-            </div>
-          </div>
-        </div>
-        <div class="Steps">
-          <van-steps direction="vertical" v-model="step" :active="-1">
-            <van-step v-for="(item, index) in step">
-              <div class="step-content">
-                <h3 :class="{ 'bold-text':  index === 0 || index === step.length - 1 }">{{ item.boarding_point }}</h3>
-                <p>{{ item.time }}</p>
-              </div>
-            </van-step>
-          </van-steps>
-        </div>
-        </div>
-      
-</div>
+    <van-tabs v-model="activeTab" type="card" class="custom-tabs" sticky @change="handleTabchange">
+      <van-tab title="Shift-A" name="A"></van-tab>
+      <van-tab title="Shift-B" name="B"></van-tab>
+      <van-tab title="Shift-C" name="C"></van-tab>
+      <van-tab title="Shift-G" name="G"></van-tab>
+      <van-tab title="Shift-GN" name="GN"></van-tab>
+      <van-tab title="Shift-GD" name="GD"></van-tab>
+      <van-tab title="Shift-S" name="S"></van-tab>
+    </van-tabs>
+
+    <routed v-if="showChild" :details_data="details_data" />
+
+    <van-search v-model="value" style="padding: 0px;" placeholder="Search Bus" shape="round" background="none" />
 
-<div class="card-container">
-              <div class="card-button">
-                <van-button type="info" size="large" @click="goback">GO BACK</van-button>
-              </div>
-            </div>
-</div>
-</template>
-
-     
-
-
-
-<style lang="scss">
-* {
-  box-sizing: border-box;
-}
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Adjust the height as needed */
-}
-
-.bold-text {
-  font-weight: bold;
-  font-size: 18px;
-  color: #1890ff;
-}
-.van-step__circle {
-  display: block;
-  width: 15px;
-  height: 15px;
-  border: 3px solid #1989fa;
-  background-color: #ffffff;
-  border-radius: 50%;
-}
-.van-step--vertical .van-step__circle-container{
-  z-index: 1;
-}
-.van-step--vertical .van-step__line {
-  top: 16px;
-  left: -16px;
-  width: 2px;
-  height: 100%;
-  background-color: #1989fa !important;
-}
-
-.van-steps--vertical {
-  padding: 0px 0 0 23px;
-}
-
-.step-content {
-  display: flex;
-  justify-content: space-between;
-}
-
-.step-content h3,
-.step-content p {
-  margin: 0;
-  padding: 0px 10px;
-}
-
-
-.error {
-  color: red;
-  margin-top: 10px;
-}
-
-.header {
-  height: 100px;
-  background-color: #dce9f8;
-}
-
-.header .route {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin: 0 10px;
-
-}
-
-.header .route .text2 {
-  text-align: right;
-}
-
-.header .route .text3 {
-  text-align: center;
-}
-
-.header .route .text3 .title {
-  color: #1890ff;
-  font-size: 14px;
-  text-transform: capitalize;
-}
-
-.header .route .text3 .subtitle {
-  color: #1890ff;
-  font-size: 14px;
-}
-
-.header .route .title {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-}
-
-
-.header .route .subtitle {
-  font-size: 10px;
-  color: #666;
-  /* Subtitle text color */
-}
-
-.header .details {
-  text-align: center;
-}
-
-button {
-  padding: 8px 15px;
-  background-color: #1890ff;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #1890ff;
-}
-
-button+button {
-  margin-left: 10px;
-}
-
-.Steps {
-  margin-top: 10px;
-  padding-bottom: 30px;
-  margin-left: 10px;
-  z-index: -999;
-}
-
-
-.container {
-  perspective: 1000px;
-  margin-bottom: 30px;
-}
-
-.card-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #fff;
-    }
-
-    .card-button {
-      text-align: center;
-      justify-content: center;
-    }
-
-
-// [class*=van-hairline]::after{
-//   border: none;
-// }
-
-.van-step--horizontal .van-step__title {
-
-  font-size: 17px;
-  color: #1989fa;
-  font-weight: 600;
-
-}
-
-.van-steps--horizontal {
-  padding: 0px 10px 0;
-}
-
-.van-step--horizontal .van-step__line {
-  top: 29px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  border-top: 2px dotted #1989fa;
-  margin-top: 10px;
-
-}
-
-.van-step--horizontal .van-step__icon {
-  display: block;
-  font-size: 25px;
-  left: -13px;
-  top: 0px;
-}
-
-.van-steps--horizontal .van-steps__items {
-  margin: 0 0 12px;
-  padding-bottom: 10px;
-}
-
-.van-step__line {
-  position: absolute;
-  background-color: #e4e4e4;
-  -webkit-transition: background-color .3s;
-  transition: background-color .3s;
-}
-
-.van-step--horizontal .van-step__circle-container {
-
-  position: absolute;
-  top: 30px;
-  left: -10px;
-  z-index: 1;
-  padding: 0 8px;
-  background-color: #fff0;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  margin-top: 10px;
-
-}
-
-.van-steps {
-  overflow: hidden;
-  background-color: #fff0;
-}
-
-p.text {
-  margin: 5px 0;
-}
-
-p.text span {
-  color: rgb(158, 248, 158);
-}</style>  -->
-
-
-
-
-
-
-
-
-
-<script>
-import axios from "axios";
-import { Button, Loading } from 'vant'
-export default {
-  components: {
-    "van-button": Button,
-    "van-loading": Loading
-  },
-
-
-
-  data() {
-    return {
-      step: [],
-      itemData: {},
-      loading: true,
-      hasdata: false,
-      LastPoint: {},
-
-    };
-  },
-  created() {
-    this.loadData();
-  },
-
-  watch: {
-    '$route'(to) {
-      this.loadData();
-    }
-  },
-
-  methods: {
-    loadData() {
-      const {
-        shift,
-        routeName,
-        busNumber,
-        driverName,
-        driverNumber
-      } = this.$route.query;
-
-      this.itemData = {
-        shift,
-        routeName,
-        busNumber,
-        driverName,
-        driverNumber
-      };
-
-      if (shift && routeName) {
-        this.getrouteinfo();
-      }
-    },
-
-    methods: {
-
-      async getrouteinfo() {
-        this.loading = true
-        const params = {
-          V_SHIFT: this.itemData.shift,
-          V_ROUTE_NAME: this.itemData.routeName,
-          V_WORK_DATE: ""
-        };
-        const param = params;
-        const config = {
-          headers: {
-            apiID: "ffff-1701144856798-10208193125-1092",
-            userKey: "10A33A67A312E649D907BBC927995B8A"
-          }
-        };
-        try {
-          const res = await axios.post("https://microservice.abgind.foxconn.com/india/gateway", param, config);
-          const dataArray = res.data;
-          this.LastPoint = dataArray[dataArray.length - 1];
-          console.log(this.LastPoint);
-          console.log(dataArray);
-          if (dataArray && dataArray.length > 0) {
-            this.loading = false;
-            this.step = dataArray.map((item, index) => {
-              return {
-                boarding_point: item.BOARDING_POINT,
-                Coordinate: item.COORDINATE,
-                Order: item.ORDER,
-                time: item.TIME,
-              };
-            });
-
-          } else {
-
-            console.error("No employee data found");
-            this.collapseItems = [];
-          }
-        } catch (error) {
-          this.loading = false;
-          console.error(error);
-        }
-      },
-
-      goback() {
-        this.$router.back()
-      }
-    },
-
-  }};
-</script>
-
-
-
-
-
-
-<template>
-  <div class="App">
     <div v-if="loading">
       <van-loading class="loading-container" type="spinner" size="30px" color="#1989fa" />
     </div>
+
     <div v-else>
-      <div v-if="step.length > 0">
-        <div class="header">
-
-          <van-steps active-icon="play" :active="1" active-color="#1989fa" v-model="step">
-            <van-step>{{ step[0].time }}</van-step>
-            <van-step>{{ itemData.shift }}-Shift</van-step>
-            <van-step>{{ step[step.length - 1].time }}</van-step>
-          </van-steps>
-          <div class="route">
-
-            <div class="title">
-              {{ itemData.routeName }}
-            </div>
+      <div v-if="list_item.length > 0">
+        <div class="title">Bus Details</div>
 
 
-            <div class="text2">
-              <div class="title">
-                {{ this.LastPoint.BOARDING_POINT }}
+
+        <div class="workForm">
+          <van-collapse v-model="activeNames" class="custom-collapse">
+            <van-collapse-item v-for="(routes, parentName) in groupedData" :key="parentName" :title="parentName"
+              class="custom-collapse-item">
+              <div v-for="route in routes" :key="route.id" class="child-route">
+
+                <!-- STEP 1: Click to show basic info (Driver + Vehicle) -->
+                <div v-if="!route.showBasic && !route.showFull" class="route-simple" @click="showBasicInfo(route)">
+                  <div class="route-header-simple">
+                    <span class="route-name">{{ route.ROUTE_NAME }}</span>
+                    <span class="bus-number">{{ route.Busno }}</span>
+                  </div>
+                  <van-icon name="arrow-down" class="expand-icon" />
+                </div>
+
+                <!-- STEP 2: Basic info shown (Driver + Vehicle) - Click for full details -->
+                <div v-else-if="route.showBasic && !route.showFull" class="route-basic-info">
+                  <div class="basic-header">
+                    <span class="route-name">{{ route.ROUTE_NAME }}</span>
+                    <span class="bus-number">{{ route.Busno }}</span>
+                  </div>
+
+                  <div class="basic-details">
+                    <div class="basic-item">
+                      <van-icon name="user-o" />
+                      <span>Driver: {{ route.drivername || 'Not Assigned' }}</span>
+                    </div>
+                    <div class="basic-item">
+                      <van-icon name="logistics" />
+                      <span>Vehicle: {{ route.VEHICLE_NUMBER || route.Busno }}</span>
+                    </div>
+                  </div>
+
+                  <div class="tap-hint" @click="handleClick(route)">
+                    <van-icon name="arrow-down" />
+                    <span>Tap for full details</span>
+                  </div>
+
+                </div>
+
+
               </div>
+            </van-collapse-item>
+          </van-collapse>
+        </div>
 
-            </div>
-          </div>
-        </div>
-        <div class="Steps">
-          <van-steps direction="vertical" v-model="step" :active="-1">
-            <van-step v-for="(item, index) in step">
-              <div class="step-content">
-                <h3 :class="{ 'bold-text': index === 0 || index === step.length - 1 }">{{ item.boarding_point }}</h3>
-                <p>{{ item.time }}</p>
-              </div>
-            </van-step>
-          </van-steps>
-        </div>
+
+
+
+
+
+
+
+
+
+
       </div>
-
-    </div>
-
-    <div class="card-container">
-      <div class="card-button">
-        <van-button type="info" size="large" @click="goback">GO BACK</van-button>
+      <div v-else style="padding-top: 100px;">
+        <a-empty />
       </div>
     </div>
   </div>
 </template>
 
+<script>
+import { Cell, Popup, Picker, CellGroup, Field, Button, Icon, Loading } from 'vant';
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import routed from "./components/routes.vue";
+import { ref } from "vue";
+
+export default {
+  components: {
+    "van-cell": Cell,
+    "van-popup": Popup,
+    "van-picker": Picker,
+    "van-cell-group": CellGroup,
+    "van-field": Field,
+    'van-icon': Icon,
+    "van-loading": Loading,
+    routed,
+  },
+
+  data() {
+    return {
+      activeTab: "A",
+      loading: true,
+      activeNames: [],
+      FORM_CODE: "",
+      formTypeId: '9889',
+      list_item: [],
+      Data: [], // Added: raw data storage
+      details_data: "test",
+      showChild: false,
+      employee: {
+        empId: "",
+        name: "",
+        department: "",
+        jobtitle: "",
+        OrgId: '',
+        site: '',
+      },
+      error: "",
+      iwxKey: "facd81g656fcd8p7a7lkh6dfa81gf4ik",
+      strID: "",
+      value: '',
+      showPicker: false,
+      showPopup: false,
+      data: [
+        { label: 'Employee ID', value: "", placeholder: 'Employee ID' },
+        { label: 'Employee Name', value: '', placeholder: 'Enter Employee Name' },
+        { label: 'Department', value: '', placeholder: 'Department' },
+        { label: 'Employee Type', value: '', placeholder: 'Employee Type' },
+      ],
+      formData: [
+        { label: 'Application Type', value: "", placeholder: 'Application type' },
+        { label: 'Reason', value: '', placeholder: 'Reason' },
+      ],
+    };
+  },
+
+  computed: {
+    // Moved from data() - now properly reactive
+    groupedData() {
+      const groupedRoutes = {};
+      this.list_item.forEach(item => {
+        const parent = item.ROUTE_NAME.split('-')[0].trim();
+        if (!groupedRoutes[parent]) {
+          groupedRoutes[parent] = [];
+        }
+        groupedRoutes[parent].push(item);
+      });
+      return groupedRoutes;
+    }
+  },
+
+
+  watch: {
+    value(newValue) {
+      // Debounced search
+      clearTimeout(this.searchTimer);
+      this.searchTimer = setTimeout(() => {
+        this.getformInfo();
+      }, 300);
+    },
+  },
+
+  methods: {
+
+
+    showBasicInfo(route) {
+      // Close other routes first
+      this.list_item.forEach(r => {
+        r.showBasic = false;
+        r.showFull = false;
+      });
+
+      route.showBasic = true;
+      route.showFull = false;
+    },
+
+    // Step 2: Show full details
+    showFullDetails(route) {
+      route.showFull = true;
+    },
+
+    // Collapse back to simple view
+    collapseRoute(route) {
+      route.showBasic = false;
+      route.showFull = false;
+    },
+
+    callDriver(phone) {
+      if (phone) {
+        window.location.href = `tel:${phone}`;
+      }
+    },
+
+    shareRoute(route) {
+      // Share functionality
+      const text = `Route: ${route.ROUTE_NAME}\nBus: ${route.Busno}\nDriver: ${route.drivername}\nContact: ${route.contactno}`;
+      if (navigator.share) {
+        navigator.share({ title: 'Bus Route Info', text });
+      }
+    },
 
 
 
+    handleClick(item) {
+      this.details_data = item;
+      this.$router.push({
+        path: `/routes`,           // ← Routes page
+        query: {
+          shift: this.activeTab,           // Current shift (A/B/C/G/GN/GD/S)
+          routeName: item.ROUTE_NAME,      // Route name
+          busNumber: item.Busno,           // Bus number
+          driverName: item.drivername,     // Driver name
+          driverNumber: item.contactno,    // Driver contact
+          page: true
+        }
+      }).catch(()=>{})
+    },
 
-<style lang="scss">
-* {
-  box-sizing: border-box;
+
+    getEmpNoByAPP() {
+      // this.empId = "HH0013772";
+        this.empId = "HH0023768";
+
+      // this.empId = '';
+      this.getUserBaseInfo(this.empId);
+
+      window.callH5 = (data) => {
+        data = JSON.parse(data);
+        this.empId = data.empNo;
+        this.getUserBaseInfo(this.empId);
+      };
+   
+      this.$callNative.callNative2({ share: "key" });
+    },
+
+    getUserBaseInfo(empId) {
+      this.$http.iwxPosts2({
+        body: {
+          EmployeeCode: empId,
+          Func: "FIHManage-GetEMPBaseInfo"
+        },
+        isEncrypt: true,
+        encryptKey: "facd81g656fcd8p7a7lkh6dfa81gf4ik",
+        config: {
+          headers: {
+            apiID: "ffff-1669620301290-16925411121-5665",
+            userKey: "C44F773FD87E7E41174D6A58B162B049",
+          },
+        },
+      }).then((res) => {
+        if (res.List && res.List.length > 0) {
+          const responseData = res.List[0];
+          this.employee = {
+            empId: empId,
+            site: responseData.SiteId,
+          };
+          this.getformInfo();
+        } else {
+          console.error("No employee data found");
+          this.getformInfo();
+   
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    },
+
+    handleTabchange(tab) {
+      this.list_item = [];
+      this.activeTab = tab; // Fixed: was using == instead of =
+      this.loading = true;
+      setTimeout(() => {
+        this.getformInfo();
+      }, 500);
+    },
+
+    getformInfo() {
+      this.$http.iwxPosts2({
+        body: {
+          V_SITE: this.employee.site.toString(),
+          V_SHIFT: this.activeTab,
+          V_BOARDING_POINT: this.value,
+
+        },
+        isEncrypt: false,
+        config: {
+          headers: {
+            apiID: "ffff-1701083459163-10208193125-1065",
+            userKey: "10A33A67A312E649D907BBC927995B8A"
+          },
+        },
+      }).then((res) => {
+        const dataArray = res.data;
+
+        if (dataArray && dataArray.length > 0) {
+          this.loading = false;
+          this.Data = dataArray; // Store raw data
+          this.list_item = dataArray.map((item) => ({
+            id: item.id || item.ROUTE_NAME, // Added unique key
+            ROUTE_NAME: item.ROUTE_NAME,
+            Busno: item.VEHICLE_NUMBER,
+            VEHICLE_NUMBER: item.VEHICLE_NUMBER,
+            drivername: item.DRIVER_NAME,
+            contactno: item.CONTACT_NUMBER,
+            BOARDING_POINT: item.BOARDING_POINT,
+            ROUTE_DETAILS: item.ROUTE_DETAILS,
+
+            // 🔑 Two-step reveal flags
+            showBasic: false,
+            showFull: false,
+          }));
+
+        } else {
+          console.error("No data found");
+          this.loading = false;
+          this.list_item = [];
+          this.Data = [];
+        }
+      }).catch((error) => {
+        console.error(error);
+        this.loading = false;
+      });
+    },
+
+    filteredData() {
+      // Kept for compatibility, but logic moved to computed property
+      this.list_item = this.Data.map((item) => ({
+        ROUTE_NAME: item.ROUTE_NAME,
+        Busno: item.VEHICLE_NUMBER,
+        drivername: item.DRIVER_NAME,
+        contactno: item.CONTACT_NUMBER,
+      }));
+    },
+  },
+
+  mounted() {
+    setTimeout(() => {
+      this.getEmpNoByAPP();
+    }, 500);
+  }
+};
+</script>
+
+
+<style>
+html body {
+  background-color: #c9c9c936;
+}
+
+.App {
+  padding: 10px;
 }
 
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   /* Adjust the height as needed */
 }
 
-.bold-text {
-  font-weight: bold;
-  font-size: 18px;
-  color: #1890ff;
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
 }
 
-.van-step__circle {
-  display: block;
-  width: 15px;
-  height: 15px;
-  border: 3px solid #1989fa;
+.title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #1989fa;
+  padding: 5px 0px 5px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.collapse-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1989fa;
+  padding: 0px 0px 5px 0px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.custom-list {
   background-color: #ffffff;
-  border-radius: 50%;
+  border-radius: 5px;
 }
 
-.van-step--vertical .van-step__circle-container {
-  z-index: 1;
+.item {
+  padding: 5px;
+  border-color: rgba(128, 128, 128, 0.137);
 }
 
-.van-step--vertical .van-step__line {
-  top: 16px;
-  left: -16px;
-  width: 2px;
-  height: 100%;
-  background-color: #1989fa !important;
+.list-item-label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: grey;
 }
 
-.van-steps--vertical {
-  padding: 0px 0 0 23px;
-}
-
-.step-content {
-  display: flex;
-  justify-content: space-between;
-}
-
-.step-content h3,
-.step-content p {
-  margin: 0;
-  padding: 0px 10px;
-}
-
-
-.error {
-  color: red;
-  margin-top: 10px;
-}
-
-.header {
-  height: 100px;
-  background-color: #dce9f8;
-}
-
-.header .route {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin: 0 10px;
-
-}
-
-.header .route .text2 {
-  text-align: right;
-}
-
-.header .route .text3 {
-  text-align: center;
-}
-
-.header .route .text3 .title {
-  color: #1890ff;
-  font-size: 14px;
-  text-transform: capitalize;
-}
-
-.header .route .text3 .subtitle {
-  color: #1890ff;
-  font-size: 14px;
-}
-
-.header .route .title {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-}
-
-
-.header .route .subtitle {
-  font-size: 10px;
-  color: #666;
-  /* Subtitle text color */
-}
-
-.header .details {
-  text-align: center;
-}
-
-button {
-  padding: 8px 15px;
-  background-color: #1890ff;
-  color: #fff;
+.list-item-input {
+  width: 50%;
   border: none;
-  border-radius: 3px;
-  cursor: pointer;
+  padding: 0;
+  border-color: white;
+  text-align: right;
+  height: 20px;
+  line-height: 20px;
 }
 
-button:hover {
-  background-color: #1890ff;
+.no-border {
+  border: none;
+  border-color: transparent;
+  outline: none;
 }
 
-button+button {
-  margin-left: 10px;
+.list-item-input1 {
+  width: 100%;
+  border: none;
+  padding: 0;
+  border-color: white;
+  text-align: right;
+  height: 20px;
+  line-height: 20px;
 }
 
-.Steps {
-  margin-top: 10px;
-  padding-bottom: 30px;
-  margin-left: 10px;
-  z-index: -999;
+.list-item-input::placeholder {
+  font-size: 12px;
+  color: #3d3d3d59;
 }
 
+.list-item-value {
+  font-size: 12px;
+  color: black;
+}
 
-.container {
-  perspective: 1000px;
-  margin-bottom: 30px;
+.list-item-input1::placeholder {
+  font-size: 12px;
+  color: #3d3d3d59;
+}
+
+.list-item-value1 {
+  font-size: 12px;
+  color: black;
 }
 
 .card-container {
@@ -683,84 +460,416 @@ button+button {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #fff;
+  background-color: #301f1f;
+  padding-top: 5px;
+
+
 }
 
-.card-button {
+.sign-card {
+  padding: 5px;
+}
+
+.sign-button {
+  border-color: #4686e3;
+  width: 50%;
+  border-radius: 0;
+  margin-top: 5px;
+}
+
+.sign-input {
+  padding: 5px;
+  border-radius: 0;
+}
+
+.align-top {
+  vertical-align: top;
+}
+
+.mandatory-indicator {
+  color: red;
+}
+
+.lablestyle {
+
+  padding: 0;
+}
+
+.borderless-picker {
+  padding: 0;
+
+}
+
+.custom-search {
+  background: "#1989fa";
+  padding: '0px !important';
+}
+
+.borderless-picker .van-cell::after {
+  border: none;
+  box-shadow: none;
+}
+
+.van-cell {
+  background-color: #2CB6E6;
+  color: white;
+}
+
+.selected-value {
+  flex-grow: 1;
+  text-align: right;
+  color: #999;
+}
+
+.custom-field {
+  padding: 5px 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: gray,
+
+}
+
+.van-cell--required::before {
+  position: initial;
+  left: 8px;
+  color: #640000;
+  font-size: 14px;
+  content: '*';
+}
+
+
+.sign-flow {
+  margin-top: 10px;
+  padding: 5px 0 0 15px;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+
+
+
+
+/* Step 1: Simple view */
+.route-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background-color: white;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.route-simple:active {
+  background-color: #e3f2fd;
+}
+
+.route-header-simple {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.expand-icon {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+/* Step 2: Basic info */
+.route-basic-info {
+  padding: 16px;
+  background: linear-gradient(135deg, #87d6f1 0%, #00A7E1 100%);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.basic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.basic-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.basic-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.basic-item .van-icon {
+  font-size: 18px;
+}
+
+.tap-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.9;
+  padding-top: 8px;
+}
+
+/* Step 3: Full details */
+.route-full-details {
+  padding: 16px;
+  background-color: white;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.full-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e3f2fd;
+}
+
+.full-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.detail-box {
+  background-color: #f5f5f5;
+  padding: 14px;
+  border-radius: 10px;
   text-align: center;
+}
+
+.detail-box.wide {
+  grid-column: 1 / -1;
+}
+
+.detail-box .van-icon {
+  font-size: 24px;
+  color: #1976d2;
+  margin-bottom: 8px;
+}
+
+.detail-box label {
+  display: block;
+  font-size: 11px;
+  color: #757575;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.detail-box strong {
+  display: block;
+  font-size: 14px;
+  color: #212121;
+  word-break: break-word;
+}
+
+.action-bar {
+  display: flex;
+  gap: 10px;
   justify-content: center;
 }
 
-
-// [class*=van-hairline]::after{
-//   border: none;
-// }
-
-.van-step--horizontal .van-step__title {
-
-  font-size: 17px;
-  color: #1989fa;
+/* Common styles */
+.route-name {
+  font-size: 15px;
   font-weight: 600;
-
+  color: #1565c0;
 }
 
-.van-steps--horizontal {
-  padding: 0px 10px 0;
+.bus-number {
+  background-color: #1976d2;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.van-step--horizontal .van-step__line {
-  top: 29px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  border-top: 2px dotted #1989fa;
-  margin-top: 10px;
-
+.route-basic-info .route-name {
+  color: white;
 }
 
-.van-step--horizontal .van-step__icon {
-  display: block;
-  font-size: 25px;
-  left: -13px;
-  top: 0px;
+.route-basic-info .bus-number {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.van-steps--horizontal .van-steps__items {
-  margin: 0 0 12px;
-  padding-bottom: 10px;
+
+
+
+
+
+
+
+
+
+
+
+
+.custom-collapse-item {
+  margin-bottom: 5px;
+  background-color: #0080ff;
+  border-radius: 10px;
 }
 
-.van-step__line {
-  position: absolute;
-  background-color: #e4e4e4;
-  -webkit-transition: background-color .3s;
-  transition: background-color .3s;
+
+.custom-collapse-item .van-collapse-item {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 5px 0px 5px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0080ff;
+  border-radius: 10px;
 }
 
-.van-step--horizontal .van-step__circle-container {
 
-  position: absolute;
-  top: 30px;
-  left: -10px;
-  z-index: 1;
-  padding: 0 8px;
-  background-color: #fff0;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  margin-top: 10px;
 
+
+
+
+
+/* Container styling */
+.workForm {
+  padding: 16px;
+  margin: 12px;
+  background-color: #00A7E1;
+  /* Light blue background */
+  border-radius: 12px;
 }
 
-.van-steps {
+
+
+
+
+/* Collapse container */
+.custom-collapse {
+  /* background: linear-gradient(135deg, #030303 0%, #C4E2F5 100%); */
+  background: #17AFE4;
+  /* Blue background */
+  border-radius: 8px;
   overflow: hidden;
-  background-color: #fff0;
 }
 
-p.text {
-  margin: 5px 0;
+/* Collapse item styling */
+.custom-collapse-item {
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  /* Lighter blue for items */
+  border-radius: 60px;
+  border-style: hidden;
 }
 
-p.text span {
-  color: rgb(158, 248, 158);
+
+
+/* Remove default van-collapse margins */
+::v-deep .van-collapse-item__title {
+  background-color: #b44343 !important;
+  color: rgb(53, 46, 46) !important;
+  padding: 16px !important;
+  font-weight: bold;
+}
+
+::v-deep .van-collapse-item__content {
+  background-color: #ff0000 !important;
+  /* Very light blue for content */
+  padding: 16px !important;
+}
+
+/* Child route styling */
+.child-route {
+  padding: 6px 16px;
+  margin: 1px 0;
+
+  border-radius: 6px;
+  background-color: #50C3EA;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+/* Last item remove margin */
+.custom-collapse-item:last-child {
+  margin-bottom: 0;
+}
+
+
+.van-collapse-item__content {
+  background-color: #50C3EA;
+  border-radius: 5px;
+
+}
+
+.custom-tabs .van-tab {
+  border: none;
+  color: #1989fa;
+
+}
+
+.custom-tabs .van-tab--active {
+  background-color: #1989fa;
+  /* Replace with your desired color */
+  color: #1989fa;
+  /* Replace with your desired text color */
+}
+
+/* .van-collapse-item__content {
+  padding: 12px 16px;
+
+  font-size: 14px;
+  line-height: 1.5;
+} */
+
+.van-tabs__nav--card .van-tab.van-tab--active {
+  color: #fff;
+  background-color: #1989fa;
+}
+
+.van-tabs__nav--card {
+  box-sizing: border-box;
+  height: 30px;
+  margin: 0 5px 15px;
+  border: none;
+  border-radius: 2px;
+}
+
+.van-search__content {
+  border: 1px solid;
+}
+
+.v .van-cell__right-icon {
+  margin-left: 4px;
+  margin-top: 10px;
+  color: #ffffff;
+  margin-right: 10px;
+}
+
+.van-cell__left-icon {
+  margin-left: 4px;
+  margin-top: 10px;
+  color: #fff;
+  margin-right: 15px;
+  font-size: 20px;
+
+
 }
 </style>
