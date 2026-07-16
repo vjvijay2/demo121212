@@ -1,87 +1,151 @@
-{
-  "name": "vue-project",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "node --max_old_space_size=8192 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "@vue/composition-api": "^1.7.2",
-    "aes-js": "^3.1.2",
-    "ant-design-vue": "^1.7.8",
-    "axios": "^0.19.0",
-    "core-js": "^2.6.5",
-    "crypto-js": "^3.1.9-1",
-    "dateformat": "^5.0.3",
-    "docxtemplater": "^3.24.0",
-    "docxtemplater-image-module-free": "^1.1.1",
-    "echarts": "^4.7.0",
-    "file-saver": "^2.0.5",
-    "html2canvas": "^1.0.0-rc.5",
-    "json2csv": "^6.0.0-alpha.2",
-    "jspdf": "^2.4.0",
-    "jszip-utils": "^0.1.0",
-    "moment": "^2.29.4",
-    "pizzip": "^3.1.1",
-    "qr-scanner": "^1.4.2",
-    "qrcode": "^1.4.4",
-    "regenerator-runtime": "^0.14.1",
-    "swiper": "^5.3.6",
-    "utils": "^0.3.1",
-    "vant": "^2.12.26",
-    "vconsole": "^3.15.0",
-    "vue": "^2.6.10",
-    "vue-awesome-swiper": "^4.0.4",
-    "vue-esign": "^1.1.4",
-    "vue-i18n": "^8.27.2",
-    "vue-i18n-bridge": "^9.2.2",
-    "vue-qrcode-reader": "^2.3.6",
-    "vue-router": "^3.0.6",
-    "vue-week-picker": "^1.1.8",
-    "xlsx": "^0.17.1"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.6.0",
-    "@vue/cli-plugin-eslint": "^3.6.0",
-    "@vue/cli-service": "^3.6.0",
-    "babel-eslint": "^10.0.1",
-    "babel-plugin-import": "^1.11.0",
-    "compression-webpack-plugin": "^2.0.0",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "http-proxy-middleware": "^2.0.10",
-    "less": "^3.11.1",
-    "less-loader": "^5.0.0",
-    "node-sass": "^4.11.1",
-    "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.21",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-obfuscator": "^2.6.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+const isProduction = process.env.NODE_ENV === "production";
+const CompressionPlugin = require("compression-webpack-plugin");
+const webpack = require("webpack");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
+  
+  // const JavaScriptObfuscator = require("webpack-obfuscator");
+
+module.exports = {
+ 
+  publicPath: "/India",
+  lintOnSave: false, 
+  pages: {
+    index: {
+      entry: "src/views/index/main.js",
+      template: "public/index.html",
+      filename: "index.html",
+      title: "404",
+      chunks: ["chunk-vendors", "index"],
     },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
+
+    // //movie-booking
+    "India/moviebooking":{
+      entry:"src/views/india/Moviebooking/main.js",
+      title:'Movie booking',
+      chunks:["chunk-vendors","ant-icon","India/moviebooking"]
+    },
+    //AD Form
+    "India/AdForm":{
+      entry:"src/views/india/AdForm/main.js",
+      title:'AD FORM',
+      chunks:["chunk-vendors","ant-icon","India/AdForm"]
+    },
+
+    //Tracking page
+    "India/tracking":{
+      entry:"src/views/india/tracking/main.js",
+      title:' AD Form Tracking',
+      chunks:["chunk-vendors","ant-icon","India/tracking"]
+    },
+    //Transport page
+    "India/Transport":{
+      entry:"src/views/india/Transport/main.js",
+      title:'Transport',
+      chunks:["chunk-vendors","ant-icon","India/Transport"]
+    },
+    "India/Dormexit":{
+      entry:"src/views/india/DormExit/main.js",
+      title:'Dorm Outing',
+      chunks:["chunk-vendors","ant-icon","India/Dormexit"] 
+    },
+    "India/DormReg":{
+      entry:"src/views/india/Dorm_Register/main.js",
+      title:'Dorm Register Form',
+      chunks:["chunk-vendors","ant-icon","India/DormReg"]
+    },
+    "India/DormExitTrack":{
+      entry:"src/views/india/DormExit/Tracking/main.js",
+      title:'Dorm Exit Tracking',
+      chunks:["chunk-vendors","ant-icon","India/DormExitTrack"]
+    },
+    "India/PoshManage":{
+      entry:"src/views/india/Posh/main.js",
+      title:'POSH Manage',
+      chunks:["chunk-vendors","ant-icon","India/PoshManage"]
+    },
+    "India/repair": {
+      entry: "src/views/india/repair/main.js",
+      title: "",
+    },
+
+  },
+  configureWebpack: (config) => {
+    if (isProduction) {
+      return {
+        plugins: [
+          new CompressionPlugin({
+            test: /\.js$|\.html$|\.css/, 
+            threshold: 10240, 
+            deleteOriginalAssets: false, 
+          }),
+          new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
+          new BundleAnalyzerPlugin({
+            analyzerMode: "server",
+            analyzerHost: "127.0.0.1",
+            analyzerPort: 9999,
+            reportFilename: "report.html",
+            defaultSizes: "parsed",
+            openAnalyzer: true,
+            generateStatsFile: false,
+            statsFilename: "stats.json",
+            statsOptions: null,
+            logLevel: "info",
+          }),
+        ],
+      };
     }
   },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
+  css: {
+    loaderOptions: {
+      sass: {
+        data: `@import "@/common/common.scss";`,
+      },
+    },
+  },
+  chainWebpack: (config) => {
+    if (isProduction) {
+      config
+        .mode("production")
+        .devtool("none")
+        .output.filename(`[name].js`)
+        .chunkFilename(`[name].js`);
+
+      config.plugin("extract-css").tap((args) => {
+        args[0].filename = args[0].chunkFilename = `[name].css`;
+        return args;
+      });
+
+      config.module
+        .rule("images")
+        .use("url-loader")
+        .loader("url-loader")
+        .tap((options) => {
+          options.fallback.options.name = "assets/image/[folder]/[name].[ext]";
+          return options;
+        });
+
+      config.optimization.splitChunks({
+        cacheGroups: {
+          antIcon: {
+            chunks: "all",
+            name: "ant-icon",
+            test: /[\\/]node_modules[\\/]@ant-design[\\/]/,
+            minChunks: 1,
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+          vendors: {
+            chunks: "all",
+            name: "chunk-vendors",
+            test: /[\\/]node_modules[\\/](vue|vue-router|axios|vuex|crypto-js)[\\/]/,
+            minChunks: 2,
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+        },
+      });
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
-}
+  
+};
