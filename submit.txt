@@ -1,255 +1,945 @@
-CREATE OR REPLACE package body DMS.WF_DORM_MANAGE_PK is
-  /*?件箱*/
-  PROCEDURE GET_SEND_LIST_SP(V_START_TIME  IN VARCHAR2,
-                             V_END_TIME    IN VARCHAR2,
-                             V_EMPNO       IN VARCHAR2,
-                             V_EMPNAME     IN VARCHAR2,
-                             V_FORM_CODE   IN VARCHAR2,
-                             V_FORM_STATUS IN VARCHAR2,
-                             V_USER        IN VARCHAR2,
-                             P_CURSOR      OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
+CREATE OR REPLACE PACKAGE BODY DMS.DORM_CHECKIN_SHIFT
+AS
+-- Package body
+PROCEDURE INSERT_DORM_SHIFT(
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_EMPLOYEE_NAME IN VARCHAR2,
+    V_DEPARTMENT IN VARCHAR2,
+    V_CURRENT_DORM IN VARCHAR2,
+    V_CURRENT_DORM_ID IN NUMBER,
+    V_CURRENT_FLOOR IN NUMBER,
+    V_CURRENT_ROOM IN NUMBER,
+    V_CURRENT_BED IN NUMBER,
+    V_SHIFTING_DORM IN VARCHAR2,
+    V_REASON IN VARCHAR2,
+    V_FORM_CODE IN VARCHAR2,
+    V_CHECK_IN_ID IN NUMBER,
+    V_MOVED_BY_ID IN VARCHAR2,
+    V_BED_ID IN NUMBER,
+    V_SHIFTING_DORM_CODE IN NUMBER,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) IS 
+BEGIN 
+    IF V_FORM_CODE IS NULL THEN 
+        V_RES := '0';
+        V_RESULT := 'Form Code not found, Please fill fields again !!';
+        RETURN;
+    END IF;
+    
+    BEGIN
+        INSERT INTO DMS.C_DORM_SHIFTING_T (
+            ID,
+            EMPLOYEE_ID,
+            EMPLOYEE_NAME,
+            DEPARTMENT,
+            CURRENT_DORM,
+            CURRENT_DOMR_ID,
+            CURRENT_FLOOR,
+            CURRENT_ROOM,
+            CURRENT_BED,
+            SHIFTING_DORM,
+            REASON,
+            FORM_CODE,
+            CHECK_IN_ID,
+            MOVED_BY_ID,
+            BED_ID,
+            SHIFTED_DORM_CODE 
+        ) VALUES (
+            C_DORM_SHIFTING_T_NEWSEQ.NEXTVAL,
+            V_EMPLOYEE_ID,
+            V_EMPLOYEE_NAME,
+            V_DEPARTMENT,
+            V_CURRENT_DORM,
+            V_CURRENT_DORM_ID,
+            V_CURRENT_FLOOR,
+            V_CURRENT_ROOM,
+            V_CURRENT_BED,
+            V_SHIFTING_DORM,
+            V_REASON,
+            V_FORM_CODE,
+            V_CHECK_IN_ID,
+            V_MOVED_BY_ID,
+            V_BED_ID,
+            V_SHIFTING_DORM_CODE
+        );
+        
+        UPDATE DMS.C_CHECK_IN_T
+        SET CHECK_IN_FORM_STATUS = 3,
+            STATUS = 'Dorm_Shift_Signing'
+        WHERE EMPLOYEE_ID = V_EMPLOYEE_ID
+        AND CHECK_IN_FORM_STATUS = 0;
+        
+        COMMIT;
+        
+        V_RES := '1';
+        V_RESULT := 'Dorm Shifted Successfully';
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            V_RES := '0';
+            V_RESULT := 'Error occurred: ' || SQLERRM;
+    END;
+END INSERT_DORM_SHIFT;
 
-      select DECODE(A.FORM_STATUS,
-                    '0',
-                    'Initiated',
-                    '1',
-                    'Signing',
-                    '2',
-                    'Finished',
-                    '3',
-                    'Rejected',
-                    '4',
-                    'Cancelled',
-                    '') AS FORM_STATUS, --表???
-             A.FORM_CODE,
-             'LinkWindow$$$' || A.FORM_CODE LINK_FORM_CODE,
-             A.Employee_Id as EMP_ID,
-             A.Employee_Name AS EMP_NAME,
-             A.DEPARTMENT,
-             A.SHIFTING_DORM,
-             A.REASON,
-             A.Moved_By_Id AS ADD_BY,
-             TO_CHAR(A.DORM_SHIFTED_DATE, 'DD-MM-YYYY HH24:MI:SS') AS DORM_SHIFTED_DATE
-        FROM DMS.C_DORM_SHIFTING_T A
-       WHERE 1 = 1
-         AND (A.EMPLOYEE_ID = V_EMPNO OR V_EMPNO IS NULL) --可以查看自己的?据 也可以查看??人申?的?据
-         AND (A.EMPLOYEE_NAME = V_EMPNAME OR V_EMPNAME IS NULL)
-         AND (A.DORM_SHIFTED_DATE >=
-             TO_DATE(V_START_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_START_TIME IS NULL)
-         AND (A.DORM_SHIFTED_DATE <=
-             TO_DATE(V_END_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_END_TIME IS NULL)
-         AND A.Moved_By_Id = V_USER --?前?建人是自己 如果?建人?有??前申?人是自己
-         AND (A.FORM_CODE = V_FORM_CODE OR V_FORM_CODE IS NULL)
-         AND (A.FORM_STATUS = V_FORM_STATUS OR V_FORM_STATUS IS NULL);
-  END;
-  /*收件箱*/
-  PROCEDURE GET_RECEIVE_LIST_SP(V_START_TIME IN VARCHAR2,
-                                V_END_TIME   IN VARCHAR2,
-                                V_EMPNO      IN VARCHAR2,
-                                V_EMPNAME    IN VARCHAR2,
-                                V_FORM_CODE  IN VARCHAR2,
-                                /* V_FORM_STATUS IN VARCHAR2,*/
-                                V_USER   IN VARCHAR2,
-                                P_CURSOR OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      select DECODE(A.FORM_STATUS,
-                    '0',
-                    'Initiated',
-                    '1',
-                    'Signing',
-                    '2',
-                    'Finished',
-                    '3',
-                    'Rejected',
-                    '4',
-                    'Cancelled',
-                    '') AS FORM_STATUS, --表???
-             A.FORM_CODE,
-             'LinkWindow$$$' || A.FORM_CODE LINK_FORM_CODE,
-             A.Employee_Id as EMP_ID,
-             A.Employee_Name AS EMP_NAME,
-             A.DEPARTMENT,
-             A.SHIFTING_DORM,
-             A.REASON,
-             A.Moved_By_Id AS ADD_BY,
-             TO_CHAR(A.DORM_SHIFTED_DATE, 'DD-MM-YYYY HH24:MI:SS') AS DORM_SHIFTED_DATE
-        FROM DMS.C_DORM_SHIFTING_T                A,
-             WF_STRUCTURE.WF_FORM_OPT_CONDITION_T B
-       WHERE 1 = 1
-         AND A.FORM_CODE = B.FORM_CODE
-         AND B.APPROVE_EMP_NO = V_USER
-         AND (A.EMPLOYEE_ID = V_EMPNO OR V_EMPNO IS NULL) --可以查看自己的?据 也可以查看??人申?的?据
-         AND (A.EMPLOYEE_NAME = V_EMPNAME OR V_EMPNAME IS NULL)
-         AND (A.DORM_SHIFTED_DATE >=
-             TO_DATE(V_START_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_START_TIME IS NULL)
-         AND (A.DORM_SHIFTED_DATE <=
-             TO_DATE(V_END_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_END_TIME IS NULL)
-            /*AND (A.CREATED_BY = V_EMPNO OR A.CREATED_BY = V_USER)*/ --收件箱
-         AND (A.FORM_CODE = V_FORM_CODE OR V_FORM_CODE IS NULL);
-  END;
-  /*快速查?*/
-  PROCEDURE GET_QUERY_LIST_SP(V_START_TIME  IN VARCHAR2,
-                              V_END_TIME    IN VARCHAR2,
-                              V_EMPNO       IN VARCHAR2,
-                              V_EMPNAME     IN VARCHAR2,
-                              V_FORM_CODE   IN VARCHAR2,
-                              V_FORM_STATUS IN VARCHAR2,
-                              V_USER        IN VARCHAR2,
-                              P_CURSOR      OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      select DECODE(A.FORM_STATUS,
-                    '0',
-                    'Initiated',
-                    '1',
-                    'Signing',
-                    '2',
-                    'Finished',
-                    '3',
-                    'Rejected',
-                    '4',
-                    'Cancelled',
-                    '') AS FORM_STATUS, --表???
-             A.FORM_CODE,
-             'LinkWindow$$$' || A.FORM_CODE LINK_FORM_CODE,
-             A.Employee_Id as EMP_ID,
-             A.Employee_Name AS EMP_NAME,
-             A.DEPARTMENT,
-             A.SHIFTING_DORM,
-             A.REASON,
-             A.Moved_By_Id AS ADD_BY,
-             TO_CHAR(A.DORM_SHIFTED_DATE, 'DD-MM-YYYY HH24:MI:SS') AS DORM_SHIFTED_DATE
-        FROM DMS.C_DORM_SHIFTING_T A
-       WHERE 1 = 1
-         AND (A.EMPLOYEE_ID = V_EMPNO OR V_EMPNO IS NULL) --可以查看自己的?据 也可以查看??人申?的?据
-         AND (A.EMPLOYEE_NAME = V_EMPNAME OR V_EMPNAME IS NULL)
-         AND (A.DORM_SHIFTED_DATE >=
-             TO_DATE(V_START_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_START_TIME IS NULL)
-         AND (A.DORM_SHIFTED_DATE <=
-             TO_DATE(V_END_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_END_TIME IS NULL)
-            /* AND (A.CREATED_BY = V_EMPNO OR A.CREATED_BY = V_USER)*/ --快速查?可以查?到所有人的?据
-         AND (A.FORM_CODE = V_FORM_CODE OR V_FORM_CODE IS NULL)
-         AND (A.FORM_STATUS = V_FORM_STATUS OR V_FORM_STATUS IS NULL);
-  END;
-  /*已?核表?*/
-  PROCEDURE GET_SIGN_LIST_SP(V_START_TIME  IN VARCHAR2,
-                             V_END_TIME    IN VARCHAR2,
-                             V_EMPNO       IN VARCHAR2,
-                             V_EMPNAME     IN VARCHAR2,
-                             V_FORM_CODE   IN VARCHAR2,
-                             V_FORM_STATUS IN VARCHAR2,
-                             V_USER        IN VARCHAR2,
-                             P_CURSOR      OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      select DECODE(A.FORM_STATUS,
-                    '0',
-                    'Initiated',
-                    '1',
-                    'Signing',
-                    '2',
-                    'Finished',
-                    '3',
-                    'Rejected',
-                    '4',
-                    'Cancelled',
-                    '') AS FORM_STATUS, --表???
-             A.FORM_CODE,
-             'LinkWindow$$$' || A.FORM_CODE LINK_FORM_CODE,
-             A.Employee_Id as EMP_ID,
-             A.Employee_Name AS EMP_NAME,
-             A.DEPARTMENT,
-             A.SHIFTING_DORM,
-             A.REASON,
-             A.Moved_By_Id AS ADD_BY,
-             TO_CHAR(A.DORM_SHIFTED_DATE, 'DD-MM-YYYY HH24:MI:SS') AS DORM_SHIFTED_DATE
-        FROM DMS.C_DORM_SHIFTING_T A, WF_STRUCTURE.WF_ROUTE_TRACKING_T B
-       WHERE A.FORM_CODE = B.FORM_CODE
-         AND B.DEL_FLAG = '0'
-         AND B.IS_FINISHED IN ('1', '2')
-         AND B.ROUTE_ID NOT IN (0, -99)
-         AND B.OPT_EMP = V_USER
-         AND (A.EMPLOYEE_ID = V_EMPNO OR V_EMPNO IS NULL) --可以查看自己的?据 也可以查看??人申?的?据
-         AND (A.EMPLOYEE_NAME = V_EMPNAME OR V_EMPNAME IS NULL)
-         AND (A.DORM_SHIFTED_DATE >=
-             TO_DATE(V_START_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_START_TIME IS NULL)
-         AND (A.DORM_SHIFTED_DATE <=
-             TO_DATE(V_END_TIME, 'DD-MM-YYYY HH24:MI:SS') OR
-             V_END_TIME IS NULL)
-         AND (A.FORM_CODE = V_FORM_CODE OR V_FORM_CODE IS NULL)
-         AND (A.FORM_STATUS = V_FORM_STATUS OR V_FORM_STATUS IS NULL);
-  END;
-  PROCEDURE GET_RECEIVE_COUNT_SP(V_START_TIME    IN VARCHAR2,
-                                 V_END_TIME      IN VARCHAR2,
-                                 V_EMPNO         IN VARCHAR2,
-                                 V_EMPNAME       IN VARCHAR2,
-                                 V_FORM_CODE     IN VARCHAR2,
-                                 V_FORM_CODE_CON IN VARCHAR2,
-                                 /* V_FORM_STATUS IN VARCHAR2,*/
-                                 V_USER   IN VARCHAR2,
-                                 P_CURSOR OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      SELECT V_FORM_CODE AS FORM_CODE
-        FROM DUAL --必須加此句
-      UNION ALL
-      SELECT T.FORM_CODE
-        FROM TN_APP.C_Domain_CREATION_T           T,
-             WF_STRUCTURE.WF_FORM_OPT_CONDITION_T B
-       WHERE B.FORM_CODE = T.FORM_CODE
-         AND B.APPROVE_EMP_NO = V_USER
-         AND (V_START_TIME IS NULL OR
-             T.Created_Date >=
-             to_date(V_START_TIME, 'DD-MM-YYYY HH24:MI:SS'))
-         AND (V_END_TIME IS NULL OR
-             T.Created_Date < TO_DATE(V_END_TIME, 'DD-MM-YYYY HH24:MI:SS'))
-         AND (V_EMPNO IS NULL OR T.Emp_Id = V_EMPNAME)
-         AND (V_EMPNAME IS NULL OR T.EMP_NAME = V_EMPNAME)
-         AND T.FORM_CODE <> V_FORM_CODE --ADD BY XQS
-         AND T.DEL_FLAG = '0'
-         AND (V_FORM_CODE_CON IS NULL OR T.FORM_CODE = V_FORM_CODE_CON); --ADD ZF 2024/1/18 收件箱LIST 跳轉至表單詳情;
-  END;
-  PROCEDURE GET_FORM_SEARCH_INFO(V_FORM_CODE IN VARCHAR2,
-                                 P_CURSOR    OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      SELECT A.Employee_Id AS EMP_ID, --工?
-             A.Employee_NAME AS EMP_NAME, --姓名
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 20) AS SITE, --厂?
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 5) AS SALARY_GRADE, --?位
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 6) AS JOB_TITLE, --管理?
-             A.DEPARTMENT, --部?
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 23) AS EXIT_NUMBER, --座机
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 11) AS PHONE, --手机
-             tn_emp.get_all_emp_base_info(A.MOVED_BY_ID, 9) AS EMAIL, --?箱
-             A.CURRENT_DOMR_ID,
-             A.CURRENT_DORM,
-             A.CURRENT_FLOOR,
-             A.CURRENT_ROOM,
-             A.CURRENT_BED,
-             A.MOVED_BY_ID,
-             A.SHIFTING_DORM,
-             A.REASON
-        FROM DMS.C_DORM_SHIFTING_T A
-       WHERE A.FORM_CODE = V_FORM_CODE;
-  END;
-  PROCEDURE GET_FORM_DETAIL_INFO(V_FORM_CODE IN VARCHAR2,
-                                 P_CURSOR    OUT CURTYPE) AS
-  BEGIN
-    OPEN P_CURSOR FOR
-      SELECT A.APPLICATION_TYPE, A.REASON
-        FROM TN_APP.C_Domain_CREATION_T A
-       WHERE A.FORM_CODE = V_FORM_CODE
-         AND A.DEL_FLAG = '0';
-  END;
-end WF_DORM_MANAGE_PK;
+PROCEDURE INSERT_BED_SHIFT(
+     V_EMPLOYEE_ID IN VARCHAR2,
+      V_EMPLOYEE_NAME IN VARCHAR2,
+      V_DEPARTMENT IN VARCHAR2,
+      V_CURRENT_BED_NUMBER IN NUMBER,
+      V_CURRENT_FLOOR_NUMBER IN NUMBER,
+      V_CURRENT_ROOM_NUMBER IN NUMBER,
+      V_SHIFTED_BED_NUMBER IN NUMBER,
+      V_SHIFTED_ROOM_NUMBER IN NUMBER,
+      V_SHIFTED_FLOOR_NUMBER IN NUMBER,
+      V_REASON IN VARCHAR2,
+      V_SHIFTED_DORM_ID IN NUMBER,
+      V_CURRENT_FLOOR_ID IN NUMBER,
+      V_SHIFTED_FLOOR_ID IN NUMBER,
+      V_SHIFTED_BED_ID IN NUMBER,
+      V_SHIFTED_ROOM_ID IN NUMBER,
+      V_BED_TYPE IN VARCHAR2,
+      V_CURRENT_DORM_ID IN NUMBER,
+      V_CURRENT_ROOM_ID IN NUMBER,
+      V_CURRENT_BED_ID IN NUMBER,
+      V_CURRENT_DORM IN VARCHAR2,
+      V_FORM_CODE IN VARCHAR2,
+      V_CHECK_IN_ID IN NUMBER,
+      V_SHIFTED_BY IN VARCHAR,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) IS 
+BEGIN 
+    IF V_FORM_CODE IS NULL THEN 
+        V_RES := '0';
+        V_RESULT := 'Form Code not found, Please fill fields again !!';
+        RETURN;
+    END IF;
+    
+    BEGIN
+        INSERT INTO DMS.C_BED_SHIFTING_T
+  (
+    ID,
+    EMPLOYEE_ID,
+    EMPLOYEE_NAME,
+    DEPARTMENT,
+    CURRENT_BED_NUMBER,
+    CURRENT_FLOOR_NUMBER,
+    CURRENT_ROOM_NUMBER,
+    SHIFTED_BED_NUMBER,
+    SHIFTED_ROOM_NUMBER,
+    SHIFTED_FLOOR_NUMBER,
+    REASON,
+    SHIFTED_DORM_ID,
+    CURRENT_FLOOR_ID,
+    SHIFTED_FLOOR_ID,
+    SHIFTED_BED_ID,
+    SHIFTED_ROOM_ID,
+    BED_TYPE,
+    CURRENT_DORM_ID,
+    CURRENT_ROOM_ID,
+    CURRENT_BED_ID,
+    CURRENT_DORM,
+    FORM_CODE,
+    CHECK_IN_ID,
+    SHIFTED_BY
+  )
+  VALUES
+  (
+    C_DORM_SHIFTING_T_NEWSEQ.NEXTVAL,
+    V_EMPLOYEE_ID,
+    V_EMPLOYEE_NAME,
+    V_DEPARTMENT,
+    V_CURRENT_BED_NUMBER,
+    V_CURRENT_FLOOR_NUMBER,
+    V_CURRENT_ROOM_NUMBER,
+    V_SHIFTED_BED_NUMBER,
+    V_SHIFTED_ROOM_NUMBER,
+    V_SHIFTED_FLOOR_NUMBER,
+    V_REASON,
+    V_SHIFTED_DORM_ID,
+    V_CURRENT_FLOOR_ID,
+    V_SHIFTED_FLOOR_ID,
+    V_SHIFTED_BED_ID,
+    V_SHIFTED_ROOM_ID,
+    V_BED_TYPE,
+    V_CURRENT_DORM_ID,
+    V_CURRENT_ROOM_ID,
+    V_CURRENT_BED_ID,
+    V_CURRENT_DORM,
+    V_FORM_CODE,
+    V_CHECK_IN_ID,
+    V_SHIFTED_BY
+  );
+     UPDATE DMS.C_CHECK_IN_T C 
+   SET C.CHECK_IN_FORM_STATUS = 4, C.STATUS ='Bed-Shift-Signing' 
+   WHERE C.EMPLOYEE_ID = V_EMPLOYEE_ID 
+   AND C.CHECK_IN_FORM_STATUS = 0 
+   AND C.ID = V_CHECK_IN_ID;
+  
+   -- Update the bed creation status
+   UPDATE DMS.C_BED_CREATION_T A
+   SET A.CREATE_BED_FORM_STATUS = 4,
+       A.STATUS = 'Bed-Shift-Signing'
+   WHERE A.ID = V_SHIFTED_BED_ID
+   AND EXISTS (
+       SELECT *
+       FROM DMS.C_BED_SHIFTING_T B
+       WHERE B.SHIFTED_BED_ID = V_SHIFTED_BED_ID
+       AND B.FORM_STATUS = 1
+   );
+   
+   COMMIT;
+        
+        V_RES := '1';
+        V_RESULT := 'BED Shifted Successfully';
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            V_RES := '0';
+            V_RESULT := 'Error occurred: ' || SQLERRM;
+    END;
+END ;
+
+PROCEDURE INSERT_CHECKIN_CHECKOUT(
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_EMPLOYEE_NAME IN VARCHAR2,
+    V_FATHER_NAME IN VARCHAR2,
+    V_MOTHER_NAME IN VARCHAR2,
+    V_AGE IN NUMBER,
+    V_GENDER IN VARCHAR2,
+    V_PHONE_NUMBER IN NUMBER,
+    V_EMERGENCY_NUMBER IN NUMBER,
+    V_DORM_NAME IN VARCHAR2,
+    V_DORM_ID IN NUMBER,
+    V_ROOM_ID IN NUMBER,
+    V_BED_ID IN NUMBER,
+    V_FLOOR_ID IN NUMBER,
+    V_FLOOR_NUMBER IN NUMBER,
+    V_ROOM_NUMBER IN NUMBER,
+    V_BED_NUMBER IN NUMBER,
+    V_DEPARTMENT IN VARCHAR2,
+    V_ACTION_ID IN NUMBER,
+    V_REASON IN VARCHAR2,
+    V_BED_TYPE IN VARCHAR2,
+    V_PROJECT IN VARCHAR2,
+    V_PERMANENTADDRESS IN VARCHAR2,
+    V_PERMANENTDISTRICT IN VARCHAR2,
+    V_PERMANENTSTATE IN VARCHAR2,
+    V_PERMANENTCOUNTRY IN VARCHAR2,
+    V_EMERGENCY_CONTECT_PERSON IN VARCHAR2,
+    V_CHECK_IN_BY IN VARCHAR2,
+    V_CHECK_OUT_BY IN VARCHAR2,
+    V_DOJ IN VARCHAR2, 
+    V_DORM_LOCATION IN VARCHAR2,
+    V_ROOM_TYPE IN VARCHAR2,
+    V_EMPLOYEE_STATUS IN VARCHAR2,
+    V_AADHAR_NO IN VARCHAR2,
+    V_SAPARATION_DATE IN VARCHAR2,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) IS
+    L_ROOM_CAPACITY NUMBER;
+    L_ROOM_COUNT NUMBER;
+    L_DORM_NAME VARCHAR2(255);
+    L_DATA_COUNT NUMBER;
+    L_ROOM_CAPACITY1 NUMBER;
+    L_ROOM_CAPACITY2 NUMBER;
+    L_ROOMSTATUSCOUNT NUMBER;
+    L_BED_COUNT NUMBER;
+BEGIN
+    IF V_ACTION_ID = 1001 THEN -- Check-out action
+        -- Update check-out information
+        UPDATE DMS.C_CHECK_IN_T
+        SET CHECK_OUT_DATE = SYSDATE,
+            CHECK_OUT_BY = V_CHECK_OUT_BY,
+            CHECK_IN_FORM_STATUS = 1,
+            STATUS = 'Check-Out',
+            EMPLOYEE_STATUS = V_EMPLOYEE_STATUS,
+            REASON = V_REASON,
+            SAPARATION_DATE = V_SAPARATION_DATE
+        WHERE EMPLOYEE_ID = V_EMPLOYEE_ID
+        AND CHECK_IN_FORM_STATUS = 0;
+        
+        -- Update bed status to available
+        UPDATE DMS.C_BED_CREATION_T
+        SET STATUS = 'Available',
+            CREATE_BED_FORM_STATUS = 0
+        WHERE ID = V_BED_ID
+        AND DEL_FLAG = 0;
+        
+       
+       -- Check room status after check-out
+SELECT BED_CAPACITY INTO L_ROOM_CAPACITY1 
+FROM DMS.C_ROOM_CREATION_T 
+WHERE ID = V_ROOM_ID 
+AND DEL_FLAG = 0;
+
+SELECT SUM(CREATE_BED_FORM_STATUS) INTO L_BED_COUNT
+FROM DMS.C_BED_CREATION_T 
+WHERE ROOM_ID = V_ROOM_ID 
+AND CREATE_BED_FORM_STATUS =1
+AND DEL_FLAG = 0;
+
+-- If not all beds are booked, set room back to active
+IF L_ROOM_CAPACITY1 > NVL(L_BED_COUNT, 0) THEN
+    UPDATE DMS.C_ROOM_CREATION_T 
+    SET CREATE_ROOM_FORM_STATUS = 0,
+        ROOM_STATUS = 'ACTIVE'
+    WHERE ID = V_ROOM_ID 
+    AND DEL_FLAG = 0;
+END IF;
+
+       
+       
+       
+        -- Get room capacity and count
+        SELECT ROOM_CAPACITY INTO L_ROOM_CAPACITY 
+        FROM DMS.C_FLOOR_CREATION_T 
+        WHERE ID = V_FLOOR_ID AND DEL_FLAG = 0;
+
+        SELECT COUNT(*) INTO L_ROOM_COUNT 
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE CREATE_ROOM_FORM_STATUS = 1 
+        AND FLOOR_ID = V_FLOOR_ID 
+        AND DEL_FLAG = 0;
+
+        -- Update floor status if needed
+        IF L_ROOM_CAPACITY <> L_ROOM_COUNT THEN
+            UPDATE DMS.C_FLOOR_CREATION_T 
+            SET CREATE_FLOOR_FORM_STATUS = 0 
+            WHERE ID = V_FLOOR_ID 
+            AND DEL_FLAG = 0;
+        END IF;
+        
+        COMMIT;
+        V_RES := '1';
+        V_RESULT := 'Employee checked out successfully';
+    ELSE -- Check-in action
+        -- Check if employee already has active check-in
+        BEGIN
+            SELECT COUNT(1), MAX(DORM_NAME) 
+            INTO L_DATA_COUNT, L_DORM_NAME
+            FROM DMS.C_CHECK_IN_T
+            WHERE EMPLOYEE_ID = V_EMPLOYEE_ID 
+            AND CHECK_IN_FORM_STATUS IN (0, 3, 4);
+            
+            IF L_DATA_COUNT > 0 THEN
+                V_RES := '0';
+                V_RESULT := 'The employee has already checked in at Dorm || ' || L_DORM_NAME || ' ||';
+                RETURN;
+            END IF;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                L_DATA_COUNT := 0;
+        END;
+        
+        -- Insert new check-in record
+        INSERT INTO DMS.C_CHECK_IN_T (
+            ID,
+            EMPLOYEE_ID,
+            EMPLOYEE_NAME,
+            FATHER_NAME,
+            MOTHER_NAME,
+            AGE,
+            GENDER,
+            PHONE_NUMBER,
+            EMERGENCY_NUMBER,
+            DORM_NAME,
+            DORM_ID,
+            ROOM_ID,
+            BED_ID,
+            FLOOR_ID,
+            FLOOR_NUMBER,
+            ROOM_NUMBER,
+            BED_NUMBER,
+            DEPARTMENT,
+            REASON,
+            BED_TYPE,
+            PROJECT,
+            PERMANENTADDRESS,
+            PERMANENTDISTRICT,
+            PERMANENTSTATE,
+            PERMANENTCOUNTRY,
+            EMERGENCY_CONTECT_PERSON,
+            CHECK_IN_BY,
+            DOJ,
+            DORM_LOCATION,
+            ROOM_TYPE,
+            AADHAR_NO,
+            CHECK_IN_DATE,
+            CHECK_IN_FORM_STATUS,
+            STATUS
+        ) VALUES (
+            DMS.C_CHECK_IN_T_NEWSEQ.NEXTVAL,
+            V_EMPLOYEE_ID,
+            V_EMPLOYEE_NAME,
+            V_FATHER_NAME,
+            V_MOTHER_NAME,
+            V_AGE,
+            V_GENDER,
+            V_PHONE_NUMBER,
+            V_EMERGENCY_NUMBER,
+            V_DORM_NAME,
+            V_DORM_ID,
+            V_ROOM_ID,
+            V_BED_ID,
+            V_FLOOR_ID,
+            V_FLOOR_NUMBER,
+            V_ROOM_NUMBER,
+            V_BED_NUMBER,
+            V_DEPARTMENT,
+            V_REASON,
+            V_BED_TYPE,
+            V_PROJECT,
+            V_PERMANENTADDRESS,
+            V_PERMANENTDISTRICT,
+            V_PERMANENTSTATE,
+            V_PERMANENTCOUNTRY,
+            V_EMERGENCY_CONTECT_PERSON,
+            V_CHECK_IN_BY,
+            TO_DATE(V_DOJ, 'DD-MM-YYYY'),
+            V_DORM_LOCATION,
+            V_ROOM_TYPE,
+            V_AADHAR_NO,
+            SYSDATE,
+            0,
+            'Check-In'
+        );
+        
+        -- Update bed status to booked
+        UPDATE DMS.C_BED_CREATION_T A 
+        SET A.CREATE_BED_FORM_STATUS = 1,
+            A.STATUS = 'Booked' 
+        WHERE A.ID = V_BED_ID 
+        AND DEL_FLAG = 0;
+        
+        -- Check room capacity vs booked beds
+        SELECT BED_CAPACITY INTO L_ROOM_CAPACITY1 
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE ID = V_ROOM_ID 
+        AND DEL_FLAG = 0;    
+
+        SELECT SUM(CREATE_BED_FORM_STATUS) INTO L_BED_COUNT
+        FROM DMS.C_BED_CREATION_T 
+        WHERE CREATE_BED_FORM_STATUS = 1 
+        AND ROOM_ID = V_ROOM_ID 
+        AND DEL_FLAG = 0;
+        
+        IF L_ROOM_CAPACITY1 = L_BED_COUNT THEN
+            UPDATE DMS.C_ROOM_CREATION_T 
+            SET CREATE_ROOM_FORM_STATUS = 1,
+                ROOM_STATUS = 'ROOM-FILLED' 
+            WHERE ID = V_ROOM_ID 
+            AND DEL_FLAG = 0;
+        END IF;
+
+        -- Check floor capacity vs active rooms
+        SELECT ROOM_CAPACITY INTO L_ROOM_CAPACITY2 
+        FROM DMS.C_FLOOR_CREATION_T 
+        WHERE ID = V_FLOOR_ID 
+        AND DEL_FLAG = 0;
+
+        SELECT COUNT(CREATE_ROOM_FORM_STATUS) INTO L_ROOMSTATUSCOUNT
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE CREATE_ROOM_FORM_STATUS = 1 
+        AND FLOOR_ID = V_FLOOR_ID 
+        AND DEL_FLAG = 0;
+        
+        IF L_ROOM_CAPACITY2 = L_ROOMSTATUSCOUNT THEN 
+            UPDATE DMS.C_FLOOR_CREATION_T 
+            SET CREATE_FLOOR_FORM_STATUS = 3, 
+                FLOOR_STATUS = 'FLOOR-FILLED' 
+            WHERE ID = V_FLOOR_ID 
+            AND DEL_FLAG = 0;
+        END IF;
+
+        COMMIT;
+        V_RES := '1';
+        V_RESULT := 'New Employee CHECK-IN successfully';
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        V_RES := '0';
+        V_RESULT := 'Error: ' || SQLERRM;
+END ;
+
+
+ PROCEDURE BULK_DORM_SHIFT_STATUS_CHECK(
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_CURRENT_DORM_NAME IN VARCHAR2,
+    V_CURRENT_FLOOR_NUMBER IN NUMBER,
+    V_CURRENT_ROOM_NUMBER IN NUMBER,
+    V_CURRENT_BED_NUMBER IN NUMBER,
+    V_SHIFTING_DORM_NAME IN VARCHAR2,
+    V_SHIFTING_DORM_CODE IN NUMBER,
+    V_SHIFTING_FLOOR_NUMBER IN NUMBER,
+    V_SHIFTING_ROOM_NUMBER IN NUMBER,
+    V_SHIFTING_BED_NUMBER IN NUMBER,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) IS 
+    V_CHECK_IN_STATUS NUMBER;
+    V_FLOOR_EXISTS NUMBER;
+    V_ROOM_EXISTS NUMBER;
+    V_BED_EXISTS NUMBER;
+    V_SHIFTING_DORM_EXISTS NUMBER;
+    V_SHIFTING_FLOOR_EXISTS NUMBER;
+    V_SHIFTING_ROOM_EXISTS NUMBER;
+    V_SHIFTING_BED_EXISTS NUMBER;
+BEGIN
+    -- 1. Check if employee has active check-in in current location
+    BEGIN
+        SELECT CHECK_IN_FORM_STATUS 
+        INTO V_CHECK_IN_STATUS
+        FROM DMS.C_CHECK_IN_T 
+        WHERE EMPLOYEE_ID = V_EMPLOYEE_ID 
+        AND DORM_NAME = V_CURRENT_DORM_NAME
+        AND CHECK_IN_FORM_STATUS IN (0,3,4) 
+        AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER 
+        AND ROOM_NUMBER = V_CURRENT_ROOM_NUMBER 
+        AND BED_NUMBER = V_CURRENT_BED_NUMBER;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Current Dorm Name/' || V_EMPLOYEE_ID || 
+                     ' or CURRENT_FLOOR_NUMBER/' || V_CURRENT_FLOOR_NUMBER || 
+                     ' or CURRENT_ROOM_NUMBER/' || V_CURRENT_ROOM_NUMBER || 
+                     ' or CURRENT_BED_NUMBER/' || V_CURRENT_BED_NUMBER || 
+                     ' is not found!';
+            RETURN;
+    END;
+    
+    -- 2. Validate current floor exists in current dorm
+    BEGIN
+        SELECT 1 INTO V_FLOOR_EXISTS
+        FROM DMS.C_FLOOR_CREATION_T 
+        WHERE DORM_NAME = V_CURRENT_DORM_NAME 
+        AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER 
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Current Floor Number ' || V_CURRENT_FLOOR_NUMBER || 
+                     ' is Not Found in this Dorm ' || V_CURRENT_DORM_NAME || '!';
+            RETURN;
+    END;
+    
+    -- 3. Validate current room exists on current floor
+    BEGIN
+        SELECT 1 INTO V_ROOM_EXISTS
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE DORM_NAME = V_CURRENT_DORM_NAME 
+        AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_CURRENT_ROOM_NUMBER 
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Current Room Number ' || V_CURRENT_ROOM_NUMBER || 
+                     ' is Not Found on Floor ' || V_CURRENT_FLOOR_NUMBER || 
+                     ' in Dormitory ' || V_CURRENT_DORM_NAME || '!';
+            RETURN;
+    END;
+    
+    -- 4. Validate current bed exists in current room
+    BEGIN
+        SELECT 1 INTO V_BED_EXISTS
+        FROM DMS.C_BED_CREATION_T 
+        WHERE DORM_NAME = V_CURRENT_DORM_NAME 
+        AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_CURRENT_ROOM_NUMBER 
+        AND BED_NUMBER = V_CURRENT_BED_NUMBER 
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Current Bed Number ' || V_CURRENT_BED_NUMBER || 
+                     ' is Not Found on Room ' || V_CURRENT_ROOM_NUMBER || '!';
+            RETURN;
+    END;
+    
+    -- 5. Validate shifting dorm exists and is active
+    BEGIN
+        SELECT 1 INTO V_SHIFTING_DORM_EXISTS
+        FROM DMS.C_DORM_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND CREATE_DORM_FORM_STATUS = 0 
+        AND DORM_CODE = V_SHIFTING_DORM_CODE  
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting Dorm Name or Shifting Dorm Code is not found!';
+            RETURN;
+    END;
+    
+    -- 6. Validate shifting floor exists in shifting dorm
+    BEGIN
+        SELECT 1 INTO V_SHIFTING_FLOOR_EXISTS
+        FROM DMS.C_FLOOR_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER 
+         AND CREATE_FLOOR_FORM_STATUS=0
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting Floor Number ' || V_SHIFTING_FLOOR_NUMBER || 
+                     ' is Not Found in this Dorm ' || V_SHIFTING_DORM_NAME || '!';
+            RETURN;
+    END;
+    
+    -- 7. Validate shifting room exists on shifting floor
+    BEGIN
+        SELECT 1 INTO V_SHIFTING_ROOM_EXISTS
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_SHIFTING_ROOM_NUMBER 
+        AND DEL_FLAG = 0;
+     --  AND CREATE_ROOM_FORM_STATUS=0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting Room Number ' || V_SHIFTING_ROOM_NUMBER || 
+                     ' is Not Found on Floor ' || V_SHIFTING_FLOOR_NUMBER || 
+                     ' in Dormitory ' || V_SHIFTING_DORM_NAME || '!';
+            RETURN;
+    END;
+    
+    -- 8. Validate shifting bed exists and is available
+    BEGIN
+        SELECT 1 INTO V_SHIFTING_BED_EXISTS
+        FROM DMS.C_BED_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_SHIFTING_ROOM_NUMBER 
+        AND BED_NUMBER = V_SHIFTING_BED_NUMBER 
+        AND CREATE_BED_FORM_STATUS = 0 
+        AND DEL_FLAG = 0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting Bed Number ' || V_SHIFTING_BED_NUMBER || 
+                     ' is Not Found on Room ' || V_SHIFTING_ROOM_NUMBER || '!';
+            RETURN;
+    END;
+    
+    -- 9. Check employee status and return appropriate response
+    IF V_CHECK_IN_STATUS = 0 THEN
+        V_RES := '1';
+        V_RESULT := 'Success';
+    ELSIF V_CHECK_IN_STATUS = 3 THEN
+        V_RES := '0';
+        V_RESULT := V_EMPLOYEE_ID || ' is Dorm Shifting status!';
+    ELSIF V_CHECK_IN_STATUS = 4 THEN
+        V_RES := '0';
+        V_RESULT := V_EMPLOYEE_ID || ' is Bed Shifting status!';
+    ELSE
+        V_RES := '1';
+        V_RESULT := 'Success';
+    END IF;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        V_RES := '0';
+        V_RESULT := 'Bad Request Found: ' || SQLERRM;
+END;
+
+PROCEDURE INSERT_BULK_DORM_SHIFT(
+    V_EMPLOYEE_ID IN VARCHAR2,
+    V_CURRENT_DORM_NAME IN VARCHAR2,
+    V_CURRENT_FLOOR_NUMBER IN NUMBER,
+    V_CURRENT_ROOM_NUMBER IN NUMBER,
+    V_CURRENT_BED_NUMBER IN NUMBER,
+    V_SHIFTING_DORM_NAME IN VARCHAR2,
+    V_SHIFTING_FLOOR_NUMBER IN NUMBER,
+    V_SHIFTING_ROOM_NUMBER IN NUMBER,
+    V_SHIFTING_BED_NUMBER IN NUMBER,
+    V_SHIFTED_BY IN VARCHAR2,
+    V_BED_TYPE IN VARCHAR2,
+    V_ROOM_TYPE IN VARCHAR2,
+    V_REASON IN VARCHAR2,
+    V_LAST_EDIT_BY IN VARCHAR2,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) IS
+    V_CURRENT_BED_ID NUMBER;
+    V_CURRENT_DORM_ID NUMBER;
+    V_CURRENT_FLOOR_ID NUMBER;
+    V_CURRENT_ROOM_ID NUMBER;
+    V_CHECKIN_ID NUMBER;
+    
+    -- Variables for employee details
+    V_AGE NUMBER;
+    V_PHONE_NUMBER NUMBER;
+    V_EMERGENCY_NUMBER NUMBER;
+    V_EMPLOYEE_NAME VARCHAR2(100);
+    V_DEPARTMENT VARCHAR2(100);
+    V_PERMANENTADDRESS VARCHAR2(200);
+    V_PERMANENTDISTRICT VARCHAR2(100);
+    V_PERMANENTSTATE VARCHAR2(100);
+    V_PERMANENTCOUNTRY VARCHAR2(100);
+    V_PROJECT VARCHAR2(100);
+    V_EMERGENCY_CONTECT_PERSON VARCHAR2(100);
+    V_DOJ VARCHAR2(100);
+    V_AADHAR_NO VARCHAR2(20);
+    V_GENDER VARCHAR2(10);
+    V_FATHER_NAME VARCHAR2(100);
+    
+    -- Variables for shifting location data
+    V_SHIFTING_DORM_ID NUMBER;
+    V_SHIFTING_FLOOR_ID NUMBER;
+    V_SHIFTING_ROOM_ID NUMBER;
+    V_SHIFTING_BED_ID NUMBER;
+BEGIN
+    BEGIN
+        SELECT 
+            ID, BED_ID, DORM_ID, FLOOR_ID, ROOM_ID,
+            AGE, PHONE_NUMBER, EMERGENCY_NUMBER, EMPLOYEE_NAME, DEPARTMENT, 
+            PERMANENTADDRESS, PERMANENTDISTRICT, PERMANENTSTATE, PERMANENTCOUNTRY, 
+            PROJECT, EMERGENCY_CONTECT_PERSON, DOJ, AADHAR_NO, GENDER, FATHER_NAME
+        INTO
+            V_CHECKIN_ID, V_CURRENT_BED_ID, V_CURRENT_DORM_ID, V_CURRENT_FLOOR_ID, V_CURRENT_ROOM_ID,
+            V_AGE, V_PHONE_NUMBER, V_EMERGENCY_NUMBER, V_EMPLOYEE_NAME, V_DEPARTMENT, 
+            V_PERMANENTADDRESS, V_PERMANENTDISTRICT, V_PERMANENTSTATE, V_PERMANENTCOUNTRY, 
+            V_PROJECT, V_EMERGENCY_CONTECT_PERSON, V_DOJ, V_AADHAR_NO, V_GENDER, V_FATHER_NAME
+        FROM DMS.C_CHECK_IN_T 
+        WHERE EMPLOYEE_ID = V_EMPLOYEE_ID 
+        AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_CURRENT_ROOM_NUMBER
+        AND BED_NUMBER = V_CURRENT_BED_NUMBER 
+        AND DORM_NAME = V_CURRENT_DORM_NAME 
+        AND CHECK_IN_FORM_STATUS = 0
+        AND ROWNUM = 1;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Current bed assignment not found for employee ' || V_EMPLOYEE_ID;
+            RETURN;
+    END;
+
+    UPDATE DMS.C_CHECK_IN_T
+    SET CHECK_IN_FORM_STATUS = 2,
+        DORM_SHIFTED_DATE = SYSDATE,
+        STATUS = 'Dorm-Shifted',
+        LAST_EDIT_BY = V_LAST_EDIT_BY,
+        LAST_EDIT_DATE = SYSDATE
+    WHERE ROWID = (
+        SELECT ROWID FROM (
+            SELECT ROWID
+            FROM DMS.C_CHECK_IN_T
+            WHERE EMPLOYEE_ID = V_EMPLOYEE_ID
+            AND FLOOR_NUMBER = V_CURRENT_FLOOR_NUMBER
+            AND ROOM_NUMBER = V_CURRENT_ROOM_NUMBER
+            AND DORM_NAME = V_CURRENT_DORM_NAME
+            AND BED_NUMBER = V_CURRENT_BED_NUMBER
+            AND CHECK_IN_FORM_STATUS = 0
+            ORDER BY CHECK_IN_DATE DESC
+        ) WHERE ROWNUM = 1
+    );
+    
+    UPDATE DMS.C_BED_CREATION_T
+    SET CREATE_BED_FORM_STATUS = 0,
+        STATUS = 'Available'
+    WHERE ID = V_CURRENT_BED_ID 
+    AND DEL_FLAG = 0;
+
+    BEGIN
+        SELECT ID INTO V_SHIFTING_DORM_ID
+        FROM DMS.C_DORM_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND DEL_FLAG = 0 AND CREATE_DORM_FORM_STATUS =0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting dorm ' || V_SHIFTING_DORM_NAME || ' not found';
+            RETURN;
+    END;
+
+    BEGIN
+        SELECT ID INTO V_SHIFTING_FLOOR_ID
+        FROM DMS.C_FLOOR_CREATION_T
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER 
+        AND DEL_FLAG = 0
+        AND CREATE_FLOOR_FORM_STATUS = 0
+        AND ROWNUM = 1;
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting floor ' || V_SHIFTING_FLOOR_NUMBER || ' not found in dorm ' || V_SHIFTING_DORM_NAME;
+            RETURN;
+    END;
+
+    BEGIN
+        SELECT ID INTO V_SHIFTING_ROOM_ID
+        FROM DMS.C_ROOM_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_SHIFTING_ROOM_NUMBER 
+        AND DEL_FLAG = 0
+        AND CREATE_ROOM_FORM_STATUS =0
+        AND ROWNUM = 1;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting room ' || V_SHIFTING_ROOM_NUMBER || ' not found on floor ' || V_SHIFTING_FLOOR_NUMBER;
+            RETURN;
+    END;
+
+    BEGIN
+        SELECT ID INTO V_SHIFTING_BED_ID
+        FROM DMS.C_BED_CREATION_T 
+        WHERE DORM_NAME = V_SHIFTING_DORM_NAME 
+        AND FLOOR_NUMBER = V_SHIFTING_FLOOR_NUMBER
+        AND ROOM_NUMBER = V_SHIFTING_ROOM_NUMBER 
+        AND BED_NUMBER = V_SHIFTING_BED_NUMBER 
+        AND DEL_FLAG = 0
+       AND  CREATE_BED_FORM_STATUS =0;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_RES := '0';
+            V_RESULT := 'Shifting bed ' || V_SHIFTING_BED_NUMBER || ' not found in room ' || V_SHIFTING_ROOM_NUMBER;
+            RETURN;
+    END;
+
+    INSERT INTO DMS.C_CHECK_IN_T (
+        ID, DORM_ID, FLOOR_ID, ROOM_ID, BED_ID,
+        DORM_NAME, FLOOR_NUMBER, ROOM_NUMBER, BED_NUMBER,
+        EMPLOYEE_ID, AGE, PHONE_NUMBER, EMERGENCY_NUMBER,
+        EMPLOYEE_NAME, DEPARTMENT, PERMANENTADDRESS,
+        PERMANENTDISTRICT, PERMANENTSTATE, PERMANENTCOUNTRY,
+        PROJECT, EMERGENCY_CONTECT_PERSON, DOJ, AADHAR_NO,
+        GENDER, CHECK_IN_BY, CHECK_IN_DATE, BED_TYPE, ROOM_TYPE,
+        FATHER_NAME, REASON
+    ) VALUES (
+        DMS.C_CHECK_IN_T_NEWSEQ.NEXTVAL,
+        V_SHIFTING_DORM_ID, V_SHIFTING_FLOOR_ID, V_SHIFTING_ROOM_ID, V_SHIFTING_BED_ID,
+        V_SHIFTING_DORM_NAME, V_SHIFTING_FLOOR_NUMBER, V_SHIFTING_ROOM_NUMBER, V_SHIFTING_BED_NUMBER,
+        V_EMPLOYEE_ID, V_AGE, V_PHONE_NUMBER, V_EMERGENCY_NUMBER,
+        V_EMPLOYEE_NAME, V_DEPARTMENT, V_PERMANENTADDRESS,
+        V_PERMANENTDISTRICT, V_PERMANENTSTATE, V_PERMANENTCOUNTRY,
+        V_PROJECT, V_EMERGENCY_CONTECT_PERSON, V_DOJ, V_AADHAR_NO,
+        V_GENDER, V_SHIFTED_BY, SYSDATE, V_BED_TYPE, V_ROOM_TYPE,
+        V_FATHER_NAME, V_REASON
+    );
+
+    UPDATE DMS.C_BED_CREATION_T 
+    SET CREATE_BED_FORM_STATUS = 1, 
+        STATUS = 'Booked'
+    WHERE ID = V_SHIFTING_BED_ID 
+    AND DEL_FLAG = 0;
+    
+    INSERT INTO DMS.C_BULK_SHIFTING_T (
+        ID, EMPLOYEE_ID, CURRENT_DORM_ID, CURRENT_FLOOR_ID, CURRENT_ROOM_ID, CURRENT_BED_ID,
+        SHIFTING_DORM_ID, SHIFTING_FLOOR_ID, SHIFTING_ROOM_ID, SHIFTING_BED_ID,
+        REASON, SHIFTED_BY, SHIFTED_DATE, CREATED_DATE, CHECK_IN_ID
+    ) VALUES (
+        DMS.C_BULK_SHIFTING_T_SEQ.NEXTVAL,
+        V_EMPLOYEE_ID, V_CURRENT_DORM_ID, V_CURRENT_FLOOR_ID, V_CURRENT_ROOM_ID, V_CURRENT_BED_ID,
+        V_SHIFTING_DORM_ID, V_SHIFTING_FLOOR_ID, V_SHIFTING_ROOM_ID, V_SHIFTING_BED_ID,
+        V_REASON, V_SHIFTED_BY, SYSDATE, SYSDATE, V_CHECKIN_ID
+    );
+    
+    COMMIT;
+    
+    V_RES := '1';
+    V_RESULT := 'Dorm shifting processed successfully';
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        V_RES := '0';
+        V_RESULT := 'Error processing dorm shifting: ' || SQLERRM;
+END;
+PROCEDURE BED_SHIFTING_ACCEPT (
+    V_EMPLOYEES IN SYS_REFCURSOR,
+    V_RES OUT VARCHAR2,
+    V_RESULT OUT VARCHAR2
+) AS
+    V_EMP_ID NUMBER;
+    V_SHIFTED_DORM_ID NUMBER;
+    V_SHIFTED_FLOOR_ID NUMBER;
+    V_SHIFTED_ROOM_ID NUMBER;
+    V_SHIFTED_BED_ID NUMBER;
+    V_SHIFTED_FLOOR_NUMBER NUMBER;
+    V_SHIFTED_ROOM_NUMBER NUMBER;
+    V_SHIFTED_BED_NUMBER NUMBER;
+    V_CURRENT_BED_ID NUMBER;
+    V_CHECK_IN_ID NUMBER;
+    V_FORM_STATUS NUMBER;
+BEGIN
+    LOOP
+        FETCH V_EMPLOYEES INTO V_EMP_ID, V_SHIFTED_DORM_ID, V_SHIFTED_FLOOR_ID, 
+              V_SHIFTED_ROOM_ID, V_SHIFTED_BED_ID, V_SHIFTED_FLOOR_NUMBER, 
+              V_SHIFTED_ROOM_NUMBER, V_SHIFTED_BED_NUMBER, V_CURRENT_BED_ID, 
+              V_CHECK_IN_ID;
+        EXIT WHEN V_EMPLOYEES%NOTFOUND;
+
+        -- Check the form status
+        SELECT FORM_STATUS INTO V_FORM_STATUS FROM (
+            SELECT B.FORM_STATUS,
+                   ROW_NUMBER() OVER (PARTITION BY B.EMPLOYEE_ID ORDER BY B.SHIFTED_DATE DESC) AS RN
+            FROM DMS.C_CHECK_IN_T C
+            INNER JOIN DMS.C_BED_SHIFTING_T B ON C.ID = B.CHECK_IN_ID
+            WHERE C.EMPLOYEE_ID = V_EMP_ID AND C.CHECK_IN_FORM_STATUS = 4
+        ) WHERE RN = 1;
+
+        IF V_FORM_STATUS = 2 THEN
+            -- Update CHECK-IN status
+            UPDATE DMS.C_CHECK_IN_T
+            SET CHECK_IN_FORM_STATUS = 0,
+                STATUS = 'Check-In',
+                DORM_ID = V_SHIFTED_DORM_ID,
+                FLOOR_ID = V_SHIFTED_FLOOR_ID,
+                ROOM_ID = V_SHIFTED_ROOM_ID,
+                BED_ID = V_SHIFTED_BED_ID,
+                FLOOR_NUMBER = V_SHIFTED_FLOOR_NUMBER,
+                ROOM_NUMBER = V_SHIFTED_ROOM_NUMBER,
+                BED_NUMBER = V_SHIFTED_BED_NUMBER
+            WHERE EMPLOYEE_ID = V_EMP_ID AND CHECK_IN_FORM_STATUS = 4;
+
+            -- Update bed status
+            UPDATE DMS.C_BED_CREATION_T
+            SET CREATE_BED_FORM_STATUS = 1, STATUS = 'booked'
+            WHERE ID = V_SHIFTED_BED_ID AND DEL_FLAG = 0;
+
+            UPDATE DMS.C_BED_CREATION_T
+            SET CREATE_BED_FORM_STATUS = 0, STATUS = 'available'
+            WHERE ID = V_CURRENT_BED_ID AND DEL_FLAG = 0;
+
+            -- Mark shift as finished
+            UPDATE DMS.C_BED_SHIFTING_T
+            SET STATUS = 'Finished'
+            WHERE FORM_STATUS = 2 AND EMPLOYEE_ID = V_EMP_ID;
+ 
+        ELSIF V_FORM_STATUS = 3 THEN
+            -- Revert CHECK-IN status
+            UPDATE DMS.C_CHECK_IN_T
+            SET CHECK_IN_FORM_STATUS = 0, STATUS = 'Check-In'
+            WHERE EMPLOYEE_ID = V_EMP_ID AND CHECK_IN_FORM_STATUS = 4 AND ID = V_CHECK_IN_ID;
+
+            -- Mark shifted bed as available
+            UPDATE DMS.C_BED_CREATION_T
+            SET CREATE_BED_FORM_STATUS = 0, STATUS = 'available'
+            WHERE ID = V_SHIFTED_BED_ID AND CREATE_BED_FORM_STATUS = 4 AND DEL_FLAG = 0;
+
+            -- Mark shift as rejected
+            UPDATE DMS.C_BED_SHIFTING_T
+            SET STATUS = 'Rejected'
+            WHERE FORM_STATUS = 3 AND EMPLOYEE_ID = V_EMP_ID;
+        END IF;
+    END LOOP;
+
+    V_RES := '1';
+    V_RESULT := 'Success';
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        V_RES := '0';
+        V_RESULT := 'Error: ' || SQLERRM;
+END;
+END DORM_CHECKIN_SHIFT;
