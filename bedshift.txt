@@ -1,68 +1,53 @@
-INSERT INTO DMS.C_CHECK_IN_T (
-    ID,
-    DORM_ID,
-    FLOOR_ID,
-    ROOM_ID,
-    BED_ID,
-    DORM_NAME,
-    FLOOR_NUMBER,
-    ROOM_NUMBER,
-    BED_NUMBER,
-    EMPLOYEE_ID,
-    AGE,
-    PHONE_NUMBER,
-    EMERGENCY_NUMBER,
-    EMPLOYEE_NAME,
-    DEPARTMENT,
-    PERMANENTADDRESS,
-    PERMANENTDISTRICT,
-    PERMANENTSTATE,
-    PERMANENTCOUNTRY,
-    PROJECT,
-    EMERGENCY_CONTECT_PERSON,
-    DOJ,
-    AADHAR_NO,
-    GENDER,
-    CHECK_IN_BY,
-    CHECK_IN_DATE,
-    CHECK_IN_FORM_STATUS,
-    STATUS,
-    BED_TYPE,
-    ROOM_TYPE,
-    FATHER_NAME,
-    REASON
-)
-VALUES (
-    DMS.C_CHECK_IN_T_NEWSEQ.NEXTVAL,
-    V_SHIFTING_DORM_ID,
-    V_SHIFTING_FLOOR_ID,
-    V_SHIFTING_ROOM_ID,
-    V_SHIFTING_BED_ID,
-    V_SHIFTING_DORM_NAME,
-    V_SHIFTING_FLOOR_NUMBER,
-    V_SHIFTING_ROOM_NUMBER,
-    V_SHIFTING_BED_NUMBER,
-    V_EMPLOYEE_ID,
-    V_AGE,
-    V_PHONE_NUMBER,
-    V_EMERGENCY_NUMBER,
-    V_EMPLOYEE_NAME,
-    V_DEPARTMENT,
-    V_PERMANENTADDRESS,
-    V_PERMANENTDISTRICT,
-    V_PERMANENTSTATE,
-    V_PERMANENTCOUNTRY,
-    V_PROJECT,
-    V_EMERGENCY_CONTECT_PERSON,
-    V_DOJ,
-    V_AADHAR_NO,
-    V_GENDER,
-    V_SHIFTED_BY,
-    SYSDATE,
-    0,
-    'Check-In',
-    V_BED_TYPE,
-    V_ROOM_TYPE,
-    V_FATHER_NAME,
-    V_REASON
-);
+URL extraction results in comments
+================================================================================
+Serial Number: 1
+File path: src\polyfills.ts
+File name: polyfills.ts
+Line number: 1
+Annotation content: /**
+ * This file includes polyfills needed by Angular and is loaded before the app.
+ * You can add your own extra polyfills to this file.
+ *
+ * This file is divided into 2 sections:
+ *   1. Browser polyfills. These are applied before loading ZoneJS and are sorted by browsers.
+ *   2. Application imports. Files imported after ZoneJS that should be loaded before your main
+ *      file.
+ *
+ * The current setup is for so-called "evergreen" browsers; the last versions of browsers that
+ * automatically update themselves. This includes Safari >= 10, Chrome >= 55 (including Opera),
+ * Edge >= 13 on the desktop, and iOS 10 and Chrome on mobile.
+ *
+ * Learn more in https://angular.io/guide/browser-support
+ */
+URL address: https://angular.io/guide/browser-support
+--------------------------------------------------------------------------------
+Serial Number: 2
+File path: src\app\core\services\common\reuse-strategy.ts
+File name: reuse-strategy.ts
+Line number: 3
+Annotation content: 
+// 参考https://zhuanlan.zhihu.com/p/29823560
+URL address: https://zhuanlan.zhihu.com/p/29823560
+--------------------------------------------------------------------------------
+Serial Number: 3
+File path: src\app\i18n\i18n.service.ts
+File name: i18n.service.ts
+Line number: 1
+Annotation content: // 请参考：https://ng-alain.com/docs/i18n
+URL address: https://ng-alain.com/docs/i18n
+--------------------------------------------------------------------------------
+Serial Number: 4
+File path: src\app\pages\mdp\api.service.ts
+File name: api.service.ts
+Line number: 6
+Annotation content: 
+// const path = 'http://10.210.52.98:8087/VisionAfter'
+URL address: http://10.210.52.98:8087/VisionAfter
+--------------------------------------------------------------------------------
+Serial Number: 5
+File path: src\app\pages\mdp\api.service_old.ts
+File name: api.service_old.ts
+Line number: 323
+Annotation content:  // getBuild = 'http://10.199.148.127:8082/tlbustringing/stringing/product/seg/getBuild'
+URL address: http://10.199.148.127:8082/tlbustringing/stringing/product/seg/getBuild
+--------------------------------------------------------------------------------
