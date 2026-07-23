@@ -1,281 +1,119 @@
-import { Component, Input, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, OnInit,SimpleChanges, } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { Menu, MenuService, _HttpClient, SettingsService } from '@delon/theme';
-import { InputBoolean } from '@delon/util';
-import { CacheService } from '@delon/cache';
-import { BrandService } from '../../pro.service';
-import { ProMenu } from '../../pro.types';
-import {security} from '@shared';
-
-import { NzMessageService } from "ng-zorro-antd";
-import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service";
-
-@Component({
-  selector: '[layout-pro-menu]',
-  templateUrl: './menu.component.html',
-  styleUrls: ["./menu.component.less"],
-
-  host: {
-    '[class.alain-pro__menu]': 'true',
-    '[class.alain-pro__menu-only-icon]': 'pro.onlyIcon',
+// tslint:disable: no-duplicate-imports
+import { NgModule, LOCALE_ID, APP_INITIALIZER, Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// #region default language
+// 参考：https://ng-alain.com/docs/i18n
+import { default as ngLang } from '@angular/common/locales/zh';
+import { NZ_I18N, zh_CN as zorroLang, NzMenuBaseService, NzMenuService } from 'ng-zorro-antd';
+import { DELON_LOCALE, zh_CN as delonLang, SettingsService } from '@delon/theme';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+const LANG = {
+  abbr: 'zh',
+  ng: ngLang,
+  zorro: zorroLang,
+  delon: delonLang,
+};
+// register angular
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(LANG.ng, LANG.abbr);
+const LANG_PROVIDES = [
+  { provide: LOCALE_ID, useValue: LANG.abbr },
+  { provide: NZ_I18N, useValue: LANG.zorro },
+  { provide: DELON_LOCALE, useValue: LANG.delon },
+];
+// #endregion
+// #region i18n services
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ALAIN_I18N_TOKEN } from '@delon/theme';
+import { I18NService } from '@core';
+// 加载i18n语言文件
+export function I18nHttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, `assets/tmp/i18n/`, '.json');
+}
+const I18NSERVICE_MODULES = [
+  TranslateModule.forRoot({
+    loader: {
+      provide: TranslateLoader,
+      useFactory: I18nHttpLoaderFactory,
+      deps: [HttpClient],
+    },
+  }),
+];
+const I18NSERVICE_PROVIDES = [{ provide: ALAIN_I18N_TOKEN, useClass: I18NService, multi: false }];
+// #endregion
+// #region global third module
+const GLOBAL_THIRD_MODULES = [];
+// #endregion
+// #region JSON Schema form (using @delon/form)
+import { JsonSchemaModule } from '@shared/json-schema/json-schema.module';
+const FORM_MODULES = [JsonSchemaModule];
+// #endregion
+// #region Http Interceptors
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SimpleInterceptor } from '@delon/auth';
+import { DefaultInterceptor } from '@core';
+const INTERCEPTOR_PROVIDES = [
+  { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
+];
+// #endregion
+// #region Startup Service
+import { StartupService } from '@core';
+export function StartupServiceFactory(startupService: StartupService) {
+  return () => startupService.load();
+}
+const APPINIT_PROVIDES = [
+  StartupService,
+  {
+    provide: APP_INITIALIZER,
+    useFactory: StartupServiceFactory,
+    deps: [StartupService],
+    multi: true,
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class LayoutProMenuComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject<void>();
-  menus: ProMenu[];
+];
 
-  // 菜单类型
-  public menuTypeObj: any = {};
-
-  // 用户ID
-  public userId = "";
-
-  @Input() @InputBoolean() disabledAcl = false;
-  @Input() mode = 'inline';
-  @Input() isOpenMenu;
-  isFristLoading:boolean=true;//第一次進入頁面
-
-  constructor(
-    private menuSrv: MenuService,
-    private http: _HttpClient,
-    private router: Router,
-    public pro: BrandService,
-    private cdr: ChangeDetectorRef,
-    private cacheSvr: CacheService,
-    public settings: SettingsService,
-    private msgSvc: NzMessageService,
-    private apiSvr: PublicNetService,
-  ) { }
-
-  private cd() {
-    this.cdr.markForCheck();
+@Injectable({ providedIn: 'root' })
+export class MySettingsService extends (SettingsService as any) {
+  get(key: string) {
+    return JSON.parse(sessionStorage.getItem(key) || 'null') || null;
   }
-
-  private genMenus(data: Menu[]) {
-    const res: ProMenu[] = [];
-    const ingoreCategores = data.reduce((prev, cur) => prev.concat(cur.children), []);
-    this.menuSrv.visit(ingoreCategores, (item, parent) => {
-      if (!item._aclResult) {
-        if (this.disabledAcl) {
-          item.disabled = true;
-        } else {
-          item._hidden = true;
-        }
-      }
-      if (item._hidden === true) {
-        return;
-      }
-      if (parent === null) {
-        res.push(item);
-      }
-
-      this.menuTypeObj[item.id] = 'inline';
-      if (item.menuType === '8') {
-        this.menuTypeObj[item.id] = 'vertical';
-      }
-    });
-    this.menus = res;
-    
-    this.isFristLoading=true;
-    this.openStatus();
-  }
-
-  private openStatus() {
-    const inFn = (list: ProMenu[],first?:any) => {
-      if (first) {
-        // console.log("this.router.url",this.router.url)
-        const menuList = list;
-        let isMainPage = menuList.length > 0 && menuList[0].id == 599 ? true : false;
-        if (isMainPage) {
-          // 設置第二個菜單默認展開
-          menuList.forEach((item, index) => {
-            // console.log("設置第二個菜單默認展開",item)
-            item._open = index == 1&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
-            item._selected = false;
-            if (item.urlKey) {
-              item.link = "/dashboard/";
-            }
-            if (item.children.length > 0) {
-              inFn(item.children);
-            }
-
-            this.isFristLoading=index==menuList.length-1?false:true;
-          })
-        }else{
-          // 設置默認展開第一個菜單
-          menuList.forEach((item, index) => {
-            // console.log("設置默認展開第一個菜單",item)
-            item._open = index == 0&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
-            item._selected = false;
-            if (item.urlKey) {
-              item.link = "/dashboard/";
-            }
-            if (item.children.length > 0) {
-              inFn(item.children);
-            }
-            this.isFristLoading=index==menuList.length-1?false:true;
-          })
-        }
-
-      }else{
-        const menuList = list;
-        menuList.forEach((item, index) => {
-          // console.log("第二次item",item)
-          item._open =false;//默認展開workFlow菜單
-          item._selected = false;
-          if (item.urlKey) {
-            item.link = "/dashboard/";
-          }
-          if (item.children.length > 0) {
-            inFn(item.children);
-          }
-        })
-      }
-    };
-    inFn(this.menus, this.isFristLoading);
-
-    
-
-    let item = this.menuSrv.getHit(this.menus, this.router.url, true);
-    const _activeRouter = this.cacheSvr.getNone("activeRouter");
-    if (_activeRouter && !item) {
-      if (this.router.url !== "/dashboard") {
-        item = this.menuSrv.getHit(this.menus, _activeRouter.toString(), true);
-      }else{
-        
-      }
-    } else {
-      this.cacheSvr.set("activeRouter", this.router.url, { type: 'm' });
-    }
-
-    if (!item) {
-      this.cd();
-      return;
-    }
-    sessionStorage.setItem('activeUrlKey', item.urlKey);
-    do {
-      item._selected = true;
-      if (!this.pro.isTopMenu && !this.pro.collapsed) {
-        item._open = true;
-      }
-      item = item.__parent;
-    } while (item);
-    this.cd();
-  }
-
-  openChange(item: ProMenu, statue: boolean) {
-    const data = item.__parent ? item.__parent.children : this.menus;
-    if (data && data.length <= 1) return;
-    data.forEach(i => (i._open = false));
-    item._open = statue;
-  }
-
-  closeCollapsed() {
-    const { pro } = this;
-    if (pro.isMobile) {
-      setTimeout(() => pro.setCollapsed(true), 25);
-    }
-  }
-
-  ngOnInit() {
-    const { unsubscribe$, router, pro } = this;
-    this.menuSrv.change.pipe(takeUntil(unsubscribe$)).subscribe(res => this.genMenus(res));
-
-    router.events
-      .pipe(
-        takeUntil(unsubscribe$),
-        filter(e => e instanceof NavigationEnd),
-    )
-      .subscribe(() => this.openStatus());
-
-    pro.notify
-      .pipe(
-        takeUntil(unsubscribe$),
-        filter(() => !!this.menus),
-    )
-      .subscribe(() => this.cd());
-
-    const nemuId = localStorage.getItem("nemuId");
-    if (nemuId) {
-      localStorage.removeItem("nemuId");
-    }
-
-    this.userId = this.apiSvr.getSettingUserInfo().eeid;
-  }
-
-  ngOnChanges(changes:SimpleChanges){
-      setTimeout(() => {
-        this.pro.isOpenMenu=false;
-      }, 0);
-  }
-
-  ngOnDestroy() {
-    const { unsubscribe$ } = this;
-    unsubscribe$.next();
-    unsubscribe$.complete();
-  }
-
-  openSearchMenu(info) {
-    // console.log('openSearchMenu',info)
-    if(info.urlKey){
-      info._open = true;
-    }
-    if (info.menuType === '8') {
-      const nemuId = localStorage.getItem("nemuId");
-
-      if (nemuId) {
-        if (nemuId === info.id.toString()) {
-          this.pro.isShowSearchMenu = false;
-        } else {
-          this.pro.isShowSearchMenu = true;
-          setTimeout(() => {
-            this.pro.appDelEmitChange(info);
-          }, 0);
-        }
-      } else {
-        this.pro.isShowSearchMenu = true;
-        setTimeout(() => {
-          this.pro.appDelEmitChange(info);
-        }, 0);
-      }
-
-      if (this.pro.isShowSearchMenu) {
-        localStorage.setItem("nemuId", info.id);
-      } else {
-        localStorage.removeItem("nemuId");
-      }
-    }
-  }
-
-  closeSearchMenu() {
-    this.pro.isShowSearchMenu = false;
-    localStorage.removeItem("nemuId");
-  }
-
-  addMenuLog(menuId, menuName) {
-    const param = {
-      url: "/addMenuLog",
-      data: {
-        "menuId": menuId,
-        "menuName": menuName,
-        "empNo": this.userId,
-        "systemCode":"LMS"
-      }
-    };
-
-    const body = security.encryptForWeb(JSON.stringify(param.data));
-
-    this.http.post(param.url, body, null, {headers:{"Content-Type": "application/json;charset=UTF-8"}}).subscribe(data => {
-      const res = JSON.parse(security.decryptForWeb(data));
-      // console.log('res!!',res)
-      if (res.status !== 200) {
-        if (res.msg) {
-          this.msgSvc.error(res.msg);
-        }
-      }
-    });
+  set(key: string, value: any) {
+    sessionStorage.setItem(key, JSON.stringify(value));
   }
 }
+
+const SETTING_PROVIDES = [
+  { provide: SettingsService, useClass: MySettingsService },
+]
+
+// #endregion
+import { DelonModule } from './delon.module';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
+import { AppComponent } from './app.component';
+import { RoutesModule } from './routes/routes.module';
+
+import {PublicNetService} from "./routes/a_Public_net/Public_net.service";
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    DelonModule.forRoot(),
+    CoreModule,
+    SharedModule,
+    RoutesModule,
+    DragDropModule,
+    ...I18NSERVICE_MODULES,
+    ...GLOBAL_THIRD_MODULES,
+    ...FORM_MODULES,
+  ],
+  providers: [...LANG_PROVIDES, ...INTERCEPTOR_PROVIDES, ...I18NSERVICE_PROVIDES, ...APPINIT_PROVIDES, ...SETTING_PROVIDES, NzMenuBaseService, NzMenuService,PublicNetService],
+  bootstrap: [AppComponent],
+})
+export class AppModule { }
