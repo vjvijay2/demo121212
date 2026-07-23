@@ -1,383 +1,119 @@
-Folder PATH listing
-Volume serial number is 7618-2825
-E:\NPISP-PROJECT\LICENSE MANAGEMENT SYSTEM - UPDATED_20072026\SRC
-³   favicon.ico
-³   favicon2.ico
-³   hmr.ts
-³   index.html
-³   main.ts
-³   polyfills.ts
-³   style-icons-auto.ts
-³   style-icons.ts
-³   styles.less
-³   test.ts
-³   typings.d.ts
-³   
-ÃÄÄÄapp
-³   ³   app.component.ts
-³   ³   app.module.ts
-³   ³   delon.module.ts
-³   ³   
-³   ÃÄÄÄcore
-³   ³   ³   core.module.ts
-³   ³   ³   index.ts
-³   ³   ³   module-import-guard.ts
-³   ³   ³   README.md
-³   ³   ³   
-³   ³   ÃÄÄÄi18n
-³   ³   ³       i18n.service.spec.ts
-³   ³   ³       i18n.service.ts
-³   ³   ³       
-³   ³   ÃÄÄÄnet
-³   ³   ³       default.interceptor.ts
-³   ³   ³       
-³   ³   ÀÄÄÄstartup
-³   ³           startup.service.ts
-³   ³           
-³   ÃÄÄÄlayout
-³   ³   ³   layout.module.ts
-³   ³   ³   
-³   ³   ÀÄÄÄpassport
-³   ³           passport.component.html
-³   ³           passport.component.less
-³   ³           passport.component.ts
-³   ³           
-³   ÃÄÄÄroutes
-³   ³   ³   routes-routing.module.ts
-³   ³   ³   routes.module.ts
-³   ³   ³   
-³   ³   ÃÄÄÄa_Public_net
-³   ³   ³       Public_net.service.ts
-³   ³   ³       Url.ts
-³   ³   ³       
-³   ³   ÃÄÄÄcallback
-³   ³   ³       callback.component.ts
-³   ³   ³       
-³   ³   ÃÄÄÄdashboard
-³   ³   ³       dashboard.component.html
-³   ³   ³       dashboard.component.less
-³   ³   ³       dashboard.component.ts
-³   ³   ³       
-³   ³   ÃÄÄÄexception
-³   ³   ³       403.component.ts
-³   ³   ³       404.component.ts
-³   ³   ³       500.component.ts
-³   ³   ³       exception-routing.module.ts
-³   ³   ³       exception.module.ts
-³   ³   ³       trigger.component.ts
-³   ³   ³       
-³   ³   ÃÄÄÄLMS
-³   ³   ³   ÀÄÄÄuser-management
-³   ³   ³       ³   user-management-routing.module.ts
-³   ³   ³       ³   user-management.module.ts
-³   ³   ³       ³   
-³   ³   ³       ÃÄÄÄDrawer
-³   ³   ³       ³   ÀÄÄÄuser-manage-add
-³   ³   ³       ³           user-manage-add.component.html
-³   ³   ³       ³           user-manage-add.component.less
-³   ³   ³       ³           user-manage-add.component.spec.ts
-³   ³   ³       ³           user-manage-add.component.ts
-³   ³   ³       ³           
-³   ³   ³       ÀÄÄÄusermanagement
-³   ³   ³               usermanagement.component.html
-³   ³   ³               usermanagement.component.less
-³   ³   ³               usermanagement.component.spec.ts
-³   ³   ³               usermanagement.component.ts
-³   ³   ³               
-³   ³   ÃÄÄÄpassport
-³   ³   ³   ³   passport.module.ts
-³   ³   ³   ³   passport.routing.module.ts
-³   ³   ³   ³   
-³   ³   ³   ÃÄÄÄlock
-³   ³   ³   ³       lock.component.html
-³   ³   ³   ³       lock.component.less
-³   ³   ³   ³       lock.component.ts
-³   ³   ³   ³       
-³   ³   ³   ÃÄÄÄlogin
-³   ³   ³   ³       login.component.html
-³   ³   ³   ³       login.component.less
-³   ³   ³   ³       login.component.ts
-³   ³   ³   ³       
-³   ³   ³   ÃÄÄÄregister
-³   ³   ³   ³       register.component.html
-³   ³   ³   ³       register.component.less
-³   ³   ³   ³       register.component.ts
-³   ³   ³   ³       
-³   ³   ³   ÀÄÄÄregister-result
-³   ³   ³           register-result.component.html
-³   ³   ³           register-result.component.ts
-³   ³   ³           
-³   ³   ÀÄÄÄtemplate
-³   ³       ³   template-routing.module.ts
-³   ³       ³   template.module.ts
-³   ³       ³   
-³   ³       ÃÄÄÄdraw
-³   ³       ³   ÀÄÄÄadd-draw
-³   ³       ³           add-draw.component.html
-³   ³       ³           add-draw.component.ts
-³   ³       ³           
-³   ³       ÃÄÄÄlist
-³   ³       ³       list.component.html
-³   ³       ³       list.component.ts
-³   ³       ³       
-³   ³       ÀÄÄÄ_net
-³   ³               template.service.ts
-³   ³               
-³   ÀÄÄÄshared
-³       ³   index.ts
-³       ³   README.md
-³       ³   shared.module.ts
-³       ³   
-³       ÃÄÄÄcomponents
-³       ³   ³   index.less
-³       ³   ³   
-³       ³   ÃÄÄÄaadhar-number
-³       ³   ³       aadhar-number.component.html
-³       ³   ³       aadhar-number.component.ts
-³       ³   ³       
-³       ³   ÃÄÄÄaddress
-³       ³   ³       address.component.html
-³       ³   ³       address.component.ts
-³       ³   ³       address.service.ts
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       
-³       ³   ÃÄÄÄdelay
-³       ³   ³       delay.directive.ts
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       
-³       ³   ÃÄÄÄeditor
-³       ³   ³       editor.component.html
-³       ³   ³       editor.component.ts
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       
-³       ³   ÃÄÄÄeditor-oracle
-³       ³   ³       editor.component.html
-³       ³   ³       editor.component.ts
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       
-³       ³   ÃÄÄÄfile-manager
-³       ³   ³       file-manager.component.html
-³       ³   ³       file-manager.component.ts
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       
-³       ³   ÃÄÄÄgrid-cell
-³       ³   ³       cell-group.component.ts
-³       ³   ³       cell-table.component.ts
-³       ³   ³       cell.component.ts
-³       ³   ³       types.ts
-³       ³   ³       
-³       ³   ÃÄÄÄimg
-³       ³   ³       img.component.html
-³       ³   ³       img.component.ts
-³       ³   ³       img.directive.ts
-³       ³   ³       
-³       ³   ÃÄÄÄlangs
-³       ³   ³       langs.component.html
-³       ³   ³       langs.component.ts
-³       ³   ³       
-³       ³   ÃÄÄÄmasonry
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       masonry.directive.ts
-³       ³   ³       
-³       ³   ÃÄÄÄmouse-focus
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       mouse-focus.directive.ts
-³       ³   ³       
-³       ³   ÃÄÄÄquick-chat
-³       ³   ³       index.ts
-³       ³   ³       quick-chat-status.component.html
-³       ³   ³       quick-chat-status.component.ts
-³       ³   ³       quick-chat.component.html
-³       ³   ³       quick-chat.component.ts
-³       ³   ³       quick-chat.service.ts
-³       ³   ³       
-³       ³   ÃÄÄÄscrollbar
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       scrollbar.directive.ts
-³       ³   ³       scrollbar.interface.ts
-³       ³   ³       
-³       ³   ÃÄÄÄstatus-label
-³       ³   ³       index.en-US.md
-³       ³   ³       index.zh-CN.md
-³       ³   ³       status-label.component.ts
-³       ³   ³       
-³       ³   ÃÄÄÄupload-photo
-³       ³   ³       upload-photo.component.html
-³       ³   ³       upload-photo.component.less
-³       ³   ³       upload-photo.component.ts
-³       ³   ³       
-³       ³   ÃÄÄÄupload-photo-oracle
-³       ³   ³       upload-photo.component.html
-³       ³   ³       upload-photo.component.less
-³       ³   ³       upload-photo.component.ts
-³       ³   ³       
-³       ³   ÀÄÄÄwang-editor
-³       ³           wang-editor.component.html
-³       ³           wang-editor.component.less
-³       ³           wang-editor.component.ts
-³       ³           
-³       ÃÄÄÄjson-schema
-³       ³   ³   index.md
-³       ³   ³   json-schema.module.ts
-³       ³   ³   
-³       ³   ÀÄÄÄwidgets
-³       ³       ÃÄÄÄaddress
-³       ³       ³       address.widget.ts
-³       ³       ³       
-³       ³       ÃÄÄÄeditor
-³       ³       ³       editor.widget.ts
-³       ³       ³       
-³       ³       ÀÄÄÄimg
-³       ³               img.widget.ts
-³       ³               
-³       ÀÄÄÄutils
-³               aes.ts
-³               urlManage.ts
-³               utils.ts
-³               yuan.ts
-³               
-ÃÄÄÄassets
-³   ³   .gitkeep
-³   ³   0.gif
-³   ³   1.gif
-³   ³   2.gif
-³   ³   3.gif
-³   ³   4.gif
-³   ³   alain-pro.less
-³   ³   buji.png
-³   ³   cardbb1.jpg
-³   ³   danren.png
-³   ³   end.png
-³   ³   favicon.ico
-³   ³   FMS_Login.png
-³   ³   FMS_Login1.png
-³   ³   heardBg-1.png
-³   ³   heardBg.png
-³   ³   home-head-logo.png
-³   ³   home-head-logo1.png
-³   ³   i-Pocket-1.png
-³   ³   i-Pocket.png
-³   ³   LMS_Login.png
-³   ³   login-callback.html
-³   ³   loginBg.png
-³   ³   loginBg2.png
-³   ³   loginForm.png
-³   ³   loginForm2.png
-³   ³   logo-color.svg
-³   ³   logo-color222x222.svg
-³   ³   logo.png
-³   ³   logoBg-0.png
-³   ³   logoBg-1.png
-³   ³   logoBg.png
-³   ³   marquee_add.png
-³   ³   minLogo-1.png
-³   ³   minLogo.png
-³   ³   noData.svg
-³   ³   roadmap-1.png
-³   ³   roadmap-2.png
-³   ³   roadmap-3.png
-³   ³   roadmap-4.png
-³   ³   roadmap-5.png
-³   ³   sso-login.css
-³   ³   userPhoto.jpg
-³   ³   Vehicle Information Template.xlsx
-³   ³   zorro.svg
-³   ³   
-³   ÃÄÄÄfonts
-³   ³       icomoon.eot
-³   ³       icomoon.svg
-³   ³       icomoon.ttf
-³   ³       icomoon.woff
-³   ³       
-³   ÃÄÄÄimg
-³   ³       bg-long.png
-³   ³       bgColor-long.png
-³   ³       bottom-arrow.png
-³   ³       double-line.png
-³   ³       left-arrow.png
-³   ³       point-white.png
-³   ³       right-arrow.png
-³   ³       single-data.png
-³   ³       top-arrow.png
-³   ³       unuseBox.png
-³   ³       unuseRound.png
-³   ³       useBox.png
-³   ³       useRound.png
-³   ³       Workbench-bg-1.png
-³   ³       Workbench-bg-2.png
-³   ³       Workbench-maskchart.png
-³   ³       
-³   ÃÄÄÄjs
-³   ³       FoxCAPackage.js
-³   ³       
-³   ÃÄÄÄlib
-³   ³       flexible.js
-³   ³       
-³   ÀÄÄÄtmp
-³       ³   app-data.json
-³       ³   demo.docx
-³       ³   demo.pdf
-³       ³   demo.pptx
-³       ³   demo.xlsx
-³       ³   demo.zip
-³       ³   docx.docx
-³       ³   pc-code.json
-³       ³   pca-code.json
-³       ³   
-³       ÃÄÄÄi18n
-³       ³       el-GR.json
-³       ³       en-US.json
-³       ³       ko-KR.json
-³       ³       pl-PL.json
-³       ³       tr-TR.json
-³       ³       zh-CN.json
-³       ³       zh-TW.json
-³       ³       
-³       ÀÄÄÄimg
-³               1.png
-³               2.png
-³               3.png
-³               4.png
-³               5.png
-³               6.png
-³               avatar.jpg
-³               bg1.jpg
-³               bg10.jpg
-³               bg2.jpg
-³               bg3.jpg
-³               bg4.jpg
-³               bg5.jpg
-³               bg6.jpg
-³               bg7.jpg
-³               bg8.jpg
-³               bg9.jpg
-³               half-float-bg-1.jpg
-³               
-ÃÄÄÄenvironments
-³       environment.hmr.ts
-³       environment.prod.ts
-³       environment.ts
-³       
-ÀÄÄÄstyles
-    ³   form-style.less
-    ³   index.less
-    ³   style.css
-    ³   theme.less
-    ³   
-    ÀÄÄÄfix
-            antd.less
-            index.less
-            _chat.less
-            _file-manager.less
-            _quick-chat.less
-            _quill.less
-            _utils.less
-            
+// tslint:disable: no-duplicate-imports
+import { NgModule, LOCALE_ID, APP_INITIALIZER, Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// #region default language
+// 参考：https://ng-alain.com/docs/i18n
+import { default as ngLang } from '@angular/common/locales/zh';
+import { NZ_I18N, zh_CN as zorroLang, NzMenuBaseService, NzMenuService } from 'ng-zorro-antd';
+import { DELON_LOCALE, zh_CN as delonLang, SettingsService } from '@delon/theme';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+const LANG = {
+  abbr: 'zh',
+  ng: ngLang,
+  zorro: zorroLang,
+  delon: delonLang,
+};
+// register angular
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(LANG.ng, LANG.abbr);
+const LANG_PROVIDES = [
+  { provide: LOCALE_ID, useValue: LANG.abbr },
+  { provide: NZ_I18N, useValue: LANG.zorro },
+  { provide: DELON_LOCALE, useValue: LANG.delon },
+];
+// #endregion
+// #region i18n services
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ALAIN_I18N_TOKEN } from '@delon/theme';
+import { I18NService } from '@core';
+// 加载i18n语言文件
+export function I18nHttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, `assets/tmp/i18n/`, '.json');
+}
+const I18NSERVICE_MODULES = [
+  TranslateModule.forRoot({
+    loader: {
+      provide: TranslateLoader,
+      useFactory: I18nHttpLoaderFactory,
+      deps: [HttpClient],
+    },
+  }),
+];
+const I18NSERVICE_PROVIDES = [{ provide: ALAIN_I18N_TOKEN, useClass: I18NService, multi: false }];
+// #endregion
+// #region global third module
+const GLOBAL_THIRD_MODULES = [];
+// #endregion
+// #region JSON Schema form (using @delon/form)
+import { JsonSchemaModule } from '@shared/json-schema/json-schema.module';
+const FORM_MODULES = [JsonSchemaModule];
+// #endregion
+// #region Http Interceptors
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SimpleInterceptor } from '@delon/auth';
+import { DefaultInterceptor } from '@core';
+const INTERCEPTOR_PROVIDES = [
+  { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
+];
+// #endregion
+// #region Startup Service
+import { StartupService } from '@core';
+export function StartupServiceFactory(startupService: StartupService) {
+  return () => startupService.load();
+}
+const APPINIT_PROVIDES = [
+  StartupService,
+  {
+    provide: APP_INITIALIZER,
+    useFactory: StartupServiceFactory,
+    deps: [StartupService],
+    multi: true,
+  },
+];
+
+@Injectable({ providedIn: 'root' })
+export class MySettingsService extends (SettingsService as any) {
+  get(key: string) {
+    return JSON.parse(sessionStorage.getItem(key) || 'null') || null;
+  }
+  set(key: string, value: any) {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }
+}
+
+const SETTING_PROVIDES = [
+  { provide: SettingsService, useClass: MySettingsService },
+]
+
+// #endregion
+import { DelonModule } from './delon.module';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
+import { AppComponent } from './app.component';
+import { RoutesModule } from './routes/routes.module';
+
+import {PublicNetService} from "./routes/a_Public_net/Public_net.service";
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    DelonModule.forRoot(),
+    CoreModule,
+    SharedModule,
+    RoutesModule,
+    DragDropModule,
+    ...I18NSERVICE_MODULES,
+    ...GLOBAL_THIRD_MODULES,
+    ...FORM_MODULES,
+  ],
+  providers: [...LANG_PROVIDES, ...INTERCEPTOR_PROVIDES, ...I18NSERVICE_PROVIDES, ...APPINIT_PROVIDES, ...SETTING_PROVIDES, NzMenuBaseService, NzMenuService,PublicNetService],
+  bootstrap: [AppComponent],
+})
+export class AppModule { }
