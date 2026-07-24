@@ -1,1463 +1,387 @@
-import { Injectable, Inject } from "@angular/core";
-import { Observable,of } from "rxjs";
-import { map,switchMap } from "rxjs/operators";
-import { I18NService } from "@core";
-import { _HttpClient, DrawerHelper } from "@delon/theme";
-import { deepMerge } from "@delon/util";
-import { Router } from "@angular/router";
-import { Base64 } from "js-base64";
-import { isString } from "util";
-import * as CryptoJS from "crypto-js";
-import { iwxServiceUrl, iwxServiceUrlNew,toolsServiceUrl, iwxServiceUrlNew1, iwxServiceUrl2 } from "../a_Public_net/Url";
-import { CookieService } from "ngx-cookie-service"; 
-import { ReuseTabService } from "@delon/abc";
-import { SettingsService } from "@delon/theme";
-import { NzMessageService } from "ng-zorro-antd";
-import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
-import { ITokenService, DA_SERVICE_TOKEN } from "@delon/auth";
-import { StartupService } from "@core";
-// import {XLSXLS} from "xlsx-style"
+<ng-template #sideTpl>
+  <nz-sider [nzTrigger]="null" [nzCollapsible]="true" [nzCollapsed]="isMobile ? false : pro.collapsed"
+    [nzWidth]="pro.width" [nzCollapsedWidth]="pro.widthInCollapsed" class="alain-pro__sider"
+    [ngClass]="{ 'alain-pro__sider-fixed': pro.fixSiderbar }">
+    <div class="alain-pro__side-nav"
+      style="padding: 0;position: absolute;width: 100%;overflow-y: hidden;height: calc(100% - 80px);">
+      <div class="alain-pro__side-nav-wrap" layout-pro-menu style="display:inline-block;min-width: 256px;"
+        [isOpenMenu]="pro.isOpenMenu"></div>
+    </div>
+  </nz-sider>
+</ng-template>
+<nz-layout>
+  <nz-header> 
+  <app-tabs class="alain-pro__tabset"></app-tabs>
+   <layout-pro-header></layout-pro-header>
+  </nz-header>
+  <layout-pro-searchmenu *ngIf="pro.isShowSearchMenu" class="alain-pro__sider-searchmenu" [ngStyle]="getLayoutStyle"></layout-pro-searchmenu>
+  <div class="ant-layout ant-layout-has-sider">
+    <ng-container *ngIf="pro.menu === 'side' || isMobile">
+      <nz-drawer *ngIf="isMobile" [nzWidth]="pro.width" nzWrapClassName="alain-pro__drawer" [nzVisible]="!pro.collapsed"
+        [nzClosable]="false" nzPlacement="left" (nzOnClose)="pro.setCollapsed(true)">
+        <ng-template [ngTemplateOutlet]="sideTpl"></ng-template>
+      </nz-drawer>
+      <ng-container *ngIf="!isMobile">
+        <ng-template [ngTemplateOutlet]="sideTpl"></ng-template>
+      </ng-container>
+    </ng-container>
+    <div class="ant-layout" style="min-height: 100vh;" [ngStyle]="getLayoutStyle">
+     
+      <div class="ant-layout-content alain-pro__body" [ngStyle]="getContentStyle">
+        <div *ngIf="isFetching" style="padding-top: 100px; text-align: center;">
+          <nz-spin nzSpinning></nz-spin>
+        </div>
+        <ng-container *ngIf="!isFetching">
+          <router-outlet></router-outlet>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <ng-template #settingHost></ng-template>
+</nz-layout>
+import {
+  Component,
+  ElementRef,
+  Renderer2,
+  AfterViewInit,
+  ViewChild,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  OnInit,
+  OnDestroy,
+  Inject,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Router, NavigationEnd, RouteConfigLoadStart, NavigationError } from '@angular/router';
+import { BreakpointObserver, MediaMatcher } from '@angular/cdk/layout';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { NzMessageService, } from 'ng-zorro-antd';
+import { updateHostClass } from '@delon/util';
+import { ScrollService, MenuService, MenuIcon } from '@delon/theme';
+import { ReuseTabService } from '@delon/abc';
+import { environment } from '@env/environment';
+import { HttpClient } from "@angular/common/http";
+import { ProSettingDrawerComponent } from './setting-drawer/setting-drawer.component';
+import { BrandService } from './pro.service';
+import { isArray } from 'util';
+import { SharedModule } from "@shared";
+import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+import { SettingsService, _HttpClient } from '@delon/theme';
+import {PublicNetService} from "../../routes/a_Public_net/Public_net.service";
+// import { PlatformLocation } from "@angular/common";
+import {serviceUrl} from "../../routes/a_Public_net/Url";
 
-import { BrandService } from "../../../app/layout/pro/pro.service";
 
-@Injectable()
-export class PublicNetService {
+
+@Component({
+  selector: 'layout-pro',
+  templateUrl: './pro.component.html',
+  // NOTICE: If all pages using OnPush mode, you can turn it on and all `cdr.detectChanges()` codes
+  // changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class LayoutProComponent implements OnInit, AfterViewInit, OnDestroy {
+  private unsubscribe$ = new Subject<void>();
+  private queryCls: string;
+  @ViewChild('settingHost', { read: ViewContainerRef, static: false }) private settingHost: ViewContainerRef;
+
+  isFetching = false;
+  isError=false;
+
+  get isMobile() {
+    return this.pro.isMobile;
+  }
+
+  get getLayoutStyle() {
+    const { isMobile, fixSiderbar, collapsed, menu, width, widthInCollapsed } = this.pro;
+    if (fixSiderbar && menu !== 'top' && !isMobile) {
+      return {
+        paddingLeft: (collapsed ? widthInCollapsed : width) + 'px',
+      };
+    }
+    return null;
+  }
+
+  get getContentStyle() {
+    const { fixedHeader, headerHeight } = this.pro;
+    return {
+      margin: '24px 16px 0',
+      // 'padding-top': (fixedHeader ? headerHeight : 0) + 'px',//
+    };
+  }
+
+  private get body(): HTMLElement {
+    return this.doc.body;
+  }
+
   constructor(
-    private http: _HttpClient,
-    private i18n: I18NService,
-    public router: Router,
-    public drawerHelper: DrawerHelper,
-    private settingService: SettingsService,
-    private cookieService: CookieService,
-    private reuseTabService: ReuseTabService,
-    @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
-    private startupSrv: StartupService,
-    private msgSvr: NzMessageService,
+    bm: BreakpointObserver,
+    mediaMatcher: MediaMatcher,
+    router: Router,
+    private msg: NzMessageService,
+    scroll: ScrollService,
+    reuseTabSrv: ReuseTabService,
+    private resolver: ComponentFactoryResolver,
+    private el: ElementRef,
+    private renderer: Renderer2,
     public pro: BrandService,
-  ) { }
-
-  iwxKStr="azRnOGY2azc3OGM2NjFkYWZjOGc1ZmRwYWxoZGExZmk=";//愛萬象加密
-  javaKStr="Mjk0ZjA3YzQ5NTU1NjVmOTc0YzhhYWE4Y2E0NDI3MWM=";//java加密
-  USER_GQ = "C44F773FD87E7E41174D6A58B162B049";
-  USER_TN_test ="E9785F13CCEAFB251A6AB147AFD24336";
-   USER_TN =   iwxServiceUrl ==='http://10.208.193.125:8086/gateway/manager'  ? "E9785F13CCEAFB251A6AB147AFD24336" :   "10A33A67A312E649D907BBC927995B8A";
-
-  USER_APPLIATION_WEB = "677C05D9E198F136CDE7F84E7B08C57D";//menu
-  // 工具箱接口
-  private param_o: string = 'CV6njbvQ7XRV1f4pS6rBPmUYvpe/arGPV1Gkd9dMZdHaj1F1Z4aMp7AsISpgKkNe';
-  security = {
-    cfg: {
-      iv: CryptoJS.enc.Hex.parse("0000000000000000"),
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    },
-    encryptForWeb(str) {
-      const iwxKStr=this.getDK("azRnOGY2azc3OGM2NjFkYWZjOGc1ZmRwYWxoZGExZmk=");
-      const k = CryptoJS.enc.Utf8.parse(iwxKStr);
-      return CryptoJS.AES.encrypt(str, k, this.cfg).toString();
-    },
-    decryptForWeb(str) {
-      const iwxKStr=this.getDK("azRnOGY2azc3OGM2NjFkYWZjOGc1ZmRwYWxoZGExZmk=");
-      const k = CryptoJS.enc.Utf8.parse(iwxKStr);
-      return CryptoJS.enc.Utf8.stringify(
-        CryptoJS.AES.decrypt(str, k, this.cfg)
-      );
-    },
-    // 後端java加解密
-    encryptForWebJava(str) {
-      const javaKStr=this.getDK("Mjk0ZjA3YzQ5NTU1NjVmOTc0YzhhYWE4Y2E0NDI3MWM=");
-      const k = CryptoJS.enc.Utf8.parse(javaKStr);
-      return CryptoJS.AES.encrypt(str, k, this.cfg).toString();
-    },
-    decryptForWebJava(str) {
-      const javaKStr=this.getDK("Mjk0ZjA3YzQ5NTU1NjVmOTc0YzhhYWE4Y2E0NDI3MWM=");
-      const k = CryptoJS.enc.Utf8.parse(javaKStr);
-      return CryptoJS.enc.Utf8.stringify(
-        CryptoJS.AES.decrypt(str, k, this.cfg)
-      );
-    },
-    encrypt(str, key) {
-      const k = CryptoJS.enc.Utf8.parse(key);
-      return CryptoJS.AES.encrypt(str, k, this.cfg).toString();
-    },
-    decrypt(str, key) {
-      const k = CryptoJS.enc.Utf8.parse(key);
-      return CryptoJS.enc.Utf8.stringify(
-        CryptoJS.AES.decrypt(str, k, this.cfg)
-      );
-    },
-    md5(str) {
-      return CryptoJS.MD5(str)
-        .toString()
-        .toUpperCase();
-    },
-    genVldCode(str, key) {
-      return this.encrypt(this.md5(str + key), key);
-    },
-    genVldCode2(str, key) {
-      return this.md5(key + str + key);
-    },
-    getDK(key) {    //传入编码后的密钥(newStr)以获取真实的秘钥信息
-      const str = window.atob(key);
-      const middle = Math.floor(str.length / 2);
-      let left = middle - 1;
-      let right = str.length % 2 === 0 ? middle : middle + 1;
-      let result = '';
-      while (left >= 0 && right < str.length) {
-       result += str[right];
-       result += str[left];
-       left--;
-       right++;
+    private menuService: MenuService,
+    private http: _HttpClient,
+    private shareSvr: SharedModule,
+    private publicSvr: PublicNetService,
+    private route: Router,
+    // public locations: PlatformLocation,
+    @Inject(DOCUMENT) private doc: any,
+  ) // private cdr: ChangeDetectorRef
+  {
+    // scroll to top in change page
+    router.events.pipe(takeUntil(this.unsubscribe$)).subscribe(evt => {
+      if (!this.isFetching && evt instanceof RouteConfigLoadStart) {
+        this.isFetching = true;
+        scroll.scrollToTop();
       }
-      return result + str.slice(right) + str.slice(0, left + 1);
-    }
-  }; 
-  iwxKInfo=this.security.getDK(this.iwxKStr);
-  // 解密存儲在settingService中的user信息
-  getSettingUserInfo() {
-    const userData = {
-      avatar: "",
-      eeid: "",
-      name: "",
-      time: ""
-    }
-    const userInfo = this.settingService.user.userInfo ? JSON.parse(this.security.decryptForWeb(this.settingService.user.userInfo)) : userData;
- 
-    return userInfo
+      if (evt instanceof NavigationError) {
+        this.isFetching = false;
+        // this.msg.error(`无法加载${evt.url}路由`, { nzDuration: 1000 * 3 });
+        // router.navigateByUrl("/exception/404") 
+        // 请尝试刷新缓存获取最新系统内容
+        this.shareSvr.modalSvr.confirm({
+          nzTitle:"Sorry, the system timed out!",//`无法加载${evt.url}路由`
+          nzContent: 'Try flushing the cache to get the latest system content?Clicking OK will refresh the cache.',//尝试刷新缓存获取最新系统内容?点击OK将刷新缓存
+          nzOnOk: () => {location.reload();this.isError=true;}
+        });
+
+        // 如果3秒钟后没有点击OK的话，自动刷新
+        setTimeout(()=>{
+          if(!this.isError){
+            location.reload();
+          }
+        },3000)
+        // 请尝试刷新缓存获取最新系统内容
+        return;
+      }
+      if (!(evt instanceof NavigationEnd)) {
+        return;
+      }
+      this.isFetching = false;
+      // If have already cached router, should be don't need scroll to top
+      if (!reuseTabSrv.exists(evt.url)) {
+        scroll.scrollToTop();
+      }
+    });
+
+    // media
+    const query = {
+      'screen-xs': '(max-width: 575px)',
+      'screen-sm': '(min-width: 576px) and (max-width: 767px)',
+      'screen-md': '(min-width: 768px) and (max-width: 991px)',
+      'screen-lg': '(min-width: 992px) and (max-width: 1199px)',
+      'screen-xl': '(min-width: 1200px)',
+    };
+    bm.observe([
+      '(min-width: 1200px)',
+      '(min-width: 992px) and (max-width: 1199px)',
+      '(min-width: 768px) and (max-width: 991px)',
+      '(min-width: 576px) and (max-width: 767px)',
+      '(max-width: 575px)',
+    ]).subscribe(() => {
+      this.queryCls = Object.keys(query).find(key => mediaMatcher.matchMedia(query[key]).matches);
+      this.setClass();
+    });
   }
 
+  private setClass() {
+    const { body, renderer, queryCls, pro } = this;
+    updateHostClass(body, renderer, {
+      ['color-weak']: pro.layout.colorWeak,
+      [`layout-fixed`]: pro.layout.fixed,
+      [`aside-collapsed`]: pro.collapsed,
+      ['alain-pro']: true,
+      [queryCls]: true,
+      [`alain-pro__content-${pro.layout.contentWidth}`]: true,
+      [`alain-pro__fixed`]: pro.layout.fixedHeader,
+      [`alain-pro__wide`]: pro.isFixed,
+      [`alain-pro__dark`]: pro.theme === 'dark',
+      [`alain-pro__light`]: pro.theme === 'light',
+    });
+  }
 
+  ngAfterViewInit(): void {
+  }
 
-    timer: any;
+  ngOnInit() {
+    const { pro, unsubscribe$ } = this;
+    pro.notify.pipe(takeUntil(unsubscribe$)).subscribe(() => {
+      this.setClass();
+    });
 
-async insertLoginData(Empid: string, ipAddress: string): Promise<void> {
-  console.log("insertLoginData", Empid);
-  clearTimeout(this.timer);
+    // 获取用户对应菜单
+    this.getSystemMenu();
+  }
+  // getSystemMenu() {
+  //   const group = [
+  //     {
+  //       text: "主導航",
+  //       group: true,
+  //       children: []
+  //     }
+  //   ];
+  //   this.http.post(serviceUrl+"/menuFms", {}).subscribe(res => {
+  //     if(res && isArray(res)){
+  //       group[0].children = this.arrayToTree(res);
+  //       this.menuService.add(group);
+  //     }else{
+  //       this.msg.error("您暫無可查看的菜單，請聯繫管理員開通！", { nzDuration: 1000 * 3 });
+  //     }
+  //   });
+  // }
 
-  // Use arrow function to preserve 'this' context
-  this.timer = setTimeout(() => {
-    this.getUserBaseInfo(Empid).then((res: any) => {
-      if (res.IsOK == "1") {
-        console.log("User base info retrieved successfully", res);
-        const userInfo = res.List[0];
-        const _param = {
-          Func: "Reports-InsertLoginLog",
-          EmpId: Empid,
-          EmpName: userInfo.EmployeeName,
-          Department: userInfo.Department,
-          IpAddress: ipAddress,
-          Site : userInfo.Site,
-        };
-        const config = {
+  // getToMenuData(data,menuId){
+  //   const toMenuData = data.filter(item => {
+  //       return item.id == menuId;
+  //   });
+  //   if(toMenuData.length==0){
+  //     data.forEach((item)=>{
+  //       if(item.children.length!=0){
+  //         const list=item.children;
+  //         this.getToMenuData(list,menuId)
+  //       }
+  //     })
+
+  //   }else{
+  //     const menuData=toMenuData[0];
+  //     this.getPage(menuData)
+  //   }
+  // }
+getSystemMenu() {
+  const group = [
+    {
+      text: "主導航",
+      group: true,
+      children: [],
+    },
+  ];
+
+  const params = {
+    Func: "Permission management-GetUserPermitModuleBySystem",
+    SystemId: 30373,
+    EmpNo: this.publicSvr.getSettingUserINfo().eeid,
+  };
+
+  const param = true
+    ? this.publicSvr.dealPostParamsEncrypt(params)
+    : this.publicSvr.dealPostParams(params);
+
+  new Promise((resolve, reject) => {
+    this.http
+      .post(
+       'https://microservice.abgind.foxconn.com/india/gateway',
+        param,
+        null,
+        {
           headers: {
-            apiID: "ffff-1751512339410-10208193125-0093",
-            userKey: this.USER_TN,
+            apiID: "ffff-1687574205823-1020819373-1797",
+            userKey: this.publicSvr.USER_APPLIATION_WEB,
           },
-        };
-        const param = this.dealPostParamsEncrypt(_param);
-        this.http.post(iwxServiceUrl, param, null, config).subscribe(
-          (res: any) => {
-             const res1 = JSON.parse(this.security.decrypt(res.r, this.iwxKInfo));
-            // Check if the response indicates success
-            if (res1.IsOK === "1") {
-              // console.log("Successfully inserted login data");
-            } else {
-              console.error("Error inserting login data", res);
-            }
-          },
-          (err) => {
-            console.error("HTTP error inserting login data", err);
-          }
-        );
-      }
-    });
-  }, 1000);
-}
-
-
-
-  getselectSiteData(): Observable<any> {
-   // const TypeCode = params.slice(9);
-    let _param = {
-      Func: "Base Code-Get_SPbasecode",
-      Type  : 5,
-     // Input :''
-    };
-    const config = {
-      headers: {
-        apiID: "ffff-1740459269703-10208193125-1423",
-        userKey: this.USER_TN,
-      },
-    };
-
-    const param = this.dealPostParamsEncrypt(_param);
-    return this.http
-    //  .post(iwxServiceUrl, param, null, config)
-    .post(iwxServiceUrl, param, null, config)
-      .pipe(
-        map((resp: any) => {
-          const res = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-          // console.log(res)
-          if (res.IsOK === "1") {
-  
-            const _data = [];
-            res.List.forEach((element) => {
-              if (!element) return;
-              let _item: any = {};
-              _item = {
-                label: element.BasicCode,
-                value: element.Id,
-                // repairitemgrupid :element.GroupIds,
-                // repaircategorygrupid :element.GroupIds2
-              };
-              _data.push(_item);
-            });
-            return _data;
-          }
-        })
-      );
-  }
-
-  getSiteDataforUserManage(): Observable<any> {
-    // const TypeCode = params.slice(9);
-    let _param = {
-      Func: "Base Code-Get_SPbasecode",
-      Type: 5,
-    };
-    const config = {
-      headers: {
-        apiID: "ffff-1740459269703-10208193125-1423",
-        userKey: this.USER_TN,
-      },
-    };
-  
-    const param = this.dealPostParamsEncrypt(_param);
-    return this.http
-      .post(iwxServiceUrl, param, null, config)
-      .pipe(
-        switchMap((resp: any) => {
-          const result = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-  
-          if (result.IsOK === "1") {
-            return this.getSitebasedUser().pipe(
-              map((res: any) => {
-              
-                const res1 = res;
-            
-                const _data = [];
-                res1.forEach((element) => {
-                  // console.log(element)
-                  const matchedItem = result.List.find(
-                    (listItem) => listItem.Id === element.SiteId
-                  );
-               
-                  if (matchedItem) {
-                    _data.push({
-                      label: matchedItem.BasicCode,
-                      value: matchedItem.Id
-                   
-                    });
-               
-                  }
-                });
-            console.log(_data) ;
-                return _data;
-              })
-            );
-          } else {
-            return of([]); // or handle the case where IsOK is not "1"
-          }
-        })
-      );
-  }
-  
-
-
-  // 下拉选数据
-  getselectDatas(params: any): Observable<any> {
-    // const code = params.slice(10);
-    let _param = {
-      Func: params.fun,
-    };
-    let _p = {
-      Id: params.id,
-    };
-    const _params = deepMerge(params.id ? _p : {}, _param);
-    const config = {
-      headers: {
-        apiID: params.apiID,
-        userKey: this.USER_GQ,
-      },
-    };
-
-    const param = this.dealPostParamsEncrypt(_params);
-    return this.http
-      .post(iwxServiceUrl, param, null, config)
-      .pipe(
-        map((resp: any) => {
-          const res = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-          // console.log(res)
-          if (res.IsOK === "1") {
-            let data = res.List;
-            data.map((item) => {
-              item.children = [];
-              item.title = item.Menuname;
-              item.key = item.Id;
-              item.parentId = item.Parentid;
-              item.isLeaf = false;
-              let _param = {
-                Func: params.fun,
-                Id: item.Id,
-              };
-              const config = {
-                headers: {
-                  apiID: params.apiID,
-                  userKey: this.USER_GQ,
-                },
-              };
-
-              const param = this.dealPostParamsEncrypt(_params);
-              return this.http
-                .post(iwxServiceUrl, param, null, config)
-                .pipe(
-                  map((resp: any) => {
-                    const res = JSON.parse(
-                      this.security.decrypt(resp.r, this.iwxKInfo)
-                    );
-                    //
-                    res.List.map((items) => {
-                      items.title = items.Menuname;
-                      items.key = items.Id;
-                      items.parentId = items.Parentid;
-                      items.isLeaf = true;
-                    });
-                    item.children = res.List;
-                  })
-                );
-            });
-            // console.log(data)
-            return data;
-          }
-        })
-      );
-  }
-
-  /**
-   * {key: "", name: "", type: "", required: "0||1", readOnly: "0||1", description: "描述", default: "默認值" ui: {} }
-   * key:鍵名(對應接口字段名), name：前端展示的名稱,required:YesNo必填項, readOnly：YesNo可編輯,
-   * type: "text|默認，textarea|多行文本框，select|下拉框，date|日期，radio|單選，checkbox|多選，number|數字，custom|自定義"
-   *
-   * select|checkbox|radio 同步{enum:[
-   *  {label: "", value: ""}
-   * ], width: 230|默認 }
-   * 異步 {
-   *  ui: {
-   *      async: {url: "請求地址", data: "參數", label: "對應字段默認label", value: "對應字段默認value"}
-   *  }
-   * }
-   * select {multiple: "0|單選默認，1|多選"}
-   * date {format："時間格式默認：YYYY/MM/DD"}
-   * 方法可依據需求拓展，文檔參考鏈接 https://ng-alain.com/form/getting-started/zh
-   * @param data 自定義Form數組
-   * @param res 初始化數據
-   */
-  // 表單初始化
-  jointSchema(data, res?: any) {
-    const _res = res ? res : {};
-    const sfSchema = {
-      properties: {},
-      required: [],
-    };
-    data.forEach((element) => {
-      const key = {};
-      let _default =
-        _res[element.key] || _res[element.key] === 0
-          ? _res[element.key]
-          : element.default || element.default === 0
-            ? element.default
-            : null;
-      if (_default && element.multiple && element.multiple === "1") {
-        _default = _default.split(",");
-      }
-      let selectWidth = element.width ? element.width : 230;
-      if (typeof selectWidth === "string") {
-        if (selectWidth.indexOf("%") === -1) {
-          selectWidth = selectWidth + "px";
         }
-      }
-      // 必填項
-      if (element.require && element.require === "1") {
-        sfSchema.required.push(element.key);
-      }
-
-      let allowClear = element.allowClear ? element.allowClear : true; //默認允許刪除
-
-      switch (element.type) {
-        case "textarea":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: "textarea",
-              autosize: {
-                minRows: element.minRows ? element.minRows : 3,
-                maxRows: element.maxRows ? element.maxRows : 6,
-              },
-            },
-            default: _default,
-          };
-          if (element.maxLength) {
-            key[element.key].maxLength = element.maxLength;
-          }
-          break;
-        case "select":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: "select",
-              allowClear: allowClear,
-              width: selectWidth,
-              placeholder: "Please select",
-              mode:
-                element.multiple && element.multiple === "1"
-                  ? "tags"
-                  : "default",
-              dropdownStyle: {
-                maxHeight: "300px",
-              },
-            },
-            default: _default,
-          };
-          if (element.async) {
-
-          }
-          break;
-
-        case "tree-select":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: "tree-select",
-              width: selectWidth,
-              multiple: element.selectModule === "1",
-              asyncData: () => { },
-              change: (value) => {
-                console.log(value);
-              },
-
-              allowClear: true,
-              dropdownMatchSelectWidth: false,
-              dropdownStyle: {
-                maxHeight: "300px",
-              },
-            },
-            default: _default,
-          };
-          sfSchema.properties = { ...sfSchema.properties, ...key };
-          break;
-        case "date":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            format: element.format ? element.format : "YYYY/MM/DD",
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: "date",
-              displayFormat: element.format ? element.format : "YYYY/MM/DD",
-              format: element.format ? element.format : "YYYY/MM/DD",
-              allowClear: allowClear,
-            },
-            default: _default,
-          };
-          break;
-          case "year":
-            key[element.key] = {
-              type: "string",
-              title: element.name,
-              format: element.format ? element.format : "YYYY",
-              ui: {
-                i18n: element.i18n ? element.i18n : "",
-                widget: "date",
-                mode: 'year' ,
-                displayFormat: element.format ? element.format : "YYYY",
-                format: element.format ? element.format : "YYYY",
-                allowClear: allowClear,
-              },
-              default: _default,
-            };
-            break;
-        case "dateMonth":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            format: "month",
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              displayFormat: element.format ? element.format : "MM",
-              format: element.format ? element.format : "MM",
-            },
-            default: _default,
-          };
-          break;
-        case "dateTime":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            format: "date-time",
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              displayFormat: element.format
-                ? element.format
-                : "YYYY-MM-DD HH:mm:ss",
-              format: element.format ? element.format : "YYYY-MM-DD HH:mm:ss",
-            },
-            default: _default,
-          };
-          break;
-        case "dateRange":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            format: element.format ? element.format : "YYYY/MM/DD",
-            ui: {
-              widget: "date",
-              mode: "range",
-              i18n: element.i18n ? element.i18n : "",
-              displayFormat: element.format ? element.format : "YYYY-MM-DD",
-              format: element.format ? element.format : "YYYY-MM-DD",
-            },
-            default: _default,
-          };
-          break;
-        case "time":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            format: element.format ? element.format : "HH:mm",
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: 'time',
-              displayFormat: element.format ? element.format : "HH:mm",
-              format: element.format ? element.format : "HH:mm"
-            },
-            default: _default
-          };
-          break;
-        case "radio":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              widget: "radio",
-              i18n: element.i18n ? element.i18n : "",
-            },
-            default: _default,
-          };
-          break;
-        case "checkbox":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              widget: "checkbox",
-              i18n: element.i18n ? element.i18n : "",
-            },
-            default: _default,
-          };
-          break;
-        case "number": // 默認最小為 1
-          key[element.key] = {
-            type: "number",
-            title: element.name,
-            default: _default,
-            minimum: element.minimum ? element.minimum : 0,
-            ui: {
-              formatter: (value) => (value ? Number(value).toFixed(0) : 0),
-              i18n: element.i18n ? element.i18n : "",
-            },
-          };
-          if (element.maximum) {
-            key[element.key].maximum = element.maximum;
-          }
-          if (element.multipleOf) {
-            key[element.key].multipleOf = element.multipleOf;
-          }
-          break;
-        case "custom":
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              widget: "custom",
-            
-            },
-
-            default: _default,
-          };
-          break;
-        case "button":
-          break;
-        default:
-          key[element.key] = {
-            type: "string",
-            title: element.name,
-            default: _default,
-            ui: {
-              i18n: element.i18n ? element.i18n : "",
-              placeholder: element.placeholder
-                ? element.placeholder
-                : "Please enter",
-              autocomplete: "off"
-            },
-          };
-          if (element.maxLength) {
-            key[element.key].maxLength = element.maxLength;
-          }
-          if (element.pattern) {
-            key[element.key].pattern = element.pattern;
-          }
-          break;
-      }
-      if (element.description) {
-        key[element.key].description = element.description;
-      }
-      if (element.readOnly && element.readOnly === "1") {
-        key[element.key].readOnly = true;
-      }
-      if (element.ui) {
-        key[element.key].ui = key[element.key].ui
-          ? deepMerge(key[element.key].ui, element.ui)
-          : element.ui;
-      }
-      sfSchema.properties = { ...sfSchema.properties, ...key };
-    });
-    return sfSchema;
-  }
-
-  // 日期格式化
-  dateFormat(value, fmt) {
-    const date = new Date(value);
-    let ret: any;
-    const opt = {
-      "Y+": date.getFullYear().toString(), // 年
-      "M+": (date.getMonth() + 1).toString(), // 月
-      "D+": date.getDate().toString(), // 日
-      "h+": date.getHours().toString(), // 时
-      "m+": date.getMinutes().toString(), // 分
-      "s+": date.getSeconds().toString(), // 秒
-      // 有其他格式化字符需求可以继续添加，必须转化成字符串
-    };
-    for (const k in opt) {
-      if (opt.hasOwnProperty(k)) {
-        ret = new RegExp("(" + k + ")").exec(fmt);
-        if (ret) {
-          fmt = fmt.replace(
-            ret[1],
-            ret[1].length === 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
-          );
-        }
-      }
-    }
-    return fmt;
-  }
-
-
-  // 參數特殊符號處理
-  urlSafeCode(e) {
-    return e = (e = (e = (e = (e = (e = (e = (e = (e = (e = (e = e.replace(/\%/g, "%25")).replace(/\#/g, "%23")).replace(/\&/g, "%26")).replace(/\+/g, "%2B")).replace(/\ /g, "%20")).replace(/\./g, "%2E")).replace(/\:/g, "%3A")).replace(/\//g, "%2F")).replace(/\\/g, "%5C")).replace(/\= /g, "%3D")).replace(/\?/g, "%3F")
-  }
-
-  // 數據解密-特殊符號處理
-  dUrlSafeCode(e) {
-    return e = (e = (e = (e = (e = (e = (e = (e = (e = (e = (e = e.replace(/\%25/g, "%")).replace(/\%23/g, "#")).replace(/\%26/g, "&")).replace(/\%2B/g, "+")).replace(/\%20/g, " ")).replace(/\%2 E/g, ".")).replace(/\%3A/g, ":")).replace(/\%2F/g, "/")).replace(/\%5C/g, "\\")).replace(/\ %3D/g, "=")).replace(/\%3F/g, "?")
-  }
-
-
-  // 爱万象post参数处理
-  dealPostParams(data = {}) {
-    let params = "";
-    let res = null;
-    for (const key in data) {
-      data[key] = data[key].replace("=", "%3D");
-      data[key] = data[key].replace("&", "%26");
-      params += `${key}=${data[key]}&`;
-    }
-    params = params.substring(0, params.length - 1);
-    res = {
-      inputString: params,
-    };
-    return res;
-  }
-  // 爱万象post参数处理 - 加密
-  dealPostParamsEncrypt(data = {}) {
-    let res = null;
-    const o = this.security.encrypt(
-      JSON.stringify({ Os: "", DeviceId: "Utility", AppVer: "0" }),
-      this.iwxKInfo
-    );
-    
-    let s = "";
-    s = this.security.encrypt(JSON.stringify(data), this.iwxKInfo);
-    res = {
-      s: s,
-      o: o,
-    };
-   
-    return res;
-  }
-
-
-
-  // 爱万象post参数处理
-  dealPostParams2(data = {}) {
-    let params = "";
-    let res = null;
-    for (const key in data) {
-      data[key] = data[key] ? this.urlSafeCode(data[key]) : data[key];
-      params += `${key}=${data[key]}&`;
-    }
-    params = params.substring(0, params.length - 1);
-    res = {
-      inputString: params,
-    };
-    return res;
-  }
-
-  // 爱万象post参数处理 - 加密
-  dealPostParamsEncrypt2(data = {}) {
-    let res = null;
-    const o = this.security.encrypt(
-      JSON.stringify({ Os: "", DeviceId: "Utility", AppVer: "0" }),
-      this.iwxKInfo
-    );
-    let s = "";
-
-    for (const key in data) {
-      // 對特殊符號進行處理
-      data[key] = data[key] ? this.urlSafeCode(data[key]) : data[key];
-    }
-
-    s = this.security.encrypt(JSON.stringify(data), this.iwxKInfo);
-
-    res = {
-      s: s,
-      o: o,
-    };
-    return res;
-  }
-
-  /**
-   * @description 爱万象post请求
-   * @param params 参数
-   * @param config 请求头信息
-   * @param isEncrypt 参数是否加密
-   */
-  iwxPost(params = {}, config = {}, isEncrypt: boolean) {
-    const param = isEncrypt
-      ? this.dealPostParamsEncrypt(params)
-      : this.dealPostParams(params);
-    // const param = params
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(iwxServiceUrl, param, null, config)
-        .subscribe(
-          (data) => {
-            let res = isEncrypt
-              ? JSON.parse(this.security.decrypt(data.r, this.iwxKInfo))
-              : data;
-            resolve(res);
-          },
-          (err) => {
-            // 请求错误
-            reject(err);
-          }
-        );
-    }).catch((reason) => {
-    });
-  }
-  iwxPosts(params = {}, config = {}, isEncrypt: boolean) {
-    const param = isEncrypt
-      ? this.dealPostParamsEncrypt(params)
-      : this.dealPostParams(params);
-    // const param = params
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(iwxServiceUrl2, param, null, config)
-        .subscribe(
-          (data) => {
-            let res = isEncrypt
-              ? JSON.parse(this.security.decrypt(data.r, this.iwxKInfo))
-              : data;
-            resolve(res);
-          },
-          (err) => {
-            // 请求错误
-            reject(err);
-          }
-        );
-    }).catch((reason) => {
-    });
-  }
-
-  iwxPost2(config = {}) {
-    return new Promise((resolve, reject) => {
-      this.http.post(iwxServiceUrl, {}, null, config).subscribe(
+      )
+      .subscribe(
         (data) => {
-          resolve(data);
+          let res = true
+            ? JSON.parse(this.publicSvr.security.decrypt(data.r, this.publicSvr.iwxKInfo))
+            : data;
+          resolve(res);
         },
         (err) => {
-          // 请求错误
           reject(err);
         }
       );
-    }).catch((reason) => {
-       console.log(reason)
-    });
-  }
-
-  iwxPostNew(params = {}, config = {}, isEncrypt: boolean) {
-    // console.log(params);
- 
-    const param = isEncrypt
-      ? this.dealPostParamsEncrypt(params)
-      : this.dealPostParams(params);
-      // console.log(this.dealPostParamsEncrypt(params))
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(iwxServiceUrlNew, param, null, config).subscribe((data) => {
-            let res = isEncrypt
-              ? JSON.parse(this.security.decrypt(data.r, this.iwxKInfo))
-              : data;
-            resolve(res);
-            // console.log(res)
-          },
-        
-          
-          (err) => {
-          console.log(err)
-            reject(err);
-          }
-        );
-    }).catch((reason) => {
-    });
-  }
- iwxPostNew3 (params = {}, config = {}, isEncrypt: boolean) {
-    // console.log(params);
-    // console.log(config)
-    const param = isEncrypt
-      ? this.dealPostParamsEncrypt(params)
-      : this.dealPostParams(params);
-      // console.log(this.dealPostParamsEncrypt(params))
-    return new Promise((resolve, reject) => {
-      this.http
-        .post('http://10.208.193.125:8086/gateway/manager', param, null, config).subscribe((data) => {
-            let res = isEncrypt
-              ? JSON.parse(this.security.decrypt(data.r, this.iwxKInfo))
-              : data;
-            resolve(res);
-            //  console.log(res)
-          },
-        
-          
-          (err) => {
-          console.log(err)
-            reject(err);
-          }
-        );
-    }).catch((reason) => {
-    });
-  }
-  
-  iwxPost4(params: any,config = {},isEncrypt){
-    let body =isEncrypt? this.dealPostParamsEncrypt4(params):params;
-  
-    return new Promise((resolve,reject) => {
-      this.http.post(iwxServiceUrlNew, body,null,config).subscribe(data => {
-       
-        resolve(data);
-      },err => {
-        reject(err);
-      });
-  }).catch(reason =>{
-    console.log(reason);
   })
-}
-
-dealPostParamsEncrypt4(data) {iwxServiceUrlNew
-
-  let res = null;
-  const params=this.security.encryptForWeb(JSON.stringify(data));
-  res = {
-      "inputString": params,
-    };
-  return res;
-}
-
-  permitRequest(params = {}, config = {}, isEncrypt: boolean) {
-    const param = isEncrypt
-      ? this.dealPostParamsEncrypt(params)
-      : this.dealPostParams(params);
-    return new Promise((resolve, reject) => {
-      const url = iwxServiceUrl+"?_allow_anonymous=true";//正式
-      this.http
-        .post(url, param, null, config)
-        .subscribe(
-          (data) => {
-            let res = isEncrypt
-              ? JSON.parse(this.security.decrypt(data.r, this.iwxKInfo))
-              : data;
-            resolve(res);
-          },
-          (err) => {
-            // 请求错误
-            reject(err);
-          }
-        );
-    }).catch((reason) => {
-    });
-  }
-
-    // 工具箱接口
-    commonAkdPostApi2(param: any) {
-      let key = this.iwxKInfo;
-      let param_o = this.param_o;
-      const _param = {
-        s: this.security.encrypt(JSON.stringify(param), key),
-        o: param_o,
-        d: null
-      };
-      return new Promise((resolve, reject) => {
-        this.http.post(toolsServiceUrl, _param).subscribe(data => {
-          let res = JSON.parse(this.security.decrypt(data.r, key));
-          resolve(res);
-        }, err => {//请求错误
-          reject(err);
-        });
-      }).catch(reason => {
-        return Promise.reject(reason);
+  .then((res: any) => {
+    if (res.IsOK == "1") {
+      group[0].children = this.arrayToTree(res.List);
+      this.menuService.add(group);
+    } else {
+      this.msg.error("您暫無可查看的菜單，請聯繫管理員開通！", {
+        nzDuration: 1000 * 3,
       });
     }
-
-
-
-
-  // 導出數據接口----data為需要導出的數據內容,num為導出數據有多少列，然後設置每列的寬度
-  exportHandle(data, num?: any, fileName?: any) {
-    // 設置excel表的單元格寬度
-    let long = {
-      "001": [
-        { wch: 20 },
-
-      ],
-    };
-
-    let cols = Object.keys(data[0]).length
-    for (let i = 0; i <= cols; i++) {
-      long["001"].push({ wch: 20 })
-    }
-    // let cols=data.length
-    // let wsrows=[{hpx:20}]
-    // for(let i=0;i<=total;i++){
-    //   wsrows.push({hpx:120})
-    // }
-    long["001"] = long["001"].slice(0, num);
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    worksheet["!cols"] = num ? long["001"] : null; //設置excel表的單元格寬度和表頭高度
-    // worksheet["!rows"]=wsrows //設置excel表第一行的高度
-    // for (let key in worksheet){
-    //   if (new RegExp('^[A-Za-z0-9]+$').exec(key)) {
-    //     let cell = key.toString();
-    //     worksheet[cell].s = {
-    //       alignment: {
-    //         horizontal: "center", // 水平对齐-居中
-    //         vertical: "center", // 垂直对齐-居中
-    //         wrap_text: true
-    //       }
-    //     }
-    //   }
-    // }
- // Format "PurchaseYear" column as "MM-YYYY"
-   
-
-// console.log(data)
-    const workbook: XLSX.WorkBook = {
-      Sheets: { data: worksheet },
-      SheetNames: ["data"],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    this.saveAsExcelFile(excelBuffer, fileName);
-  }
-  saveAsExcelFile(buffer: any, fileName?: any) {
-    const data: Blob = new Blob([buffer], {
-      type:
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-    });
-    FileSaver.saveAs(
-      data,
-      fileName ? fileName : "Data_" + new Date().getTime() + ".xlsx"
-    );
-  }
-
-  getUserBaseInfo(empId) {
-    console.log("getUserBaseInfo", empId);
-    const params = {
-      EmployeeCode: empId,
-      Func: "FIHManage-GetEMPBaseInfo"
-    }
-    const param = this.dealPostParamsEncrypt(params);
-    const config = {
-      headers: {
-        apiID: "ffff-1669620301290-16925411121-5665",
-        userKey: this.USER_GQ
-      }
-    }
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(iwxServiceUrl, param, null, config)
-        .subscribe(
-          (data) => {
-            let res = JSON.parse(this.security.decrypt(data.r, this.iwxKInfo));
-            resolve(res);
-            console.log("getUserBaseInfo", res);
-          
-          },
-          (err) => {
-            // 请求错误
-            reject(err);
-            console.error("Error in getUserBaseInfo", err);
-          }
-        );
-    }).catch((reason) => {
-        console.log("getUserBaseInfo", reason);
-    });
-  }
-
-  getSitebasedUser (){
-    const params = {
-      Dept :'',
-      EmpId :this.getSettingUserInfo().eeid,
-      Site : '',
-      StartPage :1,
-      PageSize :999999999999,////pagesize = 0的時候是查詢的全部的數據,可以用作導出
-      Func: "SystemSettings-Get_User_manage"
-    }
-    
- 
-  const     config = {
-     headers :{
-        apiID: "ffff-1740459507956-10208193125-1431",
-        userKey: this.USER_TN
-      }
-    }
-      const param = this.dealPostParamsEncrypt(params);
-      return this.http
-        .post(iwxServiceUrl, param, null, config)
-        .pipe(
-          map((resp: any) => {
-            const res = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-            if (res.IsOK === "1") {
-        
-              // const _data = [];
-              // res.List.forEach((element) => {
-              //   if (!element) return;
-              //   let _item: any = {};
-              //   _item = {
-              //     label: element.BasicCode,
-              //     value: element.Id,
-              //   };
-              //   _data.push(_item);
-              // });
-               return res.List;
-            }
-          })
-        );
-  }
-
-  getSPbaseCode (value){
-    let _param = {
-      Func: "Base Code-Get_SPbasecode",
-      Type: value,
-    };
-    const config = {
-      headers: {
-        apiID: "ffff-1740459269703-10208193125-1423",
-        userKey: this.USER_TN,
-      },
-    };
-  
-      const param = this.dealPostParamsEncrypt(_param);
-      return this.http
-        .post(iwxServiceUrl, param, null, config)
-        .pipe(
-          map((resp: any) => {
-            const res = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-            if (res.IsOK === "1") {
-        
-              // const _data = [];
-              // res.List.forEach((element) => {
-              //   if (!element) return;
-              //   let _item: any = {};
-              //   _item = {
-              //     label: element.BasicCode,
-              //     value: element.Id,
-              //   };
-              //   _data.push(_item);
-              // });
-               return res.List;
-            }
-          })
-        );
-  }
-
-
-
-
-
-
-  // 獲取結薪月日期範圍
-  getPayrollMonthDate() {
-    // 設置默認日期：
-    //  當月20號之前顯示：上月21號至當月20號；
-    // 當月20號之後顯示：當月21號至下月20號；
-    let date: any = new Date();
-    let currentYear = date.getFullYear();
-    let currentMonth = date.getMonth();//月份從0開始，0-->1月
-    // console.log('currentYear', currentYear);
-    // console.log('currentMonth', currentMonth);
-
-    let day = date.getDate();
-    let startDate = new Date();
-    let endDate = new Date();
-    if (currentMonth == 0) {//當前月份為1月
-      let lastYear = startDate.getFullYear() - 1;
-      if (day > 20) {
-        let nextMonth = currentMonth + 1;
-        startDate.setFullYear(currentYear, currentMonth, 21)
-        endDate.setFullYear(currentYear, nextMonth, 20);
-
-      } else {
-        startDate.setFullYear(lastYear, 11, 21);
-        endDate.setFullYear(currentYear, currentMonth, 20);
-      }
-
-    } else if (currentMonth == 11) {//當前月份是12月
-      let nextYear = currentYear + 1;
-      if (day > 20) {
-        startDate.setFullYear(currentYear, currentMonth, 21)
-        endDate.setFullYear(nextYear, 0, 20);
-      } else {
-        let lastMonth = currentMonth - 1;
-        startDate.setFullYear(currentYear, lastMonth, 21)
-        endDate.setFullYear(currentYear, currentMonth, 20);
-      }
-    } else {
-      if (day > 20) {
-        let nextMonth = currentMonth + 1;
-        startDate.setFullYear(currentYear, currentMonth, 21)
-        endDate.setFullYear(currentYear, nextMonth, 20);
-      } else {
-        let lastMonth = currentMonth - 1;
-        startDate.setFullYear(currentYear, lastMonth, 21)
-        endDate.setFullYear(currentYear, currentMonth, 20);
-      }
-
-    }
-    let dateRange: any = [];
-    dateRange[0] = startDate;
-    dateRange[1] = endDate;
-    return dateRange;
-  }
-
-  //日期格式
-  getFormatDate_XLSX(value, Symbol) {
-    let reg = new RegExp(/^[0-9]+$/)
-    let result = reg.test(value)
-    if (result) {
-      let serial = parseInt(value)
-      var utc_days = Math.floor(serial - 25569);   //1970-01-01
-      var utc_value = utc_days * 86400;
-      var date_info = new Date(utc_value * 1000);
-      var fractional_day = serial - Math.floor(parseInt(value)) + 0.0000001;
-      var total_seconds = Math.floor(86400 * fractional_day);
-      var seconds = total_seconds % 60;
-      total_seconds -= seconds;
-      var hours = Math.floor(total_seconds / (60 * 60));
-      var minutes = Math.floor(total_seconds / 60) % 60;
-      var d = new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
-      let year = d.getFullYear() + ''
-      let month = d.getMonth() + 1 + ''
-      let date1 = d.getDate() + ''
-      month = month.length === 1 ? month.padStart(2, '0') : month //補0
-      date1 = date1.length === 1 ? date1.padStart(2, "0") : date1; //補0
-      // return year + '/' + month + '/' + date1
-      return date1 + Symbol + month + Symbol + year
-    } else {
-      return value;
-    }
-  }
-
-  // 獲取兩個日期之前的天數
-  getDays(startDate, endDate) {
-    const sDate = Date.parse(startDate);
-    const eDate = Date.parse(endDate);
-    const days = (Math.abs(eDate - sDate) / (1 * 24 * 60 * 60 * 1000));
-    return days;
-  }
-
-  // 檢驗費用代碼
-  checkCostCode(value) {
-    const reg = /^[A-Za-z][0-9][A-Za-z][0-9]{3}$/;
-    const reg1 = /^[A-Za-z][0-9][A-Za-z][0-9][A-Za-z][0-9]$/;
-    const res = reg.test(value);
-    const res1 = reg1.test(value);
-    let result = res || res1;
-    return result;
-  }
-
-  // 座機校驗
-  checkExtNumber(value) {
-    // The ext number format is XXX-XXXXX
-    const reg = /^[0-9]{3}-[0-9]{5}$/;
-    const res = reg.test(value);
-    return res;
-  }
-
-  // 手機號校驗 10位數
-  checkTelephoneNumber(value) {
-    const reg = /^[0-9]{10}$/;
-    const res = reg.test(value);
-    return res;
-  }
-
-  // 校驗Email
-  checkEmail(value) {
-    const reg = /^[.a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/;
-    let result = reg.test(value)
-    return result;
-  }
-
-
-
-  getGuardPassCode(params?: any,site?: any, isShowLabel?:any): Observable<any> {
-   // const code = params.slice(10);
-    // console.log("test",code)
-    const _param = {
-      TypeName :params,
-      Func: "Base Code-GET_BASE_CODE_TYPE",
-     // Site: site, 
-    };
-    
-    const config = {
-      headers: {
-        apiID: "ffff-1740455488666-10208193125-1363",
-        userKey: this.USER_TN,
-      },
-    };
-    const param = this.dealPostParamsEncrypt(_param);
-    return this.http
-      .post(iwxServiceUrl, param, null, config)
-      .pipe(
-        map((resp: any) => {
-          const res = JSON.parse(this.security.decrypt(resp.r, this.iwxKInfo));
-          // console.log("基本代碼",res)
-          if (res.IsOK === "1") {
-            const _data = [];
-            res.List.forEach((element) => {
-              if (!element) return;
-              let _item:any;
-              if(isShowLabel){//綁定文字
-                 _item = {
-                  label: element.Name,
-                  value: element.Name,
-                };
-              }else{
-                 _item = {
-                label: element.BasicCode,
-                value: element.BaseCodeId,
-              };
-              }
-              
-              _data.push(_item);
-            });
-            return _data;
-          }
-        })
-      );
-  }
-
-
-  // 退出登錄
-  logout() {
-    this.http.post("/logout", {}).subscribe(res => { });
-    localStorage.removeItem("fromInfo");
-    localStorage.removeItem("toPageInfo");
-    localStorage.removeItem("userMenu");
-    localStorage.removeItem("userMenuId");
-    localStorage.removeItem("isActivate");
-    sessionStorage.removeItem('ClientIp')
-    this.tokenService.clear();
-    this.settingService.setUser({});
-    document.cookie = "eeid=";
-    document.cookie = "name=";
-    this.router.navigateByUrl(this.tokenService.login_url);
-  }
-
-  downloadFile(params: any): Observable<any> {
-    let resultPar =
-      "strConnName=" +
-      params.connName +
-      "&strFilePath=" +
-      params.filePath +
-      "&strFileName=" +
-      params.fileName;
-    let res = {
-      inputString: resultPar,
-    };
-    return this.http.post(
-      iwxServiceUrl,
-      res,
-      {},
-      {
-        headers: {
-          apiID: "ffff-1618561198104-10772443-0772",
-          userKey: "011E223B8F4E945052E3E4D3EE9730E0",
-        },
-      }
-    );
-  }
-
-
-  
-  saveAsFile(buffer: any, fileName) {
-    var raw = window.atob(buffer); //atob() 方法用于解码使用 base-64 编码的字符串
-    var uInt8Array = new Uint8Array(raw.length); //數組長度
-    for (var i = 0; i < raw.length; i++) {
-      uInt8Array[i] = raw.charCodeAt(i); //charCodeAt() 方法返回字符串中规定索引（下标）处字符的 Unicode
-    }
-    const link = document.createElement("a");
-    const blob = new Blob([uInt8Array]);
-    link.style.display = "none";
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-  // saveAsFileasImage(buffer: any, fileName) {
-  //   var raw = window.atob(buffer); //atob() 方法用于解码使用 base-64 编码的字符串
-  //   var uInt8Array = new Uint8Array(raw.length); //數組長度
-  //   for (var i = 0; i < raw.length; i++) {
-  //     uInt8Array[i] = raw.charCodeAt(i); //charCodeAt() 方法返回字符串中规定索引（下标）处字符的 Unicode
-  //   }
-  //   const link = document.createElement("a");
-  //   const blob = new Blob([uInt8Array],{ type: "image/jpeg" });
-  //   link.style.display = "none";
-  //   link.href = URL.createObjectURL(blob);
-  //   link.setAttribute("download", fileName);
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // }
-   saveAsFileasImage(buffer, fileName) {
-    var raw = window.atob(buffer); // Decode the base-64 encoded string
-    var uInt8Array = new Uint8Array(raw.length); // Create a Uint8Array with the same length as the decoded string
-    for (var i = 0; i < raw.length; i++) {
-      uInt8Array[i] = raw.charCodeAt(i); // Assign the Unicode of each character to the Uint8Array
-    }
-    
-    const blob = new Blob([uInt8Array], { type: "image/jpeg" }); // Create a Blob with the Uint8Array and set the MIME type to 'image/jpeg'
-    const blobUrl = URL.createObjectURL(blob); // Create a URL for the Blob
-  // console.log(blobUrl)
-    // Open the Blob URL in a new tab
-    window.open(blobUrl, '_blank');
-  }
-  getSettingUserINfo() {
-    const userData = {
-      avatar: "",
-      eeid: "",
-      name: "",
-      time: ""
-    }
-    const userInfo = this.settingService.user.userInfo ? JSON.parse(this.security.decryptForWeb(this.settingService.user.userInfo)) : userData;
-  
-    return userInfo
-  }
-
+  });
 }
 
 
-
-
-export let ouacServiceUrl: string;//一賬通url
-export let serviceUrl: string;//服務器url--一直調用正式url
-export let iwxServiceUrl: string;//愛萬象url,一直調用正式url
-export let iwxServiceUrl2: string;//愛萬象url,一直調用正式url
-export let iwxServiceUrlNew: string;//愛萬象url,區分正式和測試url
-export let toolsServiceUrl: string = "";//工具箱url,一直調用正式url
-export let toolsServiceUrlNew: string = "";//工具箱url,區分正式和測試url
-export let uploadFileServiceUrl: string = "";//上傳附件url,區分正式和測試url
-export let uploadFileServiceUrlNew: string = "";//上傳附件url,區分正式和測試url
-export let iwxServiceUrlNew1: string;//愛萬象url,區分正式和測試url
-((doc) => {
-    urlManage();
-})(document)
-
-function urlManage() {
-    iwxServiceUrlNew1 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-    iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-    iwxServiceUrl2 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-    serviceUrl = "https://ipocket.idpbgind.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
-    ouacServiceUrl = "https://ouac.idpbgind.efoxconn.com?SysCode=LMS_INDIA&NewVersion=V401";//正式
-    toolsServiceUrl = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
-    uploadFileServiceUrl = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
-   // iwxServiceUrlNew ="https://microservice.abgind.foxconn.com/india/gateway";
-    if (window.location.host == "lms.idpbgind.efoxconn.com" || window.location.host == "10.208.193.124:8000"  || window.location.host== "10.208.192.44:9001" ||
-  window.location.host == "10.209.110.101:4207" ||window.location.host == "10.209.110.94:4207"
-  || window.location.host == "10.209.122.166:4209"
-   || window.location.host == "localhost:4207" ||  window.location.host == "10.209.110.208:4207" 
-    ) {
-        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-        toolsServiceUrlNew = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
-        uploadFileServiceUrlNew = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
-    } else if (window.location.host == "lms.idpbgtn.efoxconn.com") {
-        serviceUrl = "https://ipocket.idpbgtn.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
-        ouacServiceUrl = "https://ouac.idpbgtn.efoxconn.com?SysCode=LMS_INDIA";//正式
-        toolsServiceUrl = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
-        uploadFileServiceUrl = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
-
-        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
-        toolsServiceUrlNew = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
-        uploadFileServiceUrlNew = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
-    } 
-    
-    else if (window.location.host=='http://10.209.122.166:4208'){
-           iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
-           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
-        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
-        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
-    }  else {
-        iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
-           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
-        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
-        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
-
-        if(window.location.protocol=="http:"){
-            ouacServiceUrl ="http://ouac.idpbgind.efoxconn.com:8080/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證測試網址
-        }else{
-            ouacServiceUrl ="https://ouac.idpbgind.efoxconn.com/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證正式網址 
+  getToMenuData(data, menuId) {
+    const toMenuData = data.filter((item) => {
+      return item.id == menuId;
+    });
+    if (toMenuData.length == 0) {
+      data.forEach((item) => {
+        if (item.children.length != 0) {
+          const list = item.children;
+          this.getToMenuData(list, menuId);
         }
+      });
+    } else {
+      const menuData = toMenuData[0];
+      this.getPage(menuData);
+      // console.log('menuData',menuData)
     }
+  }
+  getPage(data){
+    if(data.children.length>0){
+      const list=data.children[0];
+      this.getPage(list);
+    }else{
+      const toPage=data.link;
+      this.route.navigateByUrl(toPage);
+      localStorage.removeItem("fromInfo");
+      localStorage.removeItem("toPageInfo");
+      localStorage.removeItem("userMenu");
+      localStorage.removeItem("userMenuId");
+    }
+  }
 
+  arrayToTree(list, ModuleParentId = -1) {
+    // console.log("list", list);
+
+    return list
+      .filter((item) => item.ModuleParentId === ModuleParentId)
+      .map((item) => {
+        // console.log("item", item);
+        let icon = item.Icon
+          ? ({
+              type: "icon",
+              value: item.icon.split("|")[0],
+              theme: item.icon.split("|")[1] || "outline",
+            } as MenuIcon)
+          : null;
+        let ModuleName = item.ModuleParentId == -1 ? "LMS" : item.ModuleName;
+        return {
+          text: ModuleName,
+          icon: icon,
+          link: item.ModuleUrl,
+          parentId: item.ModuleParentId,
+          children: this.arrayToTree(list, item.ModuleId),
+          // menuType: item.menuType,
+          id: item.ModuleId,
+          // permissionId: item.permissionId,
+          show: true,
+          // urlKey: item.urlkey,
+        };
+      });
+  }
+  ngOnDestroy() {
+    const { unsubscribe$, body, pro } = this;
+    unsubscribe$.next();
+    unsubscribe$.complete();
+    body.classList.remove(
+      `alain-pro__content-${pro.layout.contentWidth}`,
+      `alain-pro__fixed`,
+      `alain-pro__wide`,
+      `alain-pro__dark`,
+      `alain-pro__light`,
+    );
+  }
 }
