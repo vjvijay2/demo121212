@@ -3,19 +3,19 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { environment } from "@env/environment";
 // layout
-
-import { LayoutPassportComponent } from "../layout/passport/passport.component";  
+import { LayoutProComponent } from "@brand";
+import { LayoutPassportComponent } from "../layout/passport/passport.component";
 // dashboard pages
-
+import { DashboardComponent } from "./dashboard/dashboard.component";
 // single pages
 import { CallbackComponent } from "./callback/callback.component";
 const routes: Routes = [
   {
     path: "",
-
+    component: LayoutProComponent,
     children: [
-      { path: "", redirectTo: "dashboard", pathMatch: "full" }, 
-
+      { path: "", redirectTo: "dashboard", pathMatch: "full" },
+      { path: "dashboard", component: DashboardComponent },
       // Exception
       {
         path: "exception",
@@ -27,25 +27,41 @@ const routes: Routes = [
         loadChildren: () => import("./template/template.module").then(m => m.TemplateModule)
       },
      //LMS
+     {
+      path:'Basicdata',
+      loadChildren:()=>import('./LMS/base-code/base-code.module').then(m=>m.BaseCodeModule)
+     },
+        
+     {
+      path:'License',
+      loadChildren:()=>import('./LMS/license-management/license-management.module').then(m=>m.LicenseManagementModule)
+     },
 
+     {
+      path:'toDo',
+      loadChildren:()=>import('./LMS/to-do-list/to-do-list.module').then(m=>m.ToDoListModule)
+
+     },
      {
       path:'Usermanage',
       loadChildren:()=>import('./LMS/user-management/user-management.module').then(m=>m.UserManagementModule)
      },
-
-
+     {
+      path:'Reports',
+      loadChildren:()=>import('./LMS/log-report/log-report.module').then(m=>m.LogReportModule)
+     },
+   
     ]
   },
   // passport
-  { 
+  {
     path: "passport",
     component: LayoutPassportComponent,
     children: [
-      { path: "", loadChildren: () => import('./passport/passport.module').then(m 
-=> m.PassportModule) }
+      { path: "", loadChildren: () => import('./passport/passport.module').then(m => m.PassportModule) }
     ]
   },
-  // å•é¡µä¸åŒ…è£¹Layout
+  // 单页不包裹Layout
   { path: "callback/:type", component: CallbackComponent },
   { path: "**", redirectTo: "exception/404" }
 ];
@@ -63,39 +79,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class RouteRoutingModule { }
-
-
-
-
-
-import { NgModule } from '@angular/core';
-import { SharedModule } from '@shared';
-import { PassportRoutingModule } from './passport.routing.module';
-import { UserLoginComponent } from './login/login.component';
-import { UserRegisterComponent } from './register/register.component';
-import { UserRegisterResultComponent } from './register-result/register-result.component';
-import { UserLockComponent } from './lock/lock.component';
-import { CookieService } from 'ngx-cookie-service';
-
-
-const COMPONENTS = [
-    UserLoginComponent,
-    UserRegisterComponent,
-    UserRegisterResultComponent, 
-    UserLockComponent
-];
-const COMPONENTS_NOROUNT = [];
-
-@NgModule({
-  imports: [
-    SharedModule,
-    PassportRoutingModule
-  ],
-  declarations: [
-    ...COMPONENTS,
-    ...COMPONENTS_NOROUNT
-  ],
-  providers:[CookieService],
-  entryComponents: COMPONENTS_NOROUNT
-})
-export class PassportModule { }
