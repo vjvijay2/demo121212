@@ -1,120 +1,123 @@
-// tslint:disable: no-duplicate-imports
-import { NgModule, LOCALE_ID, APP_INITIALIZER, Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// #region default language
-// 参考：https://ng-alain.com/docs/i18n
-import { default as ngLang } from '@angular/common/locales/zh';
-import { NZ_I18N, zh_CN as zorroLang, NzMenuBaseService, NzMenuService } from 'ng-zorro-antd';
-import { DELON_LOCALE, zh_CN as delonLang, SettingsService } from '@delon/theme';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-const LANG = {
-  abbr: 'zh',
-  ng: ngLang,
-  zorro: zorroLang,
-  delon: delonLang,
-};
-// register angular
-import { registerLocaleData } from '@angular/common';
-registerLocaleData(LANG.ng, LANG.abbr);
-const LANG_PROVIDES = [
-  { provide: LOCALE_ID, useValue: LANG.abbr },
-  { provide: NZ_I18N, useValue: LANG.zorro },
-  { provide: DELON_LOCALE, useValue: LANG.delon },
-];
-// #endregion
-// #region i18n services
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { ALAIN_I18N_TOKEN } from '@delon/theme';
-import { I18NService } from '@core';
-// 加载i18n语言文件
-export function I18nHttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, `assets/tmp/i18n/`, '.json');
-}
-const I18NSERVICE_MODULES = [
-  TranslateModule.forRoot({
-    loader: {
-      provide: TranslateLoader,
-      useFactory: I18nHttpLoaderFactory,
-      deps: [HttpClient],
-    },
-  }),
-];
-const I18NSERVICE_PROVIDES = [{ provide: ALAIN_I18N_TOKEN, useClass: I18NService, multi: false }];
-// #endregion
-// #region global third module
-const GLOBAL_THIRD_MODULES = [];
-// #endregion
-// #region JSON Schema form (using @delon/form)
-import { JsonSchemaModule } from '@shared/json-schema/json-schema.module';
-const FORM_MODULES = [JsonSchemaModule];
-// #endregion
-// #region Http Interceptors
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SimpleInterceptor } from '@delon/auth';
-import { DefaultInterceptor } from '@core';
-const INTERCEPTOR_PROVIDES = [
-  { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
-];
-// #endregion
-// #region Startup Service
-import { StartupService } from '@core';
-export function StartupServiceFactory(startupService: StartupService) {
-  return () => startupService.load();
-}
-const APPINIT_PROVIDES = [
-  StartupService,
-  {
-    provide: APP_INITIALIZER,
-    useFactory: StartupServiceFactory,
-    deps: [StartupService],
-    multi: true,
-  },
-];
+PS E:\ISM\License Management System-SVN> Get-ChildItem -Recurse -File | Select-String "PublicNetService"
 
-@Injectable({ providedIn: 'root' })
-export class MySettingsService extends (SettingsService as any) {
-  get(key: string) {
-    return JSON.parse(sessionStorage.getItem(key) || 'null') || null;
-  }
-  set(key: string, value: any) {
-    sessionStorage.setItem(key, JSON.stringify(value));
-  }
-}
+src\app\app.module.ts:99:import {PublicNetService} from "./routes/a_Public_net/Public_net.service"; 
+src\app\app.module.ts:117:  providers: [...LANG_PROVIDES, ...INTERCEPTOR_PROVIDES, ...I18NSERVICE_PROVIDES,
+...APPINIT_PROVIDES, ...SETTING_PROVIDES, NzMenuBaseService, NzMenuService,PublicNetService],
+src\app\layout\pro\pro.component.ts:32:import {PublicNetService} from "../../routes/a_Public_net/Public_net.service"; 
+src\app\layout\pro\pro.component.ts:92:    private publicSvr: PublicNetService,
+src\app\layout\pro\components\menu\menu.component.ts:13:import {PublicNetService} from  
+"../../../../routes/a_Public_net/Public_net.service";
+src\app\layout\pro\components\menu\menu.component.ts:50:    private apiSvr: PublicNetService,
+src\app\layout\pro\components\search\search.component.ts:13:import {PublicNetService} from  
+"../../../../routes/a_Public_net/Public_net.service"
+src\app\layout\pro\components\search\search.component.ts:38:  constructor(https: _HttpClient, cdr: ChangeDetectorRef,        
+public settings: SettingsService,private apiSvr:PublicNetService, private msgSvr: NzMessageService,) {
+src\app\layout\pro\components\searchMenu\searchMenu.component.ts:6:import {PublicNetService} from  
+"../../../../routes/a_Public_net/Public_net.service"
+src\app\layout\pro\components\searchMenu\searchMenu.component.ts:44:    private apiSvr:PublicNetService
+src\app\layout\pro\components\tabs\tabs.component.ts:39:import { PublicNetService } from  
+"../../../../routes/a_Public_net/Public_net.service";
+src\app\layout\pro\components\tabs\tabs.component.ts:53:    private publicSvr: PublicNetService,
+src\app\layout\pro\components\user\user.component.ts:12:import {PublicNetService} from  
+"../../../../routes/a_Public_net/Public_net.service";
+src\app\layout\pro\components\user\user.component.ts:32:    public publicSvr:PublicNetService,
+src\app\routes\a_Public_net\Public_net.service.ts:25:export class PublicNetService { 
+src\app\routes\dashboard\dashboard.component.ts:21:import { PublicNetService } from "../a_Public_net/Public_net.service"; 
+src\app\routes\dashboard\dashboard.component.ts:45:     private publicSvr: PublicNetService,
+src\app\routes\LMS\base-code\basic-code-management\basic-code-management.component.ts:13:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\base-code\basic-code-management\basic-code-management.component.ts:31:    private publicSvr:
+PublicNetService,
+src\app\routes\LMS\base-code\Drawer\base-code-add-edit\base-code-add-edit.component.ts:5:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\base-code\Drawer\base-code-add-edit\base-code-add-edit.component.ts:18:    private publicSvr:
+PublicNetService, 
+src\app\routes\LMS\base-code\Drawer\base-code-import\base-code-import.component.ts:5:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\base-code\Drawer\base-code-import\base-code-import.component.ts:16:     private apiSvr: PublicNetService, 
+src\app\routes\LMS\license-management\license-management.module.ts:9:import { PublicNetService } from  
+'../../a_Public_net/Public_net.service';
+src\app\routes\LMS\license-management\license-management.module.ts:27:const SERVICES = [PublicNetService];
+src\app\routes\LMS\license-management\Drawer\license-attribute-add-edit\license-attribute-add-edit.component.ts:6:import {  
+PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-attribute-add-edit\license-attribute-add-edit.component.ts:15:
+private publicSvr: PublicNetService,
+src\app\routes\LMS\license-management\Drawer\license-attribute-import\license-attribute-import.component.ts:5:import {  
+PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-attribute-import\license-attribute-import.component.ts:15:    private   
+apiSvr: PublicNetService,
+src\app\routes\LMS\license-management\Drawer\license-details-add\license-details-add.component.ts:6:import {  
+PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-details-add\license-details-add.component.ts:15:    private publicSvr:  
+PublicNetService,
+src\app\routes\LMS\license-management\Drawer\license-details-edit\license-details-edit.component.ts:6:import {  
+PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-details-edit\license-details-edit.component.ts:16:      private
+publicSvr: PublicNetService,
+src\app\routes\LMS\license-management\Drawer\license-details-import\license-details-import.component.ts:5:import {  
+PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-details-import\license-details-import.component.ts:17:    private       
+apiSvr: PublicNetService,
+src\app\routes\LMS\license-management\Drawer\license-details-todo-initiate\license-details-todo-initiate.component.ts:6:impo 
+rt { PublicNetService } from "../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\license-details-todo-initiate\license-details-todo-initiate.component.ts:18:    
+ private publicSvr: PublicNetService,
+src\app\routes\LMS\license-management\Drawer\plan-details\plan-details.component.ts:5:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\Drawer\plan-details\plan-details.component.ts:19:    private publicSvr:
+PublicNetService,
+src\app\routes\LMS\license-management\license-attribute-management\license-attribute-management.component.ts:11:import {  
+PublicNetService } from "../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\license-attribute-management\license-attribute-management.component.ts:26:    private  
+publicSvr: PublicNetService,
+src\app\routes\LMS\license-management\license-details-management\license-details-management.component.ts:9:import {  
+PublicNetService } from "../../../a_Public_net/Public_net.service"; 
+src\app\routes\LMS\license-management\license-details-management\license-details-management.component.ts:62:    private      
+publicSvr: PublicNetService,
+src\app\routes\LMS\license-management\removed-license\removed-license.component.ts:8:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\license-management\removed-license\removed-license.component.ts:61:        private publicSvr:
+PublicNetService,
+src\app\routes\LMS\log-report\login-log\login-log.component.ts:10:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\log-report\login-log\login-log.component.ts:29:    private publicSvr: PublicNetService,
+src\app\routes\LMS\log-report\modify-data-report\modify-data-report.component.ts:10:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\log-report\modify-data-report\modify-data-report.component.ts:23:    private publicSvr: PublicNetService, 
+src\app\routes\LMS\to-do-list\to-do-list.module.ts:5:import { PublicNetService } from  
+'../../a_Public_net/Public_net.service';
+src\app\routes\LMS\to-do-list\to-do-list.module.ts:19:const SERVICES = [PublicNetService];
+src\app\routes\LMS\to-do-list\Draw\apply-plan-draw\apply-plan-draw.component.ts:11:// import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\to-do-list\Draw\apply-plan-draw\apply-plan-draw.component.ts:24://     private publicSvr:
+PublicNetService,
+src\app\routes\LMS\to-do-list\model\apply-plan\apply-plan.component.ts:2:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\to-do-list\model\apply-plan\apply-plan.component.ts:130:    private publicSvr: PublicNetService,
+src\app\routes\LMS\to-do-list\model\update-license\update-license.component.ts:2:// import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\to-do-list\model\update-license\update-license.component.ts:21://     private publicSvr:
+PublicNetService,
+src\app\routes\LMS\to-do-list\to-do-manage\to-do-manage.component.ts:10:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\to-do-list\to-do-manage\to-do-manage.component.ts:35:      private publicSvr: PublicNetService,
+src\app\routes\LMS\user-management\Drawer\mail-drawer\mail-drawer.component.ts:5:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\user-management\Drawer\mail-drawer\mail-drawer.component.ts:16:    private publicSvr: PublicNetService,   
+src\app\routes\LMS\user-management\Drawer\user-manage-add\user-manage-add.component.ts:6:import { PublicNetService } from  
+"../../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\user-management\Drawer\user-manage-add\user-manage-add.component.ts:17:    private publicSvr:
+PublicNetService,
+src\app\routes\LMS\user-management\mail-manage\mail-manage.component.ts:13:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\user-management\mail-manage\mail-manage.component.ts:28:    private publicSvr: PublicNetService,
+src\app\routes\LMS\user-management\usermanagement\usermanagement.component.ts:13:import { PublicNetService } from  
+"../../../a_Public_net/Public_net.service";
+src\app\routes\LMS\user-management\usermanagement\usermanagement.component.ts:31:    private publicSvr: PublicNetService,    
+src\app\routes\passport\lock\lock.component.ts:6:import {PublicNetService} from "../../a_Public_net/Public_net.service" 
+src\app\routes\passport\lock\lock.component.ts:20:    private publicSvr: PublicNetService,
+src\app\routes\passport\login\login.component.ts:19:import {PublicNetService} from "../../a_Public_net/Public_net.service"; 
+src\app\routes\passport\login\login.component.ts:49:    private publicSvr: PublicNetService,
 
-const SETTING_PROVIDES = [
-  { provide: SettingsService, useClass: MySettingsService },
-]
 
-// #endregion
-import { DelonModule } from './delon.module';
-import { CoreModule } from './core/core.module';
-import { SharedModule } from './shared/shared.module';
-import { AppComponent } from './app.component';
-import { RoutesModule } from './routes/routes.module';
-import { LayoutModule } from './layout/layout.module';
-import {PublicNetService} from "./routes/a_Public_net/Public_net.service";
-
-@NgModule({
-  declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    DelonModule.forRoot(),
-    CoreModule,
-    SharedModule,
-    LayoutModule,
-    RoutesModule,
-    DragDropModule,
-    ...I18NSERVICE_MODULES,
-    ...GLOBAL_THIRD_MODULES,
-    ...FORM_MODULES,
-  ],
-  providers: [...LANG_PROVIDES, ...INTERCEPTOR_PROVIDES, ...I18NSERVICE_PROVIDES, ...APPINIT_PROVIDES, ...SETTING_PROVIDES, NzMenuBaseService, NzMenuService,PublicNetService],
-  bootstrap: [AppComponent],
-})
-export class AppModule { }
+PS E:\ISM\License Management System-SVN>
