@@ -1,123 +1,64 @@
-PS E:\ISM\License Management System-SVN> Get-ChildItem -Recurse -File | Select-String "PublicNetService"
 
-src\app\app.module.ts:99:import {PublicNetService} from "./routes/a_Public_net/Public_net.service"; 
-src\app\app.module.ts:117:  providers: [...LANG_PROVIDES, ...INTERCEPTOR_PROVIDES, ...I18NSERVICE_PROVIDES,
-...APPINIT_PROVIDES, ...SETTING_PROVIDES, NzMenuBaseService, NzMenuService,PublicNetService],
-src\app\layout\pro\pro.component.ts:32:import {PublicNetService} from "../../routes/a_Public_net/Public_net.service"; 
-src\app\layout\pro\pro.component.ts:92:    private publicSvr: PublicNetService,
-src\app\layout\pro\components\menu\menu.component.ts:13:import {PublicNetService} from  
-"../../../../routes/a_Public_net/Public_net.service";
-src\app\layout\pro\components\menu\menu.component.ts:50:    private apiSvr: PublicNetService,
-src\app\layout\pro\components\search\search.component.ts:13:import {PublicNetService} from  
-"../../../../routes/a_Public_net/Public_net.service"
-src\app\layout\pro\components\search\search.component.ts:38:  constructor(https: _HttpClient, cdr: ChangeDetectorRef,        
-public settings: SettingsService,private apiSvr:PublicNetService, private msgSvr: NzMessageService,) {
-src\app\layout\pro\components\searchMenu\searchMenu.component.ts:6:import {PublicNetService} from  
-"../../../../routes/a_Public_net/Public_net.service"
-src\app\layout\pro\components\searchMenu\searchMenu.component.ts:44:    private apiSvr:PublicNetService
-src\app\layout\pro\components\tabs\tabs.component.ts:39:import { PublicNetService } from  
-"../../../../routes/a_Public_net/Public_net.service";
-src\app\layout\pro\components\tabs\tabs.component.ts:53:    private publicSvr: PublicNetService,
-src\app\layout\pro\components\user\user.component.ts:12:import {PublicNetService} from  
-"../../../../routes/a_Public_net/Public_net.service";
-src\app\layout\pro\components\user\user.component.ts:32:    public publicSvr:PublicNetService,
-src\app\routes\a_Public_net\Public_net.service.ts:25:export class PublicNetService { 
-src\app\routes\dashboard\dashboard.component.ts:21:import { PublicNetService } from "../a_Public_net/Public_net.service"; 
-src\app\routes\dashboard\dashboard.component.ts:45:     private publicSvr: PublicNetService,
-src\app\routes\LMS\base-code\basic-code-management\basic-code-management.component.ts:13:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\base-code\basic-code-management\basic-code-management.component.ts:31:    private publicSvr:
-PublicNetService,
-src\app\routes\LMS\base-code\Drawer\base-code-add-edit\base-code-add-edit.component.ts:5:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\base-code\Drawer\base-code-add-edit\base-code-add-edit.component.ts:18:    private publicSvr:
-PublicNetService, 
-src\app\routes\LMS\base-code\Drawer\base-code-import\base-code-import.component.ts:5:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\base-code\Drawer\base-code-import\base-code-import.component.ts:16:     private apiSvr: PublicNetService, 
-src\app\routes\LMS\license-management\license-management.module.ts:9:import { PublicNetService } from  
-'../../a_Public_net/Public_net.service';
-src\app\routes\LMS\license-management\license-management.module.ts:27:const SERVICES = [PublicNetService];
-src\app\routes\LMS\license-management\Drawer\license-attribute-add-edit\license-attribute-add-edit.component.ts:6:import {  
-PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-attribute-add-edit\license-attribute-add-edit.component.ts:15:
-private publicSvr: PublicNetService,
-src\app\routes\LMS\license-management\Drawer\license-attribute-import\license-attribute-import.component.ts:5:import {  
-PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-attribute-import\license-attribute-import.component.ts:15:    private   
-apiSvr: PublicNetService,
-src\app\routes\LMS\license-management\Drawer\license-details-add\license-details-add.component.ts:6:import {  
-PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-details-add\license-details-add.component.ts:15:    private publicSvr:  
-PublicNetService,
-src\app\routes\LMS\license-management\Drawer\license-details-edit\license-details-edit.component.ts:6:import {  
-PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-details-edit\license-details-edit.component.ts:16:      private
-publicSvr: PublicNetService,
-src\app\routes\LMS\license-management\Drawer\license-details-import\license-details-import.component.ts:5:import {  
-PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-details-import\license-details-import.component.ts:17:    private       
-apiSvr: PublicNetService,
-src\app\routes\LMS\license-management\Drawer\license-details-todo-initiate\license-details-todo-initiate.component.ts:6:impo 
-rt { PublicNetService } from "../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\license-details-todo-initiate\license-details-todo-initiate.component.ts:18:    
- private publicSvr: PublicNetService,
-src\app\routes\LMS\license-management\Drawer\plan-details\plan-details.component.ts:5:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\Drawer\plan-details\plan-details.component.ts:19:    private publicSvr:
-PublicNetService,
-src\app\routes\LMS\license-management\license-attribute-management\license-attribute-management.component.ts:11:import {  
-PublicNetService } from "../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\license-attribute-management\license-attribute-management.component.ts:26:    private  
-publicSvr: PublicNetService,
-src\app\routes\LMS\license-management\license-details-management\license-details-management.component.ts:9:import {  
-PublicNetService } from "../../../a_Public_net/Public_net.service"; 
-src\app\routes\LMS\license-management\license-details-management\license-details-management.component.ts:62:    private      
-publicSvr: PublicNetService,
-src\app\routes\LMS\license-management\removed-license\removed-license.component.ts:8:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\license-management\removed-license\removed-license.component.ts:61:        private publicSvr:
-PublicNetService,
-src\app\routes\LMS\log-report\login-log\login-log.component.ts:10:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\log-report\login-log\login-log.component.ts:29:    private publicSvr: PublicNetService,
-src\app\routes\LMS\log-report\modify-data-report\modify-data-report.component.ts:10:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\log-report\modify-data-report\modify-data-report.component.ts:23:    private publicSvr: PublicNetService, 
-src\app\routes\LMS\to-do-list\to-do-list.module.ts:5:import { PublicNetService } from  
-'../../a_Public_net/Public_net.service';
-src\app\routes\LMS\to-do-list\to-do-list.module.ts:19:const SERVICES = [PublicNetService];
-src\app\routes\LMS\to-do-list\Draw\apply-plan-draw\apply-plan-draw.component.ts:11:// import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\to-do-list\Draw\apply-plan-draw\apply-plan-draw.component.ts:24://     private publicSvr:
-PublicNetService,
-src\app\routes\LMS\to-do-list\model\apply-plan\apply-plan.component.ts:2:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\to-do-list\model\apply-plan\apply-plan.component.ts:130:    private publicSvr: PublicNetService,
-src\app\routes\LMS\to-do-list\model\update-license\update-license.component.ts:2:// import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\to-do-list\model\update-license\update-license.component.ts:21://     private publicSvr:
-PublicNetService,
-src\app\routes\LMS\to-do-list\to-do-manage\to-do-manage.component.ts:10:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\to-do-list\to-do-manage\to-do-manage.component.ts:35:      private publicSvr: PublicNetService,
-src\app\routes\LMS\user-management\Drawer\mail-drawer\mail-drawer.component.ts:5:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\user-management\Drawer\mail-drawer\mail-drawer.component.ts:16:    private publicSvr: PublicNetService,   
-src\app\routes\LMS\user-management\Drawer\user-manage-add\user-manage-add.component.ts:6:import { PublicNetService } from  
-"../../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\user-management\Drawer\user-manage-add\user-manage-add.component.ts:17:    private publicSvr:
-PublicNetService,
-src\app\routes\LMS\user-management\mail-manage\mail-manage.component.ts:13:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\user-management\mail-manage\mail-manage.component.ts:28:    private publicSvr: PublicNetService,
-src\app\routes\LMS\user-management\usermanagement\usermanagement.component.ts:13:import { PublicNetService } from  
-"../../../a_Public_net/Public_net.service";
-src\app\routes\LMS\user-management\usermanagement\usermanagement.component.ts:31:    private publicSvr: PublicNetService,    
-src\app\routes\passport\lock\lock.component.ts:6:import {PublicNetService} from "../../a_Public_net/Public_net.service" 
-src\app\routes\passport\lock\lock.component.ts:20:    private publicSvr: PublicNetService,
-src\app\routes\passport\login\login.component.ts:19:import {PublicNetService} from "../../a_Public_net/Public_net.service"; 
-src\app\routes\passport\login\login.component.ts:49:    private publicSvr: PublicNetService,
+export let ouacServiceUrl: string;//一賬通url
+export let serviceUrl: string;//服務器url--一直調用正式url
+export let iwxServiceUrl: string;//愛萬象url,一直調用正式url
+export let iwxServiceUrl2: string;//愛萬象url,一直調用正式url
+export let iwxServiceUrlNew: string;//愛萬象url,區分正式和測試url
+export let toolsServiceUrl: string = "";//工具箱url,一直調用正式url
+export let toolsServiceUrlNew: string = "";//工具箱url,區分正式和測試url
+export let uploadFileServiceUrl: string = "";//上傳附件url,區分正式和測試url
+export let uploadFileServiceUrlNew: string = "";//上傳附件url,區分正式和測試url
+export let iwxServiceUrlNew1: string;//愛萬象url,區分正式和測試url
+((doc) => {
+    urlManage();
+})(document)
 
+function urlManage() {
+    iwxServiceUrlNew1 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    iwxServiceUrl2 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    serviceUrl = "https://ipocket.idpbgind.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
+    ouacServiceUrl = "https://ouac.idpbgind.efoxconn.com?SysCode=LMS_INDIA&NewVersion=V401";//正式
+    toolsServiceUrl = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
+    uploadFileServiceUrl = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
+   // iwxServiceUrlNew ="https://microservice.abgind.foxconn.com/india/gateway";
+    if (window.location.host == "lms.idpbgind.efoxconn.com" || window.location.host == "10.208.193.124:8000"  || window.location.host== "10.208.192.44:9001" ||
+  window.location.host == "10.209.110.101:4207" ||window.location.host == "10.209.110.94:4207"
+  || window.location.host == "10.209.122.166:4209"
+   || window.location.host == "localhost:4207"
+    ) {
+        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        toolsServiceUrlNew = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrlNew = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
+    } else if (window.location.host == "lms.idpbgtn.efoxconn.com") {
+        serviceUrl = "https://ipocket.idpbgtn.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
+        ouacServiceUrl = "https://ouac.idpbgtn.efoxconn.com?SysCode=LMS_INDIA";//正式
+        toolsServiceUrl = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrl = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
 
-PS E:\ISM\License Management System-SVN>
+        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        toolsServiceUrlNew = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrlNew = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
+    } 
+    
+    else if (window.location.host=='http://10.209.122.166:4208'){
+           iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
+           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
+        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
+        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
+    }  else {
+        iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
+           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
+        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
+        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
+
+        if(window.location.protocol=="http:"){
+            ouacServiceUrl ="http://ouac.idpbgind.efoxconn.com:8080/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證測試網址
+        }else{
+            ouacServiceUrl ="https://ouac.idpbgind.efoxconn.com/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證正式網址 
+        }
+    }
+
+}
