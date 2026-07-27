@@ -1,127 +1,398 @@
-import { Component, OnInit } from '@angular/core';
+.dashboard-page {
+  padding: 20px;
+  background: #f5f7fb;
+  min-height: calc(100vh - 64px);
+}
 
-@Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.less']
-})
-export class DashboardComponent implements OnInit {
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
 
-  summaryCards = [
-    {
-      title: 'Total Proposals',
-      value: 120,
-      change: '↑ 12.5%',
-      icon: '▣',
-      down: false
-    },
-    {
-      title: 'On Track',
-      value: 68,
-      change: '↑ 8.3%',
-      icon: '✓',
-      down: false
-    },
-    {
-      title: 'Overdue',
-      value: 28,
-      change: '↑ 5.7%',
-      icon: '◷',
-      down: true
-    },
-    {
-      title: 'Closed',
-      value: 88,
-      change: '↑ 15.2%',
-      icon: '✓',
-      down: false
-    },
-    {
-      title: 'Rejected',
-      value: 14,
-      change: '↓ 3.1%',
-      icon: '×',
-      down: true
-    },
-    {
-      title: 'SLA Breached',
-      value: 6,
-      change: '↓ 14.3%',
-      icon: '!',
-      down: true
+  h2 {
+    margin: 0 0 5px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2636;
+  }
+}
+
+.breadcrumb {
+  color: #8b94a5;
+
+  span {
+    margin: 0 8px;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+
+  button {
+    border: 1px solid #e4e8ef;
+    background: white;
+    border-radius: 7px;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.summary-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summary-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #edf5ff;
+  color: #2f80ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.summary-title {
+  font-size: 13px;
+  color: #394150;
+}
+
+.summary-value {
+  font-size: 25px;
+  color: #111827;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.summary-change {
+  margin-top: 12px;
+  color: #22a55b;
+  font-size: 12px;
+
+  &.down {
+    color: #e84b4b;
+  }
+}
+
+.summary-sub {
+  color: #9aa2b1;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.mini-chart {
+  margin-top: 10px;
+  color: #2f80ed;
+  overflow: hidden;
+  font-size: 19px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dashboard-card {
+  background: white;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  span {
+    border: 1px solid #e6e9ef;
+    border-radius: 5px;
+    padding: 5px 9px;
+    color: #687181;
+    font-size: 11px;
+  }
+
+  a {
+    color: #2f80ed;
+    cursor: pointer;
+  }
+}
+
+.legend {
+  text-align: center;
+  margin: 18px 0;
+  font-size: 11px;
+
+  span {
+    margin: 0 8px;
+  }
+}
+
+.bar-chart {
+  height: 190px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  border-bottom: 1px solid #e8ebf0;
+}
+
+.bar-group {
+  text-align: center;
+}
+
+.bars {
+  height: 155px;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.bar {
+  width: 22px;
+  position: relative;
+  border-radius: 2px 2px 0 0;
+
+  span {
+    position: absolute;
+    top: -19px;
+    left: 0;
+    width: 100%;
+    font-size: 10px;
+  }
+}
+
+.blue {
+  background: #3b82f6;
+}
+
+.green {
+  background: #4fc477;
+}
+
+.orange {
+  background: #ff8a34;
+}
+
+.bar-name {
+  font-size: 10px;
+  color: #6c7481;
+  margin-top: 8px;
+}
+
+.request-list {
+  margin-top: 30px;
+}
+
+.request-row {
+  display: grid;
+  grid-template-columns: 35px 1fr 25px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.request-name {
+  font-size: 11px;
+  color: #6c7481;
+}
+
+.request-track {
+  height: 17px;
+  background: #f1edff;
+}
+
+.request-bar {
+  height: 100%;
+  background: #8b63e8;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 25px;
+}
+
+.donut {
+  width: 165px;
+  height: 165px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4fc477 0 38%,
+    #3b82f6 38% 67%,
+    #ff9638 67% 83%,
+    #ef4f5f 83% 94%,
+    #8759df 94% 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.donut-center {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  strong {
+    font-size: 24px;
+  }
+
+  span {
+    color: #818896;
+  }
+}
+
+.status-list {
+  > div {
+    margin: 13px 0;
+    min-width: 145px;
+
+    strong {
+      float: right;
     }
-  ];
+  }
+}
 
-  employees = [
-    { name: 'Santhosh', ongoing: 9, closed: 6 },
-    { name: 'Sivakumar', ongoing: 7, closed: 4 },
-    { name: 'Muthu', ongoing: 6, closed: 6 },
-    { name: 'Karthik', ongoing: 4, closed: 3 },
-    { name: 'Priya', ongoing: 3, closed: 2 }
-  ];
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 7px;
+}
 
-  departments = [
-    { name: 'SM', ontrack: 4, overtime: 2 },
-    { name: 'ISM', ontrack: 6, overtime: 3 },
-    { name: 'IT', ontrack: 8, overtime: 2 },
-    { name: 'QA', ontrack: 10, overtime: 4 },
-    { name: 'HR', ontrack: 5, overtime: 2 }
-  ];
+.green-dot {
+  background: #4fc477;
+}
 
-  requests = [
-    { name: 'PD', value: 12, percent: 90 },
-    { name: 'DCC', value: 9, percent: 70 },
-    { name: 'SFA', value: 6, percent: 52 },
-    { name: 'HR', value: 4, percent: 35 },
-    { name: 'IT', value: 3, percent: 25 }
-  ];
+.blue-dot {
+  background: #3b82f6;
+}
 
-  proposals = [
-    {
-      id: 'PR-1250',
-      name: 'Website Development',
-      client: 'TechCorp',
-      status: 'On Track',
-      statusClass: 'ontrack',
-      date: 'Jul 25, 2025'
-    },
-    {
-      id: 'PR-1249',
-      name: 'Mobile App Design',
-      client: 'Innovate Ltd',
-      status: 'On Track',
-      statusClass: 'ontrack',
-      date: 'Jul 26, 2025'
-    },
-    {
-      id: 'PR-1248',
-      name: 'Cloud Migration',
-      client: 'DataSoft',
-      status: 'Overdue',
-      statusClass: 'overdue',
-      date: 'Jul 18, 2025'
-    },
-    {
-      id: 'PR-1247',
-      name: 'ERP Implementation',
-      client: 'BizSol Inc',
-      status: 'On Track',
-      statusClass: 'ontrack',
-      date: 'Jul 30, 2025'
-    },
-    {
-      id: 'PR-1246',
-      name: 'UI/UX Redesign',
-      client: 'Pixel Perfect',
-      status: 'Closed',
-      statusClass: 'closed',
-      date: 'Jul 15, 2025'
-    }
-  ];
+.orange-dot {
+  background: #ff9638;
+}
 
-  constructor() {}
+.red-dot {
+  background: #ef4f5f;
+}
 
-  ngOnInit(): void {
-    console.log('Dashboard loaded successfully');
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    color: #687181;
+    font-weight: 500;
+    font-size: 11px;
+    padding: 10px;
+    border-bottom: 1px solid #edf0f5;
+  }
+
+  td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 11px;
+  }
+}
+
+.status {
+  padding: 4px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.ontrack {
+  background: #e6f7ed;
+  color: #269b58;
+}
+
+.overdue {
+  background: #ffebeb;
+  color: #e04b4b;
+}
+
+.closed {
+  background: #e7f6ed;
+  color: #269b58;
+}
+
+/* Responsive */
+
+@media (max-width: 1400px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .dashboard-grid,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 }
