@@ -1,62 +1,192 @@
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { environment } from '@env/environment';
 
-import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from "@angular/router";
-import { environment } from "@env/environment";
-// layout
-import { LayoutProComponent } from "@brand";
-import { LayoutPassportComponent } from "../layout/passport/passport.component";
-// dashboard pages
-// single pages
-import { CallbackComponent } from "./callback/callback.component";
+// Layout
+import { LayoutProComponent } from '@brand';
+import { LayoutPassportComponent } from '../layout/passport/passport.component';
+
+// Single pages
+import { CallbackComponent } from './callback/callback.component';
+
 const routes: Routes = [
-  {
-    path: "",
-    component: LayoutProComponent,
-    children: [
-      { path: "", redirectTo: "dashboard", pathMatch: "full" },
-      // Exception
-      {
-        path: "exception",
-        loadChildren: () => import('./exception/exception.module').then(m => m.ExceptionModule)
-      },
-      // Template
-      {
-        path: "template",
-        loadChildren: () => import("./template/template.module").then(m => m.TemplateModule)
-      },
-     //LMS
-    
 
-     {
-      path:'Usermanage',
-      loadChildren:()=>import('./LMS/user-management/user-management.module').then(m=>m.UserManagementModule)
-     },
-    
-    ]
-  },
-  // passport
+  // =========================================================
+  // MAIN LAYOUT
+  // =========================================================
   {
-    path: "passport",
-    component: LayoutPassportComponent,
+    path: '',
+    component: LayoutProComponent,
+
     children: [
-      { path: "", loadChildren: () => import('./passport/passport.module').then(m => m.PassportModule) }
+
+      // -------------------------------------------------------
+      // DEFAULT PAGE
+      // -------------------------------------------------------
+      {
+        path: '',
+        redirectTo: 'test1',
+        pathMatch: 'full'
+      },
+
+      // -------------------------------------------------------
+      // DASHBOARD
+      // SSO Menu URL = /test1
+      // -------------------------------------------------------
+
+      /*
+       * IMPORTANT:
+       *
+       * Dashboard module path கிடைத்ததும் இதை uncomment பண்ணவும்.
+       *
+       * Example:
+       *
+       * {
+       *   path: 'test1',
+       *   loadChildren: () =>
+       *     import('./LMS/dashboard/dashboard.module')
+       *       .then(m => m.DashboardModule)
+       * },
+       *
+       */
+
+
+      // -------------------------------------------------------
+      // TO-DO LIST
+      // SSO Menu URL = /test2
+      // -------------------------------------------------------
+
+      /*
+       * To-Do module path கிடைத்ததும் இதை uncomment பண்ணவும்.
+       *
+       * Example:
+       *
+       * {
+       *   path: 'test2',
+       *   loadChildren: () =>
+       *     import('./LMS/to-do-list/to-do-list.module')
+       *       .then(m => m.ToDoListModule)
+       * },
+       *
+       */
+
+
+      // -------------------------------------------------------
+      // USER MANAGEMENT
+      // SSO Menu URL = /test3
+      // -------------------------------------------------------
+
+      {
+        path: 'test3',
+        loadChildren: () =>
+          import('./LMS/user-management/user-management.module')
+            .then(m => m.UserManagementModule)
+      },
+
+
+      // -------------------------------------------------------
+      // OLD USER MANAGEMENT URL
+      // Keep this if old links are still being used
+      // -------------------------------------------------------
+
+      {
+        path: 'Usermanage',
+        redirectTo: 'test3',
+        pathMatch: 'full'
+      },
+
+
+      // -------------------------------------------------------
+      // EXCEPTION
+      // -------------------------------------------------------
+
+      {
+        path: 'exception',
+        loadChildren: () =>
+          import('./exception/exception.module')
+            .then(m => m.ExceptionModule)
+      },
+
+
+      // -------------------------------------------------------
+      // TEMPLATE
+      // -------------------------------------------------------
+
+      {
+        path: 'template',
+        loadChildren: () =>
+          import('./template/template.module')
+            .then(m => m.TemplateModule)
+      }
+
     ]
   },
-  // 单页不包裹Layout
-  { path: "callback/:type", component: CallbackComponent },
-  { path: "**", redirectTo: "exception/404" }
+
+
+  // =========================================================
+  // PASSPORT
+  // =========================================================
+
+  {
+    path: 'passport',
+    component: LayoutPassportComponent,
+
+    children: [
+
+      {
+        path: '',
+        loadChildren: () =>
+          import('./passport/passport.module')
+            .then(m => m.PassportModule)
+      }
+
+    ]
+  },
+
+
+  // =========================================================
+  // CALLBACK
+  // =========================================================
+
+  {
+    path: 'callback/:type',
+    component: CallbackComponent
+  },
+
+
+  // =========================================================
+  // 404
+  // IMPORTANT: ALWAYS KEEP THIS LAST
+  // =========================================================
+
+  {
+    path: '**',
+    redirectTo: 'exception/404'
+  }
+
 ];
 
+
 @NgModule({
+
   imports: [
+
     RouterModule.forRoot(routes, {
+
       useHash: environment.useHash,
-      // NOTICE: If you use `reuse-tab` component and turn on keepingScroll you can set to `disabled`
-      // Pls refer to https://ng-alain.com/components/reuse-tab
-      scrollPositionRestoration: "top",
+
+      scrollPositionRestoration: 'top',
+
       onSameUrlNavigation: 'reload'
+
     })
+
   ],
-  exports: [RouterModule]
+
+  exports: [
+    RouterModule
+  ]
+
 })
+
 export class RouteRoutingModule { }
