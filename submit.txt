@@ -1,387 +1,552 @@
-<ng-template #sideTpl>
-  <nz-sider [nzTrigger]="null" [nzCollapsible]="true" [nzCollapsed]="isMobile ? false : pro.collapsed"
-    [nzWidth]="pro.width" [nzCollapsedWidth]="pro.widthInCollapsed" class="alain-pro__sider"
-    [ngClass]="{ 'alain-pro__sider-fixed': pro.fixSiderbar }">
-    <div class="alain-pro__side-nav"
-      style="padding: 0;position: absolute;width: 100%;overflow-y: hidden;height: calc(100% - 80px);">
-      <div class="alain-pro__side-nav-wrap" layout-pro-menu style="display:inline-block;min-width: 256px;"
-        [isOpenMenu]="pro.isOpenMenu"></div>
-    </div>
-  </nz-sider>
-</ng-template>
-<nz-layout>
-  <nz-header> 
-  <app-tabs class="alain-pro__tabset"></app-tabs>
-   <layout-pro-header></layout-pro-header>
-  </nz-header>
-  <layout-pro-searchmenu *ngIf="pro.isShowSearchMenu" class="alain-pro__sider-searchmenu" [ngStyle]="getLayoutStyle"></layout-pro-searchmenu>
-  <div class="ant-layout ant-layout-has-sider">
-    <ng-container *ngIf="pro.menu === 'side' || isMobile">
-      <nz-drawer *ngIf="isMobile" [nzWidth]="pro.width" nzWrapClassName="alain-pro__drawer" [nzVisible]="!pro.collapsed"
-        [nzClosable]="false" nzPlacement="left" (nzOnClose)="pro.setCollapsed(true)">
-        <ng-template [ngTemplateOutlet]="sideTpl"></ng-template>
-      </nz-drawer>
-      <ng-container *ngIf="!isMobile">
-        <ng-template [ngTemplateOutlet]="sideTpl"></ng-template>
-      </ng-container>
-    </ng-container>
-    <div class="ant-layout" style="min-height: 100vh;" [ngStyle]="getLayoutStyle">
-     
-      <div class="ant-layout-content alain-pro__body" [ngStyle]="getContentStyle">
-        <div *ngIf="isFetching" style="padding-top: 100px; text-align: center;">
-          <nz-spin nzSpinning></nz-spin>
-        </div>
-        <ng-container *ngIf="!isFetching">
-          <router-outlet></router-outlet>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-  <ng-template #settingHost></ng-template>
-</nz-layout>
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
-  Component,
-  ElementRef,
-  Renderer2,
-  AfterViewInit,
-  ViewChild,
-  ViewContainerRef,
-  ComponentFactoryResolver,
-  OnInit,
-  OnDestroy,
-  Inject,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef
-} from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { Router, NavigationEnd, RouteConfigLoadStart, NavigationError } from '@angular/router';
-import { BreakpointObserver, MediaMatcher } from '@angular/cdk/layout';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { NzMessageService, } from 'ng-zorro-antd';
-import { updateHostClass } from '@delon/util';
-import { ScrollService, MenuService, MenuIcon } from '@delon/theme';
-import { ReuseTabService } from '@delon/abc';
-import { environment } from '@env/environment';
-import { HttpClient } from "@angular/common/http";
-import { ProSettingDrawerComponent } from './setting-drawer/setting-drawer.component';
-import { BrandService } from './pro.service';
-import { isArray } from 'util';
-import { SharedModule } from "@shared";
-import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
-import { SettingsService, _HttpClient } from '@delon/theme';
-import {PublicNetService} from "../../routes/a_Public_net/Public_net.service";
-// import { PlatformLocation } from "@angular/common";
-import {serviceUrl} from "../../routes/a_Public_net/Url";
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Grid,
+  IconButton,
+  InputAdornment,
+  CircularProgress
+} from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { makeStyles } from '@material-ui/core/styles';
+//import QRCode from "qrcode.react";
+import { QRCodeCanvas } from 'qrcode.react';
 
+import {
+  dealPostParamsEncrypt,
+  iwxKey,
+  getdk,
+  encrypt,
+  decrypt,
+  iwxPost
+} from '../EncryptDecrypt/Encryptfile';
+import { fetchempbasicinfo, getlogincredentials } from '../Apiconfig/apiforloginandempdetails';
+import loginimage from './login-artwork.jpg';
 
+const theme = createTheme();
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    backgroundSize: "cover",
+  },
+  formm: {
+    width: "100%",
+    maxWidth: "400px",
+    padding: theme.spacing(2),
+    backgroundColor: "#fff",
+    borderRadius: theme.spacing(1),
+    boxShadow: "0px x0px 10px 10px rgba(0,0,0,0.25)",
+    fontSize: 16,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  textField: {
+    marginBottom: theme.spacing(2),
+  },
+  button: {
+    marginBottom: theme.spacing(1),
+  },
+}));
 
-@Component({
-  selector: 'layout-pro',
-  templateUrl: './pro.component.html',
-  // NOTICE: If all pages using OnPush mode, you can turn it on and all `cdr.detectChanges()` codes
-  // changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class LayoutProComponent implements OnInit, AfterViewInit, OnDestroy {
-  private unsubscribe$ = new Subject<void>();
-  private queryCls: string;
-  @ViewChild('settingHost', { read: ViewContainerRef, static: false }) private settingHost: ViewContainerRef;
+const Login = () => {
+  const navigate = useNavigate();
+  const classes = useStyles(theme);
 
-  isFetching = false;
-  isError=false;
+  // State declarations
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginStatus, setLoginStatus] = useState('');
+  const [account, setAccount] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [secretkey, setsecretkey] = useState('');
+  const [otp, setOTP] = useState("");
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [otploading, setotploading] = useState(false);
 
-  get isMobile() {
-    return this.pro.isMobile;
-  }
+  // Constants
+  const issuccessfullylogin = sessionStorage.getItem('issuccessfullylogin');
+  const isscuessqr = sessionStorage?.getItem('qrstatus');
+  const originalBoolean = true;
+  const encryptedBoolean = encrypt(originalBoolean.toString(), getdk(iwxKey));
+  const orginalnumberboo = 0;
+  const encryptedBooleannum = encrypt(orginalnumberboo.toString(), getdk(iwxKey));
 
-  get getLayoutStyle() {
-    const { isMobile, fixSiderbar, collapsed, menu, width, widthInCollapsed } = this.pro;
-    if (fixSiderbar && menu !== 'top' && !isMobile) {
-      return {
-        paddingLeft: (collapsed ? widthInCollapsed : width) + 'px',
-      };
-    }
-    return null;
-  }
-
-  get getContentStyle() {
-    const { fixedHeader, headerHeight } = this.pro;
-    return {
-      margin: '24px 16px 0',
-      // 'padding-top': (fixedHeader ? headerHeight : 0) + 'px',//
-    };
-  }
-
-  private get body(): HTMLElement {
-    return this.doc.body;
-  }
-
-  constructor(
-    bm: BreakpointObserver,
-    mediaMatcher: MediaMatcher,
-    router: Router,
-    private msg: NzMessageService,
-    scroll: ScrollService,
-    reuseTabSrv: ReuseTabService,
-    private resolver: ComponentFactoryResolver,
-    private el: ElementRef,
-    private renderer: Renderer2,
-    public pro: BrandService,
-    private menuService: MenuService,
-    private http: _HttpClient,
-    private shareSvr: SharedModule,
-    private publicSvr: PublicNetService,
-    private route: Router,
-    // public locations: PlatformLocation,
-    @Inject(DOCUMENT) private doc: any,
-  ) // private cdr: ChangeDetectorRef
-  {
-    // scroll to top in change page
-    router.events.pipe(takeUntil(this.unsubscribe$)).subscribe(evt => {
-      if (!this.isFetching && evt instanceof RouteConfigLoadStart) {
-        this.isFetching = true;
-        scroll.scrollToTop();
-      }
-      if (evt instanceof NavigationError) {
-        this.isFetching = false;
-        // this.msg.error(`无法加载${evt.url}路由`, { nzDuration: 1000 * 3 });
-        // router.navigateByUrl("/exception/404") 
-        // 请尝试刷新缓存获取最新系统内容
-        this.shareSvr.modalSvr.confirm({
-          nzTitle:"Sorry, the system timed out!",//`无法加载${evt.url}路由`
-          nzContent: 'Try flushing the cache to get the latest system content?Clicking OK will refresh the cache.',//尝试刷新缓存获取最新系统内容?点击OK将刷新缓存
-          nzOnOk: () => {location.reload();this.isError=true;}
-        });
-
-        // 如果3秒钟后没有点击OK的话，自动刷新
-        setTimeout(()=>{
-          if(!this.isError){
-            location.reload();
-          }
-        },3000)
-        // 请尝试刷新缓存获取最新系统内容
-        return;
-      }
-      if (!(evt instanceof NavigationEnd)) {
-        return;
-      }
-      this.isFetching = false;
-      // If have already cached router, should be don't need scroll to top
-      if (!reuseTabSrv.exists(evt.url)) {
-        scroll.scrollToTop();
-      }
-    });
-
-    // media
-    const query = {
-      'screen-xs': '(max-width: 575px)',
-      'screen-sm': '(min-width: 576px) and (max-width: 767px)',
-      'screen-md': '(min-width: 768px) and (max-width: 991px)',
-      'screen-lg': '(min-width: 992px) and (max-width: 1199px)',
-      'screen-xl': '(min-width: 1200px)',
-    };
-    bm.observe([
-      '(min-width: 1200px)',
-      '(min-width: 992px) and (max-width: 1199px)',
-      '(min-width: 768px) and (max-width: 991px)',
-      '(min-width: 576px) and (max-width: 767px)',
-      '(max-width: 575px)',
-    ]).subscribe(() => {
-      this.queryCls = Object.keys(query).find(key => mediaMatcher.matchMedia(query[key]).matches);
-      this.setClass();
-    });
-  }
-
-  private setClass() {
-    const { body, renderer, queryCls, pro } = this;
-    updateHostClass(body, renderer, {
-      ['color-weak']: pro.layout.colorWeak,
-      [`layout-fixed`]: pro.layout.fixed,
-      [`aside-collapsed`]: pro.collapsed,
-      ['alain-pro']: true,
-      [queryCls]: true,
-      [`alain-pro__content-${pro.layout.contentWidth}`]: true,
-      [`alain-pro__fixed`]: pro.layout.fixedHeader,
-      [`alain-pro__wide`]: pro.isFixed,
-      [`alain-pro__dark`]: pro.theme === 'dark',
-      [`alain-pro__light`]: pro.theme === 'light',
-    });
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnInit() {
-    const { pro, unsubscribe$ } = this;
-    pro.notify.pipe(takeUntil(unsubscribe$)).subscribe(() => {
-      this.setClass();
-    });
-
-    // 获取用户对应菜单
-    this.getSystemMenu();
-  }
-  // getSystemMenu() {
-  //   const group = [
-  //     {
-  //       text: "主導航",
-  //       group: true,
-  //       children: []
-  //     }
-  //   ];
-  //   this.http.post(serviceUrl+"/menuFms", {}).subscribe(res => {
-  //     if(res && isArray(res)){
-  //       group[0].children = this.arrayToTree(res);
-  //       this.menuService.add(group);
-  //     }else{
-  //       this.msg.error("您暫無可查看的菜單，請聯繫管理員開通！", { nzDuration: 1000 * 3 });
-  //     }
-  //   });
-  // }
-
-  // getToMenuData(data,menuId){
-  //   const toMenuData = data.filter(item => {
-  //       return item.id == menuId;
-  //   });
-  //   if(toMenuData.length==0){
-  //     data.forEach((item)=>{
-  //       if(item.children.length!=0){
-  //         const list=item.children;
-  //         this.getToMenuData(list,menuId)
-  //       }
-  //     })
-
-  //   }else{
-  //     const menuData=toMenuData[0];
-  //     this.getPage(menuData)
-  //   }
-  // }
-getSystemMenu() {
-  const group = [
-    {
-      text: "主導航",
-      group: true,
-      children: [],
-    },
-  ];
-
-  const params = {
-    Func: "Permission management-GetUserPermitModuleBySystem",
-    SystemId: 30373,
-    EmpNo: this.publicSvr.getSettingUserINfo().eeid,
+  // Handlers
+  const handleTogglePassword = () => {
+    setShowPassword(prev => !prev);
   };
 
-  const param = true
-    ? this.publicSvr.dealPostParamsEncrypt(params)
-    : this.publicSvr.dealPostParams(params);
-
-  new Promise((resolve, reject) => {
-    this.http
-      .post(
-       'https://microservice.abgind.foxconn.com/india/gateway',
-        param,
-        null,
-        {
-          headers: {
-            apiID: "ffff-1687574205823-1020819373-1797",
-            userKey: this.publicSvr.USER_APPLIATION_WEB,
-          },
-        }
-      )
-      .subscribe(
-        (data) => {
-          let res = true
-            ? JSON.parse(this.publicSvr.security.decrypt(data.r, this.publicSvr.iwxKInfo))
-            : data;
-          resolve(res);
-        },
-        (err) => {
-          reject(err);
-        }
-      );
-  })
-  .then((res: any) => {
-    if (res.IsOK == "1") {
-      group[0].children = this.arrayToTree(res.List);
-      this.menuService.add(group);
-    } else {
-      this.msg.error("您暫無可查看的菜單，請聯繫管理員開通！", {
-        nzDuration: 1000 * 3,
-      });
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleLogin(event);
     }
-  });
-}
+  };
 
+  // API functions
+  const fetchdata = async () => {
+    try {
+      const headers = {
+        apiID: 'ffff-1743480426986-1020912129-2253',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+      const params = {
+        EmpId: account,
+        EmpName: '',
+        Status: '',
+        StartPage: 1,
+        PageSize: 999999,
+        Func: 'UserManagement-Get_user_details_new'
+      };
+      const res = await iwxPost(params, { headers }, true);
+      const response = res.List;
+      // console.log(response)
+      const qrStatusValue = response[0].QrStatus;
+      const qrencrypt = encrypt(qrStatusValue.toString(), getdk(iwxKey));
+      sessionStorage.setItem('qrstatus', qrencrypt);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  getToMenuData(data, menuId) {
-    const toMenuData = data.filter((item) => {
-      return item.id == menuId;
+  const fetchempName = async () => {
+    try {
+      return await fetchempbasicinfo(account);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const StoreLoginLog = async (msg, empname, roles) => {
+    // console.log(empname)
+    //  console.log(roles)
+    try {
+      const headers = {
+        apiID: 'ffff-1743483394185-1020912129-2312',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+      const params = {
+        EmpId: account,
+        SystemIp: "",
+        LoginStatus: msg,
+        EmpName: empname ? empname[0].EmployeeName : '',
+        UserRole: roles ? roles.List[0]?.RoleName : '',
+        Func: 'UserManagement-Insert_login_log_new'
+      };
+      console.log(params)
+      const res = await iwxPost(params, { headers }, true);
+      //  console.log(res.List[0]?.Id);
+      return res.List[0]?.Id;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchRoleData = async () => {
+    const headers = {
+      apiID: 'ffff-1743482300704-1020912129-2290',
+      userKey: '10A33A67A312E649D907BBC927995B8A'
+    };
+    const params = {
+      EmpId: account,
+      Func: 'UserManagement-Get_role_based_empid_new'
+    };
+    try {
+      return await iwxPost(params, { headers }, true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updatateqrstatua = async () => {
+    const acnt = sessionStorage.getItem('account');
+    const decryptemp = decrypt(acnt, getdk(iwxKey));
+    const empnumber = decryptemp.replace(/"/g, '');
+    const headers = {
+      apiID: 'ffff-1743483629535-1020912129-2321',
+      userKey: '10A33A67A312E649D907BBC927995B8A'
+    };
+    const params = {
+      EmpId: empnumber,
+      SecretKey: secretkey,
+      Func: 'UserManagement-Update_secret_key_new'
+    };
+    try {
+      if (isscuessqr === encryptedBooleannum) {
+        await iwxPost(params, { headers }, true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGenerateSecret = async () => {
+    const headers = {
+      apiID: 'ffff-1694231787059-10208193125-0099',
+      userKey: '10A33A67A312E649D907BBC927995B8A'
+    };
+    try {
+      const response = await axios.post('https://microservice.abgind.foxconn.com/india/gateway', {}, { headers });
+      //const response = await axios.post('http://10.209.110.101:5665/G_Authenticator/Key/Generation', {}, { headers });
+      const res = JSON.parse(decrypt(response.data.r, getdk(iwxKey)));
+      //  console.log(res)
+      setsecretkey(res.secret);
+      setShowQRCode(true);
+    } catch (error) {
+      console.error('Error generating secret:', error);
+    }
+  };
+
+  const generateOTPURI = () => {
+    const acnt = sessionStorage.getItem('account');
+    const decryptemp = decrypt(acnt, getdk(iwxKey));
+    const empnumber = decryptemp.replace(/"/g, '');
+    return `otpauth://totp/DMS:${encodeURIComponent(empnumber)}?secret=${secretkey}`;
+  };
+
+  const StoreOTPtologinlog = async (msg) => {
+    const getloginlogid = sessionStorage.getItem('loginlogID');
+    const decryptloginlog = decrypt(getloginlogid, getdk(iwxKey));
+    try {
+      const headers = {
+        apiID: 'ffff-1743483467265-1020912129-2315',
+        userKey: '10A33A67A312E649D907BBC927995B8A'
+      };
+      const params = {
+        Update: 'OTP',
+        Id: decryptloginlog,
+        Otp: otp,
+        OtpStatus: msg,
+        Func: 'UserManagement-Update_login_log_new',
+      };
+      await iwxPost(params, { headers }, true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const verifyOTP = async () => {
+    setotploading(true);
+    const acnt = sessionStorage.getItem('account');
+    if (!acnt) return;
+
+    const decryptemp = decrypt(acnt, getdk(iwxKey));
+    const empnumber = decryptemp.replace(/"/g, '');
+    const headers = {
+      apiID: 'ffff-1743480426986-1020912129-2253',
+      userKey: '10A33A67A312E649D907BBC927995B8A'
+    };
+    const params = {
+      EmpId: empnumber,
+      EmpName: '',
+      Status: '',
+      StartPage: 1,
+      PageSize: 999999,
+      Func: 'UserManagement-Get_user_details_new'
+    };
+    const res = await iwxPost(params, { headers }, true);
+    const response = res.List;
+    const secretkeyget = response[0]?.SecretKey;
+    await verifyOTP22(secretkeyget);
+  };
+
+  const verifyOTP22 = async (secretkeyget) => {
+    const headers = {
+      apiID: 'ffff-1694232123378-10208193125-0103',
+      userKey: '433F1BB575A5F60E2547453C13FAFA32'
+    };
+    const params = dealPostParamsEncrypt({
+      secret: isscuessqr === encryptedBooleannum ? secretkey : secretkeyget,
+      otp: otp
     });
-    if (toMenuData.length == 0) {
-      data.forEach((item) => {
-        if (item.children.length != 0) {
-          const list = item.children;
-          this.getToMenuData(list, menuId);
-        }
-      });
-    } else {
-      const menuData = toMenuData[0];
-      this.getPage(menuData);
-      // console.log('menuData',menuData)
-    }
-  }
-  getPage(data){
-    if(data.children.length>0){
-      const list=data.children[0];
-      this.getPage(list);
-    }else{
-      const toPage=data.link;
-      this.route.navigateByUrl(toPage);
-      localStorage.removeItem("fromInfo");
-      localStorage.removeItem("toPageInfo");
-      localStorage.removeItem("userMenu");
-      localStorage.removeItem("userMenuId");
-    }
-  }
+    //console.log(params)
+    try {
+      const response = await axios.post('https://microservice.abgind.foxconn.com/india/gateway', params, { headers });
+      // const response = await axios.post('http://10.209.110.101:5665/G_Authenticator/OTP/User_Verifivation', params, { headers });
 
-  arrayToTree(list, ModuleParentId = -1) {
-    // console.log("list", list);
+      const res = JSON.parse(decrypt(response.data.r, getdk(iwxKey)))
+      //console.log(res)
+      if (res.IsOK === 1) {
+        await updatateqrstatua();
+        sessionStorage.setItem('isLoggedIn', encryptedBoolean);
+        const getloginstatus = sessionStorage.getItem('loginresponse');
+        sessionStorage.setItem('data', getloginstatus);
+        await StoreOTPtologinlog(res.Msg);
+        navigate(`/home/Dashboard`, { state: { account } });
+      } else {
+        setErrorMessage('Incorrect OTP');
+        await StoreOTPtologinlog(res.Msg);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setotploading(false);
+    }
+  };
 
-    return list
-      .filter((item) => item.ModuleParentId === ModuleParentId)
-      .map((item) => {
-        // console.log("item", item);
-        let icon = item.Icon
-          ? ({
-              type: "icon",
-              value: item.icon.split("|")[0],
-              theme: item.icon.split("|")[1] || "outline",
-            } as MenuIcon)
-          : null;
-        let ModuleName = item.ModuleParentId == -1 ? "LMS" : item.ModuleName;
-        return {
-          text: ModuleName,
-          icon: icon,
-          link: item.ModuleUrl,
-          parentId: item.ModuleParentId,
-          children: this.arrayToTree(list, item.ModuleId),
-          // menuType: item.menuType,
-          id: item.ModuleId,
-          // permissionId: item.permissionId,
-          show: true,
-          // urlKey: item.urlkey,
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      if (!account || !password) {
+        setErrorMessage('Fill in all fields.');
+        setIsLoading(false);
+        return;
+      }
+
+      setErrorMessage('');
+      await fetchdata();
+      const accountt = dealPostParamsEncrypt(account);
+      sessionStorage.setItem('account', accountt.s);
+
+      const fetchempname = await fetchempName();
+      const fetchroles = await fetchRoleData();
+      console.log(fetchempname)
+      console.log(fetchroles)
+      try {
+        const headers = {
+          apiID: 'ffff-1743480426986-1020912129-2253',
+          userKey: '10A33A67A312E649D907BBC927995B8A'
         };
+        const params = {
+          EmpId: account,
+          EmpName: '',
+          Status: '',
+          StartPage: 1,
+          PageSize: 999999,
+          Func: 'UserManagement-Get_user_details_new'
+        };
+        const res = await iwxPost(params, { headers }, true);
+        const response = res.List;
+        const findempdata = response.filter((dorm) => dorm.EmpId === account);
+
+        if (response.length === 0) {
+          setErrorMessage('You don\'t have access to this system.');
+          const msg = 'You don\'t have access to this system';
+          await StoreLoginLog(msg, fetchempname, fetchroles);
+          return;
+        } else if (findempdata[0]?.DelFlag === '1') {
+          setErrorMessage('You don\'t have access to this system.');
+          const msg = 'You don\'t have access to this system';
+          await StoreLoginLog(msg, fetchempname, fetchroles);
+          return;
+        }
+      } catch (error) {
+        setErrorMessage('Error checking account availability.');
+        const msg = 'Error checking account availability';
+        await StoreLoginLog(msg, fetchempname, fetchroles);
+        return;
+      }
+
+      const encryptedParams = dealPostParamsEncrypt({
+        Func: 'APPFrame-AccountLoginPhoneSpv3-IWX',
+        Account: account,
+        Password: password,
+        OsType: '1',
+        DeviceId: '1',
+        OsVer: '1',
+        AppVer: '1',
+        DeviceType: '1',
+        AppVersion: '1',
       });
-  }
-  ngOnDestroy() {
-    const { unsubscribe$, body, pro } = this;
-    unsubscribe$.next();
-    unsubscribe$.complete();
-    body.classList.remove(
-      `alain-pro__content-${pro.layout.contentWidth}`,
-      `alain-pro__fixed`,
-      `alain-pro__wide`,
-      `alain-pro__dark`,
-      `alain-pro__light`,
-    );
-  }
-}
+
+      const response = await getlogincredentials(encryptedParams);
+      const decryptedResponse = decrypt(response.r, getdk(iwxKey));
+      const decryptedResponseObj = JSON.parse(decryptedResponse);
+
+      if (decryptedResponse && decryptedResponseObj.IsOK === '1') {
+        const loginlogresponse = await StoreLoginLog(decryptedResponseObj.Msg, fetchempname, fetchroles);
+        const encryptedloginlogid = encrypt(loginlogresponse.toString(), getdk(iwxKey));
+        sessionStorage.setItem('loginlogID', encryptedloginlogid);
+        sessionStorage.setItem('loginresponse', response.r);
+        sessionStorage.setItem('issuccessfullylogin', encryptedBoolean);
+        setLoginStatus('success');
+      } else {
+        await StoreLoginLog(decryptedResponseObj.Msg, fetchempname, fetchroles);
+        setErrorMessage(decryptedResponseObj.Msg);
+        setLoginStatus('error');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlebacklogin = () => {
+    sessionStorage.removeItem('issuccessfullylogin');
+    sessionStorage.removeItem('qrstatus');
+    sessionStorage.removeItem('loginresponse');
+    sessionStorage.removeItem('loginlogID');
+    navigate('/login');
+    setAccount('');
+    setPassword('');
+  };
+
+  useEffect(() => {
+    setErrorMessage("");
+  }, [account, password, otp]);
+
+  useEffect(() => {
+    const isLoggedIn = sessionStorage.getItem('issuccessfullylogin');
+    if (isLoggedIn === null || isLoggedIn === encryptedBoolean) {
+      handleGenerateSecret();
+    }
+  }, [issuccessfullylogin, loginStatus]);
+
+  return (
+    <Grid container component="main" sx={{
+      height: "100vh",
+      backgroundImage: `url(${loginimage})`,
+      backgroundRepeat: "no-repeat",
+      height: "92vh",
+      opacity: 0.8,
+      zIndex: -1,
+      backgroundPosition: "center",
+    }}>
+      <Grid
+        item
+        xs={24}
+        sm={24}
+        md={24}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          bottom: 0,
+          justifyContent: "center",
+          marginTop: 'auto',
+          height: '100%',
+        }}
+      >
+
+        <Box className={classes.root} onKeyPress={handleKeyPress}>
+          <Box className={classes.formm}>
+            <img
+              src={`${process.env.PUBLIC_URL}/images/logo1.png`}
+              alt="MUI Image"
+            />
+            {issuccessfullylogin === encryptedBoolean ? (
+              <div>
+                <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 600, fontSize: '1rem' }}>
+                  MFA Auth
+                </Typography>
+
+                {isscuessqr === encryptedBooleannum && (
+                  <>
+                    <br />
+                    {showQRCode && (
+                      <div>
+                        <QRCodeCanvas value={generateOTPURI()} size={128} />
+                        <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 600, fontSize: '10px' }}>
+                          Secret Key:<br /> {secretkey}
+                        </Typography>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <br />
+                <TextField
+                  error
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  helperText={errorMessage}
+                  onChange={(e) => setOTP(e.target.value)}
+                />
+                <Button fullWidth disabled={!otp} onClick={verifyOTP} sx={{ mt: 3, mb: 4 }} variant='contained'>
+                  {otploading ? <CircularProgress /> : "Verify OTP"}
+                </Button>
+                <Button onClick={handlebacklogin} variant='contained'>Back to login</Button>
+              </div>
+            ) : (
+              <form onSubmit={handleLogin}>
+                <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 700, fontSize: '1rem' }}>
+                  Login
+                </Typography>
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  label="Username"
+                  value={account}
+                  autoComplete="username"
+                  onChange={(e) => setAccount(e.target.value)}
+                />
+                <TextField
+                  autoComplete="current-password"
+                  margin="normal"
+                  fullWidth
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePassword} edge="end">
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                {errorMessage && (
+                  <Typography color="error" variant="h6">
+                    {errorMessage}
+                  </Typography>
+                )}
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <CircularProgress /> : 'Login'}
+                </Button>
+              </form>
+            )}
+          </Box>
+        </Box>
+      </Grid>
+      <Grid
+        item
+        xs={24}
+        sm={24}
+        md={24}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          bottom: 0,
+          justifyContent: "center",
+          marginTop: "auto",
+          fontSize: "16px !important",
+        }}
+      >
+        <div>
+          <li style={{ listStyleType: "none", color: "#000 !important" }}>
+            FXCN IT: Tel:533-26038 | Email:idpbg-it-tn-dev@mail.foxconn.com
+          </li>
+          <li style={{ listStyleType: "none" }}>
+            Copyright 2020-2025 Foxconn A Business Group IT. All Rights Reserved
+          </li>
+        </div>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default Login;
