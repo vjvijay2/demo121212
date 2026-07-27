@@ -1,281 +1,62 @@
-import { Component, Input, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, OnInit,SimpleChanges, } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { Menu, MenuService, _HttpClient, SettingsService } from '@delon/theme';
-import { InputBoolean } from '@delon/util';
-import { CacheService } from '@delon/cache';
-import { BrandService } from '../../pro.service';
-import { ProMenu } from '../../pro.types';
-import {security} from '@shared';
 
-import { NzMessageService } from "ng-zorro-antd";
-import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service";
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
+import { environment } from "@env/environment";
+// layout
+import { LayoutProComponent } from "@brand";
+import { LayoutPassportComponent } from "../layout/passport/passport.component";
+// dashboard pages
+// single pages
+import { CallbackComponent } from "./callback/callback.component";
+const routes: Routes = [
+  {
+    path: "",
+    component: LayoutProComponent,
+    children: [
+      { path: "", redirectTo: "dashboard", pathMatch: "full" },
+      // Exception
+      {
+        path: "exception",
+        loadChildren: () => import('./exception/exception.module').then(m => m.ExceptionModule)
+      },
+      // Template
+      {
+        path: "template",
+        loadChildren: () => import("./template/template.module").then(m => m.TemplateModule)
+      },
+     //LMS
+    
 
-@Component({
-  selector: '[layout-pro-menu]',
-  templateUrl: './menu.component.html',
-  styleUrls: ["./menu.component.less"],
-
-  host: {
-    '[class.alain-pro__menu]': 'true',
-    '[class.alain-pro__menu-only-icon]': 'pro.onlyIcon',
+     {
+      path:'Usermanage',
+      loadChildren:()=>import('./LMS/user-management/user-management.module').then(m=>m.UserManagementModule)
+     },
+    
+    ]
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // passport
+  {
+    path: "passport",
+    component: LayoutPassportComponent,
+    children: [
+      { path: "", loadChildren: () => import('./passport/passport.module').then(m => m.PassportModule) }
+    ]
+  },
+  // 单页不包裹Layout
+  { path: "callback/:type", component: CallbackComponent },
+  { path: "**", redirectTo: "exception/404" }
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      useHash: environment.useHash,
+      // NOTICE: If you use `reuse-tab` component and turn on keepingScroll you can set to `disabled`
+      // Pls refer to https://ng-alain.com/components/reuse-tab
+      scrollPositionRestoration: "top",
+      onSameUrlNavigation: 'reload'
+    })
+  ],
+  exports: [RouterModule]
 })
-export class LayoutProMenuComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject<void>();
-  menus: ProMenu[];
-
-  // 菜单类型
-  public menuTypeObj: any = {};
-
-  // 用户ID
-  public userId = "";
-
-  @Input() @InputBoolean() disabledAcl = false;
-  @Input() mode = 'inline';
-  @Input() isOpenMenu;
-  isFristLoading:boolean=true;//第一次進入頁面
-
-  constructor(
-    private menuSrv: MenuService,
-    private http: _HttpClient,
-    private router: Router,
-    public pro: BrandService,
-    private cdr: ChangeDetectorRef,
-    private cacheSvr: CacheService,
-    public settings: SettingsService,
-    private msgSvc: NzMessageService,
-    private apiSvr: PublicNetService,
-  ) { }
-
-  private cd() {
-    this.cdr.markForCheck();
-  }
-
-  private genMenus(data: Menu[]) {
-    const res: ProMenu[] = [];
-    const ingoreCategores = data.reduce((prev, cur) => prev.concat(cur.children), []);
-    this.menuSrv.visit(ingoreCategores, (item, parent) => {
-      if (!item._aclResult) {
-        if (this.disabledAcl) {
-          item.disabled = true;
-        } else {
-          item._hidden = true;
-        }
-      }
-      if (item._hidden === true) {
-        return;
-      }
-      if (parent === null) {
-        res.push(item);
-      }
-
-      this.menuTypeObj[item.id] = 'inline';
-      if (item.menuType === '1') {
-        this.menuTypeObj[item.id] = 'vertical';
-      }
-    });
-    this.menus = res;
-    
-    this.isFristLoading=true;
-    this.openStatus();
-  }
-
-  private openStatus() {
-    const inFn = (list: ProMenu[],first?:any) => {
-      if (first) {
-        // console.log("this.router.url",this.router.url)
-        const menuList = list;
-        let isMainPage = menuList.length > 0 && menuList[0].id == 599 ? true : false;
-        if (isMainPage) {
-          // 設置第二個菜單默認展開
-          menuList.forEach((item, index) => {
-            // console.log("設置第二個菜單默認展開",item)
-            item._open = index == 1&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
-            item._selected = false;
-            if (item.urlKey) {
-              item.link = "/dashboard/";
-            }
-            if (item.children.length > 0) {
-              inFn(item.children);
-            }
-
-            this.isFristLoading=index==menuList.length-1?false:true;
-          })
-        }else{
-          // 設置默認展開第一個菜單
-          menuList.forEach((item, index) => {
-            // console.log("設置默認展開第一個菜單",item)
-            item._open = index == 0&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
-            item._selected = false;
-            if (item.urlKey) {
-              item.link = "/dashboard/";
-            }
-            if (item.children.length > 0) {
-              inFn(item.children);
-            }
-            this.isFristLoading=index==menuList.length-1?false:true;
-          })
-        }
-
-      }else{
-        const menuList = list;
-        menuList.forEach((item, index) => {
-          // console.log("第二次item",item)
-          item._open =false;//默認展開workFlow菜單
-          item._selected = false;
-          if (item.urlKey) {
-            item.link = "/dashboard/";
-          }
-          if (item.children.length > 0) {
-            inFn(item.children);
-          }
-        })
-      }
-    };
-    inFn(this.menus, this.isFristLoading);
-
-    
-
-    let item = this.menuSrv.getHit(this.menus, this.router.url, true);
-    const _activeRouter = this.cacheSvr.getNone("activeRouter");
-    if (_activeRouter && !item) {
-      if (this.router.url !== "/dashboard") {
-        item = this.menuSrv.getHit(this.menus, _activeRouter.toString(), true);
-      }else{
-        
-      }
-    } else {
-      this.cacheSvr.set("activeRouter", this.router.url, { type: 'm' });
-    }
-
-    if (!item) {
-      this.cd();
-      return;
-    }
-    sessionStorage.setItem('activeUrlKey', item.urlKey);
-    do {
-      item._selected = true;
-      if (!this.pro.isTopMenu && !this.pro.collapsed) {
-        item._open = true;
-      }
-      item = item.__parent;
-    } while (item);
-    this.cd();
-  }
-
-  openChange(item: ProMenu, statue: boolean) {
-    const data = item.__parent ? item.__parent.children : this.menus;
-    if (data && data.length <= 1) return;
-    data.forEach(i => (i._open = false));
-    item._open = statue;
-  }
-
-  closeCollapsed() {
-    const { pro } = this;
-    if (pro.isMobile) {
-      setTimeout(() => pro.setCollapsed(true), 25);
-    }
-  }
-
-  ngOnInit() {
-    const { unsubscribe$, router, pro } = this;
-    this.menuSrv.change.pipe(takeUntil(unsubscribe$)).subscribe(res => this.genMenus(res));
-
-    router.events
-      .pipe(
-        takeUntil(unsubscribe$),
-        filter(e => e instanceof NavigationEnd),
-    )
-      .subscribe(() => this.openStatus());
-
-    pro.notify
-      .pipe(
-        takeUntil(unsubscribe$),
-        filter(() => !!this.menus),
-    )
-      .subscribe(() => this.cd());
-
-    const nemuId = localStorage.getItem("nemuId");
-    if (nemuId) {
-      localStorage.removeItem("nemuId");
-    }
-
-    this.userId = this.apiSvr.getSettingUserInfo().eeid;
-  }
-
-  ngOnChanges(changes:SimpleChanges){
-      setTimeout(() => {
-        this.pro.isOpenMenu=false;
-      }, 0);
-  }
-
-  ngOnDestroy() {
-    const { unsubscribe$ } = this;
-    unsubscribe$.next();
-    unsubscribe$.complete();
-  }
-
-  openSearchMenu(info) {
-    // console.log('openSearchMenu',info)
-    if(info.urlKey){
-      info._open = true;
-    }
-    if (info.menuType === '8') {
-      const nemuId = localStorage.getItem("nemuId");
-
-      if (nemuId) {
-        if (nemuId === info.id.toString()) {
-          this.pro.isShowSearchMenu = false;
-        } else {
-          this.pro.isShowSearchMenu = true;
-          setTimeout(() => {
-            this.pro.appDelEmitChange(info);
-          }, 0);
-        }
-      } else {
-        this.pro.isShowSearchMenu = true;
-        setTimeout(() => {
-          this.pro.appDelEmitChange(info);
-        }, 0);
-      }
-
-      if (this.pro.isShowSearchMenu) {
-        localStorage.setItem("nemuId", info.id);
-      } else {
-        localStorage.removeItem("nemuId");
-      }
-    }
-  }
-
-  closeSearchMenu() {
-    this.pro.isShowSearchMenu = false;
-    localStorage.removeItem("nemuId");
-  }
-
-  addMenuLog(menuId, menuName) {
-    const param = {
-      url: "/addMenuLog",
-      data: {
-        "menuId": menuId,
-        "menuName": menuName,
-        "empNo": this.userId,
-        "systemCode":"NPI"
-      }
-    };
-
-    const body = security.encryptForWeb(JSON.stringify(param.data));
-
-    this.http.post(param.url, body, null, {headers:{"Content-Type": "application/json;charset=UTF-8"}}).subscribe(data => {
-      const res = JSON.parse(security.decryptForWeb(data));
-      // console.log('res!!',res)
-      if (res.status !== 200) {
-        if (res.msg) {
-          this.msgSvc.error(res.msg);
-        }
-      }
-    });
-  }
-}
+export class RouteRoutingModule { }
