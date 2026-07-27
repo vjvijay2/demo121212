@@ -6,76 +6,58 @@ import { environment } from '@env/environment';
 import { LayoutProComponent } from '@brand';
 import { LayoutPassportComponent } from '../layout/passport/passport.component';
 
-// Single pages
+// Single Page
 import { CallbackComponent } from './callback/callback.component';
 
 const routes: Routes = [
 
-  // =========================================================
-  // MAIN LAYOUT
-  // =========================================================
+  // ==========================================================
+  // MAIN APPLICATION
+  // ==========================================================
   {
     path: '',
     component: LayoutProComponent,
 
     children: [
 
-      // -------------------------------------------------------
-      // DEFAULT PAGE
-      // -------------------------------------------------------
+      // --------------------------------------------------------
+      // Default → Dashboard
+      // --------------------------------------------------------
       {
         path: '',
         redirectTo: 'test1',
         pathMatch: 'full'
       },
 
-      // -------------------------------------------------------
-      // DASHBOARD
+
+      // --------------------------------------------------------
+      // Dashboard
       // SSO Menu URL = /test1
-      // -------------------------------------------------------
-
-      /*
-       * IMPORTANT:
-       *
-       * Dashboard module path கிடைத்ததும் இதை uncomment பண்ணவும்.
-       *
-       * Example:
-       *
-       * {
-       *   path: 'test1',
-       *   loadChildren: () =>
-       *     import('./LMS/dashboard/dashboard.module')
-       *       .then(m => m.DashboardModule)
-       * },
-       *
-       */
+      // --------------------------------------------------------
+      {
+        path: 'test1',
+        loadChildren: () =>
+          import('./LMS/dashboard/dashboard.module')
+            .then(m => m.DashboardModule)
+      },
 
 
-      // -------------------------------------------------------
-      // TO-DO LIST
+      // --------------------------------------------------------
+      // To-Do List
       // SSO Menu URL = /test2
-      // -------------------------------------------------------
-
-      /*
-       * To-Do module path கிடைத்ததும் இதை uncomment பண்ணவும்.
-       *
-       * Example:
-       *
-       * {
-       *   path: 'test2',
-       *   loadChildren: () =>
-       *     import('./LMS/to-do-list/to-do-list.module')
-       *       .then(m => m.ToDoListModule)
-       * },
-       *
-       */
+      // --------------------------------------------------------
+      {
+        path: 'test2',
+        loadChildren: () =>
+          import('./LMS/to-do-list/to-do-list.module')
+            .then(m => m.ToDoListModule)
+      },
 
 
-      // -------------------------------------------------------
-      // USER MANAGEMENT
+      // --------------------------------------------------------
+      // User Management
       // SSO Menu URL = /test3
-      // -------------------------------------------------------
-
+      // --------------------------------------------------------
       {
         path: 'test3',
         loadChildren: () =>
@@ -84,11 +66,9 @@ const routes: Routes = [
       },
 
 
-      // -------------------------------------------------------
-      // OLD USER MANAGEMENT URL
-      // Keep this if old links are still being used
-      // -------------------------------------------------------
-
+      // --------------------------------------------------------
+      // Old User Management URL
+      // --------------------------------------------------------
       {
         path: 'Usermanage',
         redirectTo: 'test3',
@@ -96,10 +76,9 @@ const routes: Routes = [
       },
 
 
-      // -------------------------------------------------------
-      // EXCEPTION
-      // -------------------------------------------------------
-
+      // --------------------------------------------------------
+      // Exception
+      // --------------------------------------------------------
       {
         path: 'exception',
         loadChildren: () =>
@@ -108,10 +87,9 @@ const routes: Routes = [
       },
 
 
-      // -------------------------------------------------------
-      // TEMPLATE
-      // -------------------------------------------------------
-
+      // --------------------------------------------------------
+      // Template
+      // --------------------------------------------------------
       {
         path: 'template',
         loadChildren: () =>
@@ -123,42 +101,36 @@ const routes: Routes = [
   },
 
 
-  // =========================================================
+  // ==========================================================
   // PASSPORT
-  // =========================================================
-
+  // ==========================================================
   {
     path: 'passport',
     component: LayoutPassportComponent,
 
     children: [
-
       {
         path: '',
         loadChildren: () =>
           import('./passport/passport.module')
             .then(m => m.PassportModule)
       }
-
     ]
   },
 
 
-  // =========================================================
+  // ==========================================================
   // CALLBACK
-  // =========================================================
-
+  // ==========================================================
   {
     path: 'callback/:type',
     component: CallbackComponent
   },
 
 
-  // =========================================================
-  // 404
-  // IMPORTANT: ALWAYS KEEP THIS LAST
-  // =========================================================
-
+  // ==========================================================
+  // 404 - ALWAYS LAST
+  // ==========================================================
   {
     path: '**',
     redirectTo: 'exception/404'
@@ -168,9 +140,7 @@ const routes: Routes = [
 
 
 @NgModule({
-
   imports: [
-
     RouterModule.forRoot(routes, {
 
       useHash: environment.useHash,
@@ -180,13 +150,11 @@ const routes: Routes = [
       onSameUrlNavigation: 'reload'
 
     })
-
   ],
 
   exports: [
     RouterModule
   ]
-
 })
 
-export class RouteRoutingModule { }
+export class RouteRoutingModule {}
