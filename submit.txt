@@ -1,320 +1,127 @@
-<div class="dashboard-page">
-
-  <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2>Dashboard</h2>
-      <div class="breadcrumb">
-        Home <span>›</span> Dashboard
-      </div>
-    </div>
-
-    <div class="header-actions">
-      <button class="date-btn">
-        📅 This Week
-      </button>
-
-      <button class="filter-btn">
-        Filter
-      </button>
-    </div>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="summary-grid">
-
-    <div
-      class="summary-card"
-      *ngFor="let item of summaryCards"
-    >
-      <div class="summary-top">
-
-        <div class="summary-icon">
-          {{ item.icon }}
-        </div>
-
-        <div>
-          <div class="summary-title">
-            {{ item.title }}
-          </div>
-
-          <div class="summary-value">
-            {{ item.value }}
-          </div>
-        </div>
-
-      </div>
-
-      <div
-        class="summary-change"
-        [class.down]="item.down"
-      >
-        {{ item.change }}
-      </div>
-
-      <div class="summary-sub">
-        vs last 7 days
-      </div>
-
-      <div class="mini-chart">
-        〰〰〰〰〰
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- Row 1 -->
-  <div class="dashboard-grid">
-
-    <!-- Employee Status -->
-    <div class="dashboard-card">
-      <div class="card-header">
-        <h3>Employee Status</h3>
-        <span>This Week</span>
-      </div>
-
-      <div class="legend">
-        <span>🔵 Ongoing</span>
-        <span>🟢 Closed</span>
-      </div>
-
-      <div class="bar-chart">
-
-        <div
-          class="bar-group"
-          *ngFor="let employee of employees"
-        >
-
-          <div class="bars">
-
-            <div
-              class="bar blue"
-              [style.height.px]="employee.ongoing * 15"
-            >
-              <span>{{ employee.ongoing }}</span>
-            </div>
-
-            <div
-              class="bar green"
-              [style.height.px]="employee.closed * 15"
-            >
-              <span>{{ employee.closed }}</span>
-            </div>
-
-          </div>
-
-          <div class="bar-name">
-            {{ employee.name }}
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- Department -->
-    <div class="dashboard-card">
-      <div class="card-header">
-        <h3>On Track vs SLA</h3>
-        <span>This Week</span>
-      </div>
-
-      <div class="legend">
-        <span>🔵 On Track</span>
-        <span>🟠 Overtime</span>
-      </div>
-
-      <div class="bar-chart">
-
-        <div
-          class="bar-group"
-          *ngFor="let department of departments"
-        >
-
-          <div class="bars">
-
-            <div
-              class="bar blue"
-              [style.height.px]="department.ontrack * 12"
-            >
-              <span>{{ department.ontrack }}</span>
-            </div>
-
-            <div
-              class="bar orange"
-              [style.height.px]="department.overtime * 12"
-            >
-              <span>{{ department.overtime }}</span>
-            </div>
-
-          </div>
-
-          <div class="bar-name">
-            {{ department.name }}
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- Request Received -->
-    <div class="dashboard-card">
-
-      <div class="card-header">
-        <h3>Request Received</h3>
-        <span>This Week</span>
-      </div>
-
-      <div class="request-list">
-
-        <div
-          class="request-row"
-          *ngFor="let request of requests"
-        >
-
-          <span class="request-name">
-            {{ request.name }}
-          </span>
-
-          <div class="request-track">
-            <div
-              class="request-bar"
-              [style.width.%]="request.percent"
-            ></div>
-          </div>
-
-          <strong>
-            {{ request.value }}
-          </strong>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- Bottom -->
-  <div class="bottom-grid">
-
-    <!-- Proposal Status -->
-    <div class="dashboard-card">
-
-      <div class="card-header">
-        <h3>Proposal Status</h3>
-        <span>This Week</span>
-      </div>
-
-      <div class="status-content">
-
-        <div class="donut">
-          <div class="donut-center">
-            <strong>120</strong>
-            <span>Total</span>
-          </div>
-        </div>
-
-        <div class="status-list">
-
-          <div>
-            <span class="dot green-dot"></span>
-            Closed
-            <strong>88</strong>
-          </div>
-
-          <div>
-            <span class="dot blue-dot"></span>
-            On Track
-            <strong>68</strong>
-          </div>
-
-          <div>
-            <span class="dot orange-dot"></span>
-            Overdue
-            <strong>28</strong>
-          </div>
-
-          <div>
-            <span class="dot red-dot"></span>
-            Rejected
-            <strong>14</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- Recent Proposals -->
-    <div class="dashboard-card recent-card">
-
-      <div class="card-header">
-        <h3>Recent Proposals</h3>
-        <a>View All</a>
-      </div>
-
-      <div class="table-wrapper">
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Proposal Name</th>
-              <th>Client</th>
-              <th>Status</th>
-              <th>Due Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let proposal of proposals">
-
-              <td>
-                {{ proposal.id }}
-              </td>
-
-              <td>
-                {{ proposal.name }}
-              </td>
-
-              <td>
-                {{ proposal.client }}
-              </td>
-
-              <td>
-                <span
-                  class="status"
-                  [ngClass]="proposal.statusClass"
-                >
-                  {{ proposal.status }}
-                </span>
-              </td>
-
-              <td>
-                {{ proposal.date }}
-              </td>
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.less']
+})
+export class DashboardComponent implements OnInit {
+
+  summaryCards = [
+    {
+      title: 'Total Proposals',
+      value: 120,
+      change: '↑ 12.5%',
+      icon: '▣',
+      down: false
+    },
+    {
+      title: 'On Track',
+      value: 68,
+      change: '↑ 8.3%',
+      icon: '✓',
+      down: false
+    },
+    {
+      title: 'Overdue',
+      value: 28,
+      change: '↑ 5.7%',
+      icon: '◷',
+      down: true
+    },
+    {
+      title: 'Closed',
+      value: 88,
+      change: '↑ 15.2%',
+      icon: '✓',
+      down: false
+    },
+    {
+      title: 'Rejected',
+      value: 14,
+      change: '↓ 3.1%',
+      icon: '×',
+      down: true
+    },
+    {
+      title: 'SLA Breached',
+      value: 6,
+      change: '↓ 14.3%',
+      icon: '!',
+      down: true
+    }
+  ];
+
+  employees = [
+    { name: 'Santhosh', ongoing: 9, closed: 6 },
+    { name: 'Sivakumar', ongoing: 7, closed: 4 },
+    { name: 'Muthu', ongoing: 6, closed: 6 },
+    { name: 'Karthik', ongoing: 4, closed: 3 },
+    { name: 'Priya', ongoing: 3, closed: 2 }
+  ];
+
+  departments = [
+    { name: 'SM', ontrack: 4, overtime: 2 },
+    { name: 'ISM', ontrack: 6, overtime: 3 },
+    { name: 'IT', ontrack: 8, overtime: 2 },
+    { name: 'QA', ontrack: 10, overtime: 4 },
+    { name: 'HR', ontrack: 5, overtime: 2 }
+  ];
+
+  requests = [
+    { name: 'PD', value: 12, percent: 90 },
+    { name: 'DCC', value: 9, percent: 70 },
+    { name: 'SFA', value: 6, percent: 52 },
+    { name: 'HR', value: 4, percent: 35 },
+    { name: 'IT', value: 3, percent: 25 }
+  ];
+
+  proposals = [
+    {
+      id: 'PR-1250',
+      name: 'Website Development',
+      client: 'TechCorp',
+      status: 'On Track',
+      statusClass: 'ontrack',
+      date: 'Jul 25, 2025'
+    },
+    {
+      id: 'PR-1249',
+      name: 'Mobile App Design',
+      client: 'Innovate Ltd',
+      status: 'On Track',
+      statusClass: 'ontrack',
+      date: 'Jul 26, 2025'
+    },
+    {
+      id: 'PR-1248',
+      name: 'Cloud Migration',
+      client: 'DataSoft',
+      status: 'Overdue',
+      statusClass: 'overdue',
+      date: 'Jul 18, 2025'
+    },
+    {
+      id: 'PR-1247',
+      name: 'ERP Implementation',
+      client: 'BizSol Inc',
+      status: 'On Track',
+      statusClass: 'ontrack',
+      date: 'Jul 30, 2025'
+    },
+    {
+      id: 'PR-1246',
+      name: 'UI/UX Redesign',
+      client: 'Pixel Perfect',
+      status: 'Closed',
+      statusClass: 'closed',
+      date: 'Jul 15, 2025'
+    }
+  ];
+
+  constructor() {}
+
+  ngOnInit(): void {
+    console.log('Dashboard loaded successfully');
+  }
+}
