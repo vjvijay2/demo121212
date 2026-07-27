@@ -1,160 +1,320 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { environment } from '@env/environment';
+<div class="dashboard-page">
 
-// Layout
-import { LayoutProComponent } from '@brand';
-import { LayoutPassportComponent } from '../layout/passport/passport.component';
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2>Dashboard</h2>
+      <div class="breadcrumb">
+        Home <span>›</span> Dashboard
+      </div>
+    </div>
 
-// Single Page
-import { CallbackComponent } from './callback/callback.component';
+    <div class="header-actions">
+      <button class="date-btn">
+        📅 This Week
+      </button>
 
-const routes: Routes = [
+      <button class="filter-btn">
+        Filter
+      </button>
+    </div>
+  </div>
 
-  // ==========================================================
-  // MAIN APPLICATION
-  // ==========================================================
-  {
-    path: '',
-    component: LayoutProComponent,
+  <!-- Summary Cards -->
+  <div class="summary-grid">
 
-    children: [
+    <div
+      class="summary-card"
+      *ngFor="let item of summaryCards"
+    >
+      <div class="summary-top">
 
-      // --------------------------------------------------------
-      // Default → Dashboard
-      // --------------------------------------------------------
-      {
-        path: '',
-        redirectTo: 'test1',
-        pathMatch: 'full'
-      },
+        <div class="summary-icon">
+          {{ item.icon }}
+        </div>
 
+        <div>
+          <div class="summary-title">
+            {{ item.title }}
+          </div>
 
-      // --------------------------------------------------------
-      // Dashboard
-      // SSO Menu URL = /test1
-      // --------------------------------------------------------
-      {
-        path: 'test1',
-        loadChildren: () =>
-          import('./LMS/dashboard/dashboard.module')
-            .then(m => m.DashboardModule)
-      },
+          <div class="summary-value">
+            {{ item.value }}
+          </div>
+        </div>
 
+      </div>
 
-      // --------------------------------------------------------
-      // To-Do List
-      // SSO Menu URL = /test2
-      // --------------------------------------------------------
-      {
-        path: 'test2',
-        loadChildren: () =>
-          import('./LMS/to-do-list/to-do-list.module')
-            .then(m => m.ToDoListModule)
-      },
+      <div
+        class="summary-change"
+        [class.down]="item.down"
+      >
+        {{ item.change }}
+      </div>
 
+      <div class="summary-sub">
+        vs last 7 days
+      </div>
 
-      // --------------------------------------------------------
-      // User Management
-      // SSO Menu URL = /test3
-      // --------------------------------------------------------
-      {
-        path: 'test3',
-        loadChildren: () =>
-          import('./LMS/user-management/user-management.module')
-            .then(m => m.UserManagementModule)
-      },
+      <div class="mini-chart">
+        〰〰〰〰〰
+      </div>
 
+    </div>
 
-      // --------------------------------------------------------
-      // Old User Management URL
-      // --------------------------------------------------------
-      {
-        path: 'Usermanage',
-        redirectTo: 'test3',
-        pathMatch: 'full'
-      },
+  </div>
 
 
-      // --------------------------------------------------------
-      // Exception
-      // --------------------------------------------------------
-      {
-        path: 'exception',
-        loadChildren: () =>
-          import('./exception/exception.module')
-            .then(m => m.ExceptionModule)
-      },
+  <!-- Row 1 -->
+  <div class="dashboard-grid">
+
+    <!-- Employee Status -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3>Employee Status</h3>
+        <span>This Week</span>
+      </div>
+
+      <div class="legend">
+        <span>🔵 Ongoing</span>
+        <span>🟢 Closed</span>
+      </div>
+
+      <div class="bar-chart">
+
+        <div
+          class="bar-group"
+          *ngFor="let employee of employees"
+        >
+
+          <div class="bars">
+
+            <div
+              class="bar blue"
+              [style.height.px]="employee.ongoing * 15"
+            >
+              <span>{{ employee.ongoing }}</span>
+            </div>
+
+            <div
+              class="bar green"
+              [style.height.px]="employee.closed * 15"
+            >
+              <span>{{ employee.closed }}</span>
+            </div>
+
+          </div>
+
+          <div class="bar-name">
+            {{ employee.name }}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
 
 
-      // --------------------------------------------------------
-      // Template
-      // --------------------------------------------------------
-      {
-        path: 'template',
-        loadChildren: () =>
-          import('./template/template.module')
-            .then(m => m.TemplateModule)
-      }
+    <!-- Department -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3>On Track vs SLA</h3>
+        <span>This Week</span>
+      </div>
 
-    ]
-  },
+      <div class="legend">
+        <span>🔵 On Track</span>
+        <span>🟠 Overtime</span>
+      </div>
 
+      <div class="bar-chart">
 
-  // ==========================================================
-  // PASSPORT
-  // ==========================================================
-  {
-    path: 'passport',
-    component: LayoutPassportComponent,
+        <div
+          class="bar-group"
+          *ngFor="let department of departments"
+        >
 
-    children: [
-      {
-        path: '',
-        loadChildren: () =>
-          import('./passport/passport.module')
-            .then(m => m.PassportModule)
-      }
-    ]
-  },
+          <div class="bars">
 
+            <div
+              class="bar blue"
+              [style.height.px]="department.ontrack * 12"
+            >
+              <span>{{ department.ontrack }}</span>
+            </div>
 
-  // ==========================================================
-  // CALLBACK
-  // ==========================================================
-  {
-    path: 'callback/:type',
-    component: CallbackComponent
-  },
+            <div
+              class="bar orange"
+              [style.height.px]="department.overtime * 12"
+            >
+              <span>{{ department.overtime }}</span>
+            </div>
 
+          </div>
 
-  // ==========================================================
-  // 404 - ALWAYS LAST
-  // ==========================================================
-  {
-    path: '**',
-    redirectTo: 'exception/404'
-  }
+          <div class="bar-name">
+            {{ department.name }}
+          </div>
 
-];
+        </div>
+
+      </div>
+    </div>
 
 
-@NgModule({
-  imports: [
-    RouterModule.forRoot(routes, {
+    <!-- Request Received -->
+    <div class="dashboard-card">
 
-      useHash: environment.useHash,
+      <div class="card-header">
+        <h3>Request Received</h3>
+        <span>This Week</span>
+      </div>
 
-      scrollPositionRestoration: 'top',
+      <div class="request-list">
 
-      onSameUrlNavigation: 'reload'
+        <div
+          class="request-row"
+          *ngFor="let request of requests"
+        >
 
-    })
-  ],
+          <span class="request-name">
+            {{ request.name }}
+          </span>
 
-  exports: [
-    RouterModule
-  ]
-})
+          <div class="request-track">
+            <div
+              class="request-bar"
+              [style.width.%]="request.percent"
+            ></div>
+          </div>
 
-export class RouteRoutingModule {}
+          <strong>
+            {{ request.value }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Bottom -->
+  <div class="bottom-grid">
+
+    <!-- Proposal Status -->
+    <div class="dashboard-card">
+
+      <div class="card-header">
+        <h3>Proposal Status</h3>
+        <span>This Week</span>
+      </div>
+
+      <div class="status-content">
+
+        <div class="donut">
+          <div class="donut-center">
+            <strong>120</strong>
+            <span>Total</span>
+          </div>
+        </div>
+
+        <div class="status-list">
+
+          <div>
+            <span class="dot green-dot"></span>
+            Closed
+            <strong>88</strong>
+          </div>
+
+          <div>
+            <span class="dot blue-dot"></span>
+            On Track
+            <strong>68</strong>
+          </div>
+
+          <div>
+            <span class="dot orange-dot"></span>
+            Overdue
+            <strong>28</strong>
+          </div>
+
+          <div>
+            <span class="dot red-dot"></span>
+            Rejected
+            <strong>14</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Recent Proposals -->
+    <div class="dashboard-card recent-card">
+
+      <div class="card-header">
+        <h3>Recent Proposals</h3>
+        <a>View All</a>
+      </div>
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Proposal Name</th>
+              <th>Client</th>
+              <th>Status</th>
+              <th>Due Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let proposal of proposals">
+
+              <td>
+                {{ proposal.id }}
+              </td>
+
+              <td>
+                {{ proposal.name }}
+              </td>
+
+              <td>
+                {{ proposal.client }}
+              </td>
+
+              <td>
+                <span
+                  class="status"
+                  [ngClass]="proposal.statusClass"
+                >
+                  {{ proposal.status }}
+                </span>
+              </td>
+
+              <td>
+                {{ proposal.date }}
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
