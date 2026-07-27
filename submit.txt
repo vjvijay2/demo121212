@@ -1,552 +1,281 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import {
-  Button,
-  TextField,
-  Typography,
-  Box,
-  Grid,
-  IconButton,
-  InputAdornment,
-  CircularProgress
-} from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { makeStyles } from '@material-ui/core/styles';
-//import QRCode from "qrcode.react";
-import { QRCodeCanvas } from 'qrcode.react';
+import { Component, Input, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, OnInit,SimpleChanges, } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Menu, MenuService, _HttpClient, SettingsService } from '@delon/theme';
+import { InputBoolean } from '@delon/util';
+import { CacheService } from '@delon/cache';
+import { BrandService } from '../../pro.service';
+import { ProMenu } from '../../pro.types';
+import {security} from '@shared';
 
-import {
-  dealPostParamsEncrypt,
-  iwxKey,
-  getdk,
-  encrypt,
-  decrypt,
-  iwxPost
-} from '../EncryptDecrypt/Encryptfile';
-import { fetchempbasicinfo, getlogincredentials } from '../Apiconfig/apiforloginandempdetails';
-import loginimage from './login-artwork.jpg';
+import { NzMessageService } from "ng-zorro-antd";
+import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service";
 
-const theme = createTheme();
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
-    backgroundSize: "cover",
+@Component({
+  selector: '[layout-pro-menu]',
+  templateUrl: './menu.component.html',
+  styleUrls: ["./menu.component.less"],
+
+  host: {
+    '[class.alain-pro__menu]': 'true',
+    '[class.alain-pro__menu-only-icon]': 'pro.onlyIcon',
   },
-  formm: {
-    width: "100%",
-    maxWidth: "400px",
-    padding: theme.spacing(2),
-    backgroundColor: "#fff",
-    borderRadius: theme.spacing(1),
-    boxShadow: "0px x0px 10px 10px rgba(0,0,0,0.25)",
-    fontSize: 16,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  textField: {
-    marginBottom: theme.spacing(2),
-  },
-  button: {
-    marginBottom: theme.spacing(1),
-  },
-}));
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class LayoutProMenuComponent implements OnInit, OnDestroy {
+  private unsubscribe$ = new Subject<void>();
+  menus: ProMenu[];
 
-const Login = () => {
-  const navigate = useNavigate();
-  const classes = useStyles(theme);
+  // 菜单类型
+  public menuTypeObj: any = {};
 
-  // State declarations
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginStatus, setLoginStatus] = useState('');
-  const [account, setAccount] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [secretkey, setsecretkey] = useState('');
-  const [otp, setOTP] = useState("");
-  const [showQRCode, setShowQRCode] = useState(false);
-  const [otploading, setotploading] = useState(false);
+  // 用户ID
+  public userId = "";
 
-  // Constants
-  const issuccessfullylogin = sessionStorage.getItem('issuccessfullylogin');
-  const isscuessqr = sessionStorage?.getItem('qrstatus');
-  const originalBoolean = true;
-  const encryptedBoolean = encrypt(originalBoolean.toString(), getdk(iwxKey));
-  const orginalnumberboo = 0;
-  const encryptedBooleannum = encrypt(orginalnumberboo.toString(), getdk(iwxKey));
+  @Input() @InputBoolean() disabledAcl = false;
+  @Input() mode = 'inline';
+  @Input() isOpenMenu;
+  isFristLoading:boolean=true;//第一次進入頁面
 
-  // Handlers
-  const handleTogglePassword = () => {
-    setShowPassword(prev => !prev);
-  };
+  constructor(
+    private menuSrv: MenuService,
+    private http: _HttpClient,
+    private router: Router,
+    public pro: BrandService,
+    private cdr: ChangeDetectorRef,
+    private cacheSvr: CacheService,
+    public settings: SettingsService,
+    private msgSvc: NzMessageService,
+    private apiSvr: PublicNetService,
+  ) { }
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      handleLogin(event);
-    }
-  };
+  private cd() {
+    this.cdr.markForCheck();
+  }
 
-  // API functions
-  const fetchdata = async () => {
-    try {
-      const headers = {
-        apiID: 'ffff-1743480426986-1020912129-2253',
-        userKey: '10A33A67A312E649D907BBC927995B8A'
-      };
-      const params = {
-        EmpId: account,
-        EmpName: '',
-        Status: '',
-        StartPage: 1,
-        PageSize: 999999,
-        Func: 'UserManagement-Get_user_details_new'
-      };
-      const res = await iwxPost(params, { headers }, true);
-      const response = res.List;
-      // console.log(response)
-      const qrStatusValue = response[0].QrStatus;
-      const qrencrypt = encrypt(qrStatusValue.toString(), getdk(iwxKey));
-      sessionStorage.setItem('qrstatus', qrencrypt);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchempName = async () => {
-    try {
-      return await fetchempbasicinfo(account);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const StoreLoginLog = async (msg, empname, roles) => {
-    // console.log(empname)
-    //  console.log(roles)
-    try {
-      const headers = {
-        apiID: 'ffff-1743483394185-1020912129-2312',
-        userKey: '10A33A67A312E649D907BBC927995B8A'
-      };
-      const params = {
-        EmpId: account,
-        SystemIp: "",
-        LoginStatus: msg,
-        EmpName: empname ? empname[0].EmployeeName : '',
-        UserRole: roles ? roles.List[0]?.RoleName : '',
-        Func: 'UserManagement-Insert_login_log_new'
-      };
-      console.log(params)
-      const res = await iwxPost(params, { headers }, true);
-      //  console.log(res.List[0]?.Id);
-      return res.List[0]?.Id;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchRoleData = async () => {
-    const headers = {
-      apiID: 'ffff-1743482300704-1020912129-2290',
-      userKey: '10A33A67A312E649D907BBC927995B8A'
-    };
-    const params = {
-      EmpId: account,
-      Func: 'UserManagement-Get_role_based_empid_new'
-    };
-    try {
-      return await iwxPost(params, { headers }, true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const updatateqrstatua = async () => {
-    const acnt = sessionStorage.getItem('account');
-    const decryptemp = decrypt(acnt, getdk(iwxKey));
-    const empnumber = decryptemp.replace(/"/g, '');
-    const headers = {
-      apiID: 'ffff-1743483629535-1020912129-2321',
-      userKey: '10A33A67A312E649D907BBC927995B8A'
-    };
-    const params = {
-      EmpId: empnumber,
-      SecretKey: secretkey,
-      Func: 'UserManagement-Update_secret_key_new'
-    };
-    try {
-      if (isscuessqr === encryptedBooleannum) {
-        await iwxPost(params, { headers }, true);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleGenerateSecret = async () => {
-    const headers = {
-      apiID: 'ffff-1694231787059-10208193125-0099',
-      userKey: '10A33A67A312E649D907BBC927995B8A'
-    };
-    try {
-      const response = await axios.post('https://microservice.abgind.foxconn.com/india/gateway', {}, { headers });
-      //const response = await axios.post('http://10.209.110.101:5665/G_Authenticator/Key/Generation', {}, { headers });
-      const res = JSON.parse(decrypt(response.data.r, getdk(iwxKey)));
-      //  console.log(res)
-      setsecretkey(res.secret);
-      setShowQRCode(true);
-    } catch (error) {
-      console.error('Error generating secret:', error);
-    }
-  };
-
-  const generateOTPURI = () => {
-    const acnt = sessionStorage.getItem('account');
-    const decryptemp = decrypt(acnt, getdk(iwxKey));
-    const empnumber = decryptemp.replace(/"/g, '');
-    return `otpauth://totp/DMS:${encodeURIComponent(empnumber)}?secret=${secretkey}`;
-  };
-
-  const StoreOTPtologinlog = async (msg) => {
-    const getloginlogid = sessionStorage.getItem('loginlogID');
-    const decryptloginlog = decrypt(getloginlogid, getdk(iwxKey));
-    try {
-      const headers = {
-        apiID: 'ffff-1743483467265-1020912129-2315',
-        userKey: '10A33A67A312E649D907BBC927995B8A'
-      };
-      const params = {
-        Update: 'OTP',
-        Id: decryptloginlog,
-        Otp: otp,
-        OtpStatus: msg,
-        Func: 'UserManagement-Update_login_log_new',
-      };
-      await iwxPost(params, { headers }, true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const verifyOTP = async () => {
-    setotploading(true);
-    const acnt = sessionStorage.getItem('account');
-    if (!acnt) return;
-
-    const decryptemp = decrypt(acnt, getdk(iwxKey));
-    const empnumber = decryptemp.replace(/"/g, '');
-    const headers = {
-      apiID: 'ffff-1743480426986-1020912129-2253',
-      userKey: '10A33A67A312E649D907BBC927995B8A'
-    };
-    const params = {
-      EmpId: empnumber,
-      EmpName: '',
-      Status: '',
-      StartPage: 1,
-      PageSize: 999999,
-      Func: 'UserManagement-Get_user_details_new'
-    };
-    const res = await iwxPost(params, { headers }, true);
-    const response = res.List;
-    const secretkeyget = response[0]?.SecretKey;
-    await verifyOTP22(secretkeyget);
-  };
-
-  const verifyOTP22 = async (secretkeyget) => {
-    const headers = {
-      apiID: 'ffff-1694232123378-10208193125-0103',
-      userKey: '433F1BB575A5F60E2547453C13FAFA32'
-    };
-    const params = dealPostParamsEncrypt({
-      secret: isscuessqr === encryptedBooleannum ? secretkey : secretkeyget,
-      otp: otp
-    });
-    //console.log(params)
-    try {
-      const response = await axios.post('https://microservice.abgind.foxconn.com/india/gateway', params, { headers });
-      // const response = await axios.post('http://10.209.110.101:5665/G_Authenticator/OTP/User_Verifivation', params, { headers });
-
-      const res = JSON.parse(decrypt(response.data.r, getdk(iwxKey)))
-      //console.log(res)
-      if (res.IsOK === 1) {
-        await updatateqrstatua();
-        sessionStorage.setItem('isLoggedIn', encryptedBoolean);
-        const getloginstatus = sessionStorage.getItem('loginresponse');
-        sessionStorage.setItem('data', getloginstatus);
-        await StoreOTPtologinlog(res.Msg);
-        navigate(`/home/Dashboard`, { state: { account } });
-      } else {
-        setErrorMessage('Incorrect OTP');
-        await StoreOTPtologinlog(res.Msg);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setotploading(false);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      if (!account || !password) {
-        setErrorMessage('Fill in all fields.');
-        setIsLoading(false);
-        return;
-      }
-
-      setErrorMessage('');
-      await fetchdata();
-      const accountt = dealPostParamsEncrypt(account);
-      sessionStorage.setItem('account', accountt.s);
-
-      const fetchempname = await fetchempName();
-      const fetchroles = await fetchRoleData();
-      console.log(fetchempname)
-      console.log(fetchroles)
-      try {
-        const headers = {
-          apiID: 'ffff-1743480426986-1020912129-2253',
-          userKey: '10A33A67A312E649D907BBC927995B8A'
-        };
-        const params = {
-          EmpId: account,
-          EmpName: '',
-          Status: '',
-          StartPage: 1,
-          PageSize: 999999,
-          Func: 'UserManagement-Get_user_details_new'
-        };
-        const res = await iwxPost(params, { headers }, true);
-        const response = res.List;
-        const findempdata = response.filter((dorm) => dorm.EmpId === account);
-
-        if (response.length === 0) {
-          setErrorMessage('You don\'t have access to this system.');
-          const msg = 'You don\'t have access to this system';
-          await StoreLoginLog(msg, fetchempname, fetchroles);
-          return;
-        } else if (findempdata[0]?.DelFlag === '1') {
-          setErrorMessage('You don\'t have access to this system.');
-          const msg = 'You don\'t have access to this system';
-          await StoreLoginLog(msg, fetchempname, fetchroles);
-          return;
+  private genMenus(data: Menu[]) {
+    const res: ProMenu[] = [];
+    const ingoreCategores = data.reduce((prev, cur) => prev.concat(cur.children), []);
+    this.menuSrv.visit(ingoreCategores, (item, parent) => {
+      if (!item._aclResult) {
+        if (this.disabledAcl) {
+          item.disabled = true;
+        } else {
+          item._hidden = true;
         }
-      } catch (error) {
-        setErrorMessage('Error checking account availability.');
-        const msg = 'Error checking account availability';
-        await StoreLoginLog(msg, fetchempname, fetchroles);
+      }
+      if (item._hidden === true) {
         return;
       }
-
-      const encryptedParams = dealPostParamsEncrypt({
-        Func: 'APPFrame-AccountLoginPhoneSpv3-IWX',
-        Account: account,
-        Password: password,
-        OsType: '1',
-        DeviceId: '1',
-        OsVer: '1',
-        AppVer: '1',
-        DeviceType: '1',
-        AppVersion: '1',
-      });
-
-      const response = await getlogincredentials(encryptedParams);
-      const decryptedResponse = decrypt(response.r, getdk(iwxKey));
-      const decryptedResponseObj = JSON.parse(decryptedResponse);
-
-      if (decryptedResponse && decryptedResponseObj.IsOK === '1') {
-        const loginlogresponse = await StoreLoginLog(decryptedResponseObj.Msg, fetchempname, fetchroles);
-        const encryptedloginlogid = encrypt(loginlogresponse.toString(), getdk(iwxKey));
-        sessionStorage.setItem('loginlogID', encryptedloginlogid);
-        sessionStorage.setItem('loginresponse', response.r);
-        sessionStorage.setItem('issuccessfullylogin', encryptedBoolean);
-        setLoginStatus('success');
-      } else {
-        await StoreLoginLog(decryptedResponseObj.Msg, fetchempname, fetchroles);
-        setErrorMessage(decryptedResponseObj.Msg);
-        setLoginStatus('error');
+      if (parent === null) {
+        res.push(item);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+
+      this.menuTypeObj[item.id] = 'inline';
+      if (item.menuType === '1') {
+        this.menuTypeObj[item.id] = 'vertical';
+      }
+    });
+    this.menus = res;
+    
+    this.isFristLoading=true;
+    this.openStatus();
+  }
+
+  private openStatus() {
+    const inFn = (list: ProMenu[],first?:any) => {
+      if (first) {
+        // console.log("this.router.url",this.router.url)
+        const menuList = list;
+        let isMainPage = menuList.length > 0 && menuList[0].id == 599 ? true : false;
+        if (isMainPage) {
+          // 設置第二個菜單默認展開
+          menuList.forEach((item, index) => {
+            // console.log("設置第二個菜單默認展開",item)
+            item._open = index == 1&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
+            item._selected = false;
+            if (item.urlKey) {
+              item.link = "/dashboard/";
+            }
+            if (item.children.length > 0) {
+              inFn(item.children);
+            }
+
+            this.isFristLoading=index==menuList.length-1?false:true;
+          })
+        }else{
+          // 設置默認展開第一個菜單
+          menuList.forEach((item, index) => {
+            // console.log("設置默認展開第一個菜單",item)
+            item._open = index == 0&&this.router.url== "/dashboard" ? true : false;//默認展開workFlow菜單
+            item._selected = false;
+            if (item.urlKey) {
+              item.link = "/dashboard/";
+            }
+            if (item.children.length > 0) {
+              inFn(item.children);
+            }
+            this.isFristLoading=index==menuList.length-1?false:true;
+          })
+        }
+
+      }else{
+        const menuList = list;
+        menuList.forEach((item, index) => {
+          // console.log("第二次item",item)
+          item._open =false;//默認展開workFlow菜單
+          item._selected = false;
+          if (item.urlKey) {
+            item.link = "/dashboard/";
+          }
+          if (item.children.length > 0) {
+            inFn(item.children);
+          }
+        })
+      }
+    };
+    inFn(this.menus, this.isFristLoading);
+
+    
+
+    let item = this.menuSrv.getHit(this.menus, this.router.url, true);
+    const _activeRouter = this.cacheSvr.getNone("activeRouter");
+    if (_activeRouter && !item) {
+      if (this.router.url !== "/dashboard") {
+        item = this.menuSrv.getHit(this.menus, _activeRouter.toString(), true);
+      }else{
+        
+      }
+    } else {
+      this.cacheSvr.set("activeRouter", this.router.url, { type: 'm' });
     }
-  };
 
-  const handlebacklogin = () => {
-    sessionStorage.removeItem('issuccessfullylogin');
-    sessionStorage.removeItem('qrstatus');
-    sessionStorage.removeItem('loginresponse');
-    sessionStorage.removeItem('loginlogID');
-    navigate('/login');
-    setAccount('');
-    setPassword('');
-  };
-
-  useEffect(() => {
-    setErrorMessage("");
-  }, [account, password, otp]);
-
-  useEffect(() => {
-    const isLoggedIn = sessionStorage.getItem('issuccessfullylogin');
-    if (isLoggedIn === null || isLoggedIn === encryptedBoolean) {
-      handleGenerateSecret();
+    if (!item) {
+      this.cd();
+      return;
     }
-  }, [issuccessfullylogin, loginStatus]);
+    sessionStorage.setItem('activeUrlKey', item.urlKey);
+    do {
+      item._selected = true;
+      if (!this.pro.isTopMenu && !this.pro.collapsed) {
+        item._open = true;
+      }
+      item = item.__parent;
+    } while (item);
+    this.cd();
+  }
 
-  return (
-    <Grid container component="main" sx={{
-      height: "100vh",
-      backgroundImage: `url(${loginimage})`,
-      backgroundRepeat: "no-repeat",
-      height: "92vh",
-      opacity: 0.8,
-      zIndex: -1,
-      backgroundPosition: "center",
-    }}>
-      <Grid
-        item
-        xs={24}
-        sm={24}
-        md={24}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          bottom: 0,
-          justifyContent: "center",
-          marginTop: 'auto',
-          height: '100%',
-        }}
-      >
+  openChange(item: ProMenu, statue: boolean) {
+    const data = item.__parent ? item.__parent.children : this.menus;
+    if (data && data.length <= 1) return;
+    data.forEach(i => (i._open = false));
+    item._open = statue;
+  }
 
-        <Box className={classes.root} onKeyPress={handleKeyPress}>
-          <Box className={classes.formm}>
-            <img
-              src={`${process.env.PUBLIC_URL}/images/logo1.png`}
-              alt="MUI Image"
-            />
-            {issuccessfullylogin === encryptedBoolean ? (
-              <div>
-                <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 600, fontSize: '1rem' }}>
-                  MFA Auth
-                </Typography>
+  closeCollapsed() {
+    const { pro } = this;
+    if (pro.isMobile) {
+      setTimeout(() => pro.setCollapsed(true), 25);
+    }
+  }
 
-                {isscuessqr === encryptedBooleannum && (
-                  <>
-                    <br />
-                    {showQRCode && (
-                      <div>
-                        <QRCodeCanvas value={generateOTPURI()} size={128} />
-                        <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 600, fontSize: '10px' }}>
-                          Secret Key:<br /> {secretkey}
-                        </Typography>
-                      </div>
-                    )}
-                  </>
-                )}
+  ngOnInit() {
+    const { unsubscribe$, router, pro } = this;
+    this.menuSrv.change.pipe(takeUntil(unsubscribe$)).subscribe(res => this.genMenus(res));
 
-                <br />
-                <TextField
-                  error
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  helperText={errorMessage}
-                  onChange={(e) => setOTP(e.target.value)}
-                />
-                <Button fullWidth disabled={!otp} onClick={verifyOTP} sx={{ mt: 3, mb: 4 }} variant='contained'>
-                  {otploading ? <CircularProgress /> : "Verify OTP"}
-                </Button>
-                <Button onClick={handlebacklogin} variant='contained'>Back to login</Button>
-              </div>
-            ) : (
-              <form onSubmit={handleLogin}>
-                <Typography sx={{ fontFamily: '"Open Sans","Helvetica","Arial",sans-serif', fontWeight: 700, fontSize: '1rem' }}>
-                  Login
-                </Typography>
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Username"
-                  value={account}
-                  autoComplete="username"
-                  onChange={(e) => setAccount(e.target.value)}
-                />
-                <TextField
-                  autoComplete="current-password"
-                  margin="normal"
-                  fullWidth
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleTogglePassword} edge="end">
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+    router.events
+      .pipe(
+        takeUntil(unsubscribe$),
+        filter(e => e instanceof NavigationEnd),
+    )
+      .subscribe(() => this.openStatus());
 
-                {errorMessage && (
-                  <Typography color="error" variant="h6">
-                    {errorMessage}
-                  </Typography>
-                )}
+    pro.notify
+      .pipe(
+        takeUntil(unsubscribe$),
+        filter(() => !!this.menus),
+    )
+      .subscribe(() => this.cd());
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  disabled={isLoading}
-                >
-                  {isLoading ? <CircularProgress /> : 'Login'}
-                </Button>
-              </form>
-            )}
-          </Box>
-        </Box>
-      </Grid>
-      <Grid
-        item
-        xs={24}
-        sm={24}
-        md={24}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          bottom: 0,
-          justifyContent: "center",
-          marginTop: "auto",
-          fontSize: "16px !important",
-        }}
-      >
-        <div>
-          <li style={{ listStyleType: "none", color: "#000 !important" }}>
-            FXCN IT: Tel:533-26038 | Email:idpbg-it-tn-dev@mail.foxconn.com
-          </li>
-          <li style={{ listStyleType: "none" }}>
-            Copyright 2020-2025 Foxconn A Business Group IT. All Rights Reserved
-          </li>
-        </div>
-      </Grid>
-    </Grid>
-  );
-};
+    const nemuId = localStorage.getItem("nemuId");
+    if (nemuId) {
+      localStorage.removeItem("nemuId");
+    }
 
-export default Login;
+    this.userId = this.apiSvr.getSettingUserInfo().eeid;
+  }
+
+  ngOnChanges(changes:SimpleChanges){
+      setTimeout(() => {
+        this.pro.isOpenMenu=false;
+      }, 0);
+  }
+
+  ngOnDestroy() {
+    const { unsubscribe$ } = this;
+    unsubscribe$.next();
+    unsubscribe$.complete();
+  }
+
+  openSearchMenu(info) {
+    // console.log('openSearchMenu',info)
+    if(info.urlKey){
+      info._open = true;
+    }
+    if (info.menuType === '8') {
+      const nemuId = localStorage.getItem("nemuId");
+
+      if (nemuId) {
+        if (nemuId === info.id.toString()) {
+          this.pro.isShowSearchMenu = false;
+        } else {
+          this.pro.isShowSearchMenu = true;
+          setTimeout(() => {
+            this.pro.appDelEmitChange(info);
+          }, 0);
+        }
+      } else {
+        this.pro.isShowSearchMenu = true;
+        setTimeout(() => {
+          this.pro.appDelEmitChange(info);
+        }, 0);
+      }
+
+      if (this.pro.isShowSearchMenu) {
+        localStorage.setItem("nemuId", info.id);
+      } else {
+        localStorage.removeItem("nemuId");
+      }
+    }
+  }
+
+  closeSearchMenu() {
+    this.pro.isShowSearchMenu = false;
+    localStorage.removeItem("nemuId");
+  }
+
+  addMenuLog(menuId, menuName) {
+    const param = {
+      url: "/addMenuLog",
+      data: {
+        "menuId": menuId,
+        "menuName": menuName,
+        "empNo": this.userId,
+        "systemCode":"NPI"
+      }
+    };
+
+    const body = security.encryptForWeb(JSON.stringify(param.data));
+
+    this.http.post(param.url, body, null, {headers:{"Content-Type": "application/json;charset=UTF-8"}}).subscribe(data => {
+      const res = JSON.parse(security.decryptForWeb(data));
+      // console.log('res!!',res)
+      if (res.status !== 200) {
+        if (res.msg) {
+          this.msgSvc.error(res.msg);
+        }
+      }
+    });
+  }
+}
