@@ -1,33 +1,226 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+//using Oracle.DataAccess.Client;
+using System.Data;
+using System.Data.OracleClient;
+namespace EISP.Web.NpiProposal.ApplyClass
+{
+    public class DBClass : DBHelper
+    {
+        string Sp = "";
+        public DBClass(bool isTransaction = false) : base(isTransaction)
+        {
+        }
 
-import { IsmRoutingModule } from './ism-route.module';
+        /// <summary>
+        /// 獲取用戶信息
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult GetEmpBaseInfo(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_VISION_JUMP_SERVE_PK.GET_EMP_BASE_INFO_SP";
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property01, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
 
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { ProposalsComponent } from './proposals/proposals.component';
-import { EmployeesComponent } from './employees/employees.component';
-import { ReportsComponent } from './reports/reports.component';
-import { SlaComponent } from './sla/sla.component';
-import { CalendarComponent } from './calendar/calendar.component';
-import { DocumentComponent } from './document/document.component';
-import { UserManagementComponent } from './user-management/user-management.component';
+        public DBHelperResult GetEmpInfo(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_USER_INFO";
+            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
 
-@NgModule({
-  declarations: [
-    DashboardComponent,
-    ProposalsComponent,
-    EmployeesComponent,
-    ReportsComponent,
-    SlaComponent,
-    CalendarComponent,
-    DocumentComponent,
-    UserManagementComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    IsmRoutingModule
-  ]
-})
-export class IsmModule {}
+        /// <summary>
+        /// 獲取廠區
+        /// </summary>
+        /// <returns></returns>
+        public DBHelperResult GetSiteMessage()
+        {
+            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.GET_SITE_MESSAGE_SP";
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 獲取CATEGORY
+        /// </summary>
+        /// <returns></returns>
+        public DBHelperResult GetCategoryMessage()
+        {
+            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.GET_CATEGORY_MESSAGE_SP";
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 提交/保存
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult InsertNpiProposalForm(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.INSERT_NPI_PROPOSAL_FORM_SP";
+            AddInputParameter("V_FORMCODE", OracleType.VarChar, model.Property02, 2000);
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property03, 2000);
+            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property04, 2000);
+            AddInputParameter("V_FORM_ID", OracleType.VarChar, model.Property05, 2000);
+            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property06, 2000);
+            AddInputParameter("V_FACTORY", OracleType.VarChar, model.Property07, 2000);
+            AddInputParameter("V_POST_LEVEL", OracleType.VarChar, model.Property08, 2000);
+            AddInputParameter("V_MANAGE", OracleType.VarChar, model.Property09, 2000);
+            AddInputParameter("V_DEPT_ID", OracleType.VarChar, model.Property10, 2000);
+            AddInputParameter("V_DEPT_NAME", OracleType.VarChar, model.Property11, 2000);
+            AddInputParameter("V_COST_CODE", OracleType.VarChar, model.Property12, 2000);
+            AddInputParameter("V_PHONE_NO", OracleType.VarChar, model.Property13, 2000);
+            AddInputParameter("V_EMAIL", OracleType.VarChar, model.Property14, 2000);
+
+            AddInputParameter("V_SITE_ID", OracleType.VarChar, model.Property15, 2000);
+            AddInputParameter("V_SITE_NAME", OracleType.VarChar, model.Property16, 2000);
+            AddInputParameter("V_AREA", OracleType.VarChar, model.Property37, 2000);
+            AddInputParameter("V_AREA_ID", OracleType.VarChar, model.Property36, 2000);
+            AddInputParameter("V_BUILD", OracleType.VarChar, model.Property33, 2000);
+            AddInputParameter("V_BUILD_ID", OracleType.VarChar, model.Property17, 2000);
+            AddInputParameter("V_FLOOR", OracleType.VarChar, model.Property34, 2000);
+            AddInputParameter("V_FLOOR_ID", OracleType.VarChar, model.Property18, 2000);
+            AddInputParameter("V_LAB_NAME", OracleType.VarChar, model.Property35, 2000);
+            AddInputParameter("V_LAB_ID", OracleType.VarChar, model.Property19, 2000);
+            AddInputParameter("V_DRI_EMP", OracleType.VarChar, model.Property20, 2000);
+            AddInputParameter("V_DRI_EMAIL", OracleType.VarChar, model.Property22, 2000);
+            AddInputParameter("V_HOD_EMP", OracleType.VarChar, model.Property21, 2000);
+            AddInputParameter("V_HOD_EMAIL", OracleType.VarChar, model.Property23, 2000);
+            AddInputParameter("V_PC_QTY", OracleType.VarChar, model.Property24, 2000);
+            AddInputParameter("V_NPS_APPROVED", OracleType.VarChar, model.Property25, 2000);
+            AddInputParameter("V_REASON", OracleType.VarChar, model.Property26, 2000);
+            AddInputParameter("V_CATEGORY", OracleType.VarChar, model.Property29, 2000);
+            AddInputParameter("V_ATTACH_TYPE", OracleType.VarChar, model.Property30, 2000);
+            AddInputParameter("V_ATTACH_NAME", OracleType.VarChar, model.Property31, 2000);
+            AddInputParameter("V_FILE_PATH", OracleType.VarChar, model.Property32, 2000);
+
+            AddIOutParameter("R_OK", OracleType.VarChar, 2000);
+            AddIOutParameter("R_MSG", OracleType.VarChar, 2000);
+            return Execute_Non_Return(Sp);
+        }
+
+        /// <summary>
+        /// 刪除
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult DelNpiProposalForm(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.DEL_NPI_PROPOSAL_FORM_SP";
+            AddInputParameter("V_FORMCODE", OracleType.VarChar, model.Property01, 2000);
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
+            AddIOutParameter("R_OK", OracleType.VarChar, 2000);
+            AddIOutParameter("R_MSG", OracleType.VarChar, 2000);
+            return Execute_Non_Return(Sp);
+        }
+        /// <summary>
+        /// 獲取明細
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult GetDNLPerDetail(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_DNL_PER_DETAIL_SP";
+            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property01, 2000);
+            AddCursorParameter("P_CURSOR");
+            AddCursorParameter("P_CURSOR1");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 收件箱
+        /// </summary>
+        /// <returns></returns>
+        public DBHelperResult GetReceive(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_RECEIVE_SP";
+            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
+            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
+            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
+            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
+            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
+            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
+            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 發件箱/草稿箱
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult GetSendForm(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_SEND_FORM_SP";
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property01, 2000);
+            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property02, 2000);
+            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property03, 2000);
+            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property04, 2000);
+            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property05, 2000);
+            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property06, 2000);
+            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property07, 2000);
+            AddInputParameter("V_USER", OracleType.VarChar, model.Property08, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 快速查詢-表單追蹤
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult GetQueryForm(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_QUERY_FORM_SP";
+            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
+            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
+            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
+            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
+            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
+            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
+            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        /// <summary>
+        /// 快速查詢-已签核
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public DBHelperResult GetQuerySignForm(TempModel model)
+        {
+            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_QUERY_SIGN_FORM_SP";
+            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
+            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
+            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
+            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
+            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
+            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
+            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
+            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
+            AddCursorParameter("P_CURSOR");
+            return Execute_Return_DataTable(Sp);
+        }
+
+        public DBHelperResult CheckApplyUserNo(string empNO, string user)
+        {
+            Sp = "HRM_WF.HRM_DATA_QUERY_CONTROL_PK.CHECK_DATA_QUERY_CONTROL_SP";
+            AddInputParameter("v_emp_no", OracleType.VarChar, empNO.ToUpper().Trim(), 100);
+            AddInputParameter("v_user_no", OracleType.VarChar, user.ToUpper().Trim(), 100);
+            AddInputParameter("v_type_id", OracleType.VarChar, "1", 100);
+            AddCursorParameter("p_cursor");
+            return Execute_Return_DataTable(Sp);
+        }
+    }
+}
