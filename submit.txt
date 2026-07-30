@@ -1,226 +1,1146 @@
+using CommonFunction.Util;
+using EISP.Web.NpiProposal.ApplyClass;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-//using Oracle.DataAccess.Client;
 using System.Data;
-using System.Data.OracleClient;
-namespace EISP.Web.NpiProposal.ApplyClass
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using EISP.Components.ExcelRead;
+using Resources;
+using EISP.Components.Connection;
+
+namespace EISP.Web.NpiProposal.EForm.CreateForm
 {
-    public class DBClass : DBHelper
+    public partial class NpiProposalApply : TempPage
     {
-        string Sp = "";
-        public DBClass(bool isTransaction = false) : base(isTransaction)
+        DBClass db = new DBClass();
+        EISP.WFEngineService.WFEngineService WFEngine = new WFEngineService.WFEngineService();
+        private ExcelRead er = new ExcelRead();
+        Dictionary<string, string> dicParams = new Dictionary<string, string>();
+        JObject awxData = null;
+        Components.Connection.awxClass awx = new awxClass();
+        EISP.Components.Utilities.FileClass.UpFileClass upfile = new EISP.Components.Utilities.FileClass.UpFileClass();
+        EISP.Components.Utilities.FileClass.SFTPHelper sftp = new EISP.Components.Utilities.FileClass.SFTPHelper("WF_IT");
+
+        // 手动插入“请选择”项，并设置为隐藏、禁用、选中
+        ListItem placeholderItem = new ListItem("Please Select", "");
+
+        string formCode = "";
+        string strID = "";
+
+        protected void Page_Load(object sender, EventArgs e)
         {
+            placeholderItem.Attributes.Add("style", "display:none");   // 完全隐藏
+            placeholderItem.Attributes.Add("disabled", "disabled");   // 禁用（不可选）
+
+            strFormID = "10056";
+            if (!IsPostBack)
+            {
+                GetEmpInfo(this.UserNo);
+                SetParameter();
+                BindDDLData();
+                //簽核流程
+                GetWorkFlow();
+            }
+            else {
+                // 回发时，确保提示项属性仍然存在
+                SetPlaceholderItem(DropDownList1);
+                SetPlaceholderItem(AreaList);
+                SetPlaceholderItem(txt_build);
+                SetPlaceholderItem(txt_floor);
+                SetPlaceholderItem(TextBox1);
+                SetPlaceholderItem(DropDownList3);
+            }
+        }
+        private void SetPlaceholderItem(DropDownList ddl)
+        {
+            // 查找提示项（假设 Value 为空）
+            ListItem placeholder = ddl.Items.FindByValue("");
+            if (placeholder != null)
+            {
+                placeholder.Attributes["style"] = "display:none";
+                placeholder.Attributes["disabled"] = "disabled";
+                // 如果当前没有选中任何有效值，则选中提示项
+                if (string.IsNullOrEmpty(ddl.SelectedValue) || ddl.SelectedValue == "")
+                {
+                    ddl.SelectedIndex = ddl.Items.IndexOf(placeholder);
+                }
+            }
+        }
+
+        protected void initDropDownList()
+        {
+
+        }
+
+        #region 事件
+
+        /// <summary>
+        /// 同意
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btn_Agree_Click(object sender, ImageClickEventArgs e)
+        {
+            Sign(SignCode.Agree);
         }
 
         /// <summary>
-        /// 獲取用戶信息
+        /// 拒絕
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public DBHelperResult GetEmpBaseInfo(TempModel model)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btn_Refuse_Click(object sender, ImageClickEventArgs e)
         {
-            Sp = "HRM_IAM.HRM_VISION_JUMP_SERVE_PK.GET_EMP_BASE_INFO_SP";
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property01, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
-        }
-
-        public DBHelperResult GetEmpInfo(TempModel model)
-        {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_USER_INFO";
-            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            if (string.IsNullOrEmpty(txtComments.Text.Trim()))
+            {
+                Alert(sys.ResourceManager.GetString("ML_KEY_EISP_3426"));  //請填寫拒絕原因
+                return;
+            }
+            Sign(SignCode.Refuse);
         }
 
         /// <summary>
-        /// 獲取廠區
+        /// 取消
         /// </summary>
-        /// <returns></returns>
-        public DBHelperResult GetSiteMessage()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btn_Cancel_Click(object sender, ImageClickEventArgs e)
         {
-            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.GET_SITE_MESSAGE_SP";
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            Sign(SignCode.Canle);
+        }
+
+        protected bool CreateLog(out string strErr)
+        {
+            return Eng.EngFormCreateLog(ViewState["LOG_ID"] as string, out strErr);
         }
 
         /// <summary>
-        /// 獲取CATEGORY
+        /// 提交
         /// </summary>
-        /// <returns></returns>
-        public DBHelperResult GetCategoryMessage()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btn_submit_Click(object sender, ImageClickEventArgs e)
         {
-            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.GET_CATEGORY_MESSAGE_SP";
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            try {
+                if (!CheckForm()) //!CheckForm()
+                {
+                    return;
+                }
+                if (Save(1))
+                {
+                    string err;
+
+                    if (!CreateLog(out err))
+                    {
+                        db.DelNpiProposalForm(new TempModel() { Property01 = ViewState["FormCode"] as string, Property02 = UserNo });
+                        Alert(err);
+                    }
+                    else
+                    {
+                        AlertAndReload(sys.ResourceManager.GetString("ML_KEY_EISP_2176")); //提交成功
+                    }
+                }
+                else
+                {
+                    Alert(sys.ResourceManager.GetString("ML_KEY_EISP_574")); //提交失敗
+                }
+            }
+            catch (Exception ex)
+            {
+                Alert(sys.ResourceManager.GetString("ML_KEY_EISP_574")); //提交失敗
+            }
+
         }
 
         /// <summary>
-        /// 提交/保存
+        /// 下載模板
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public DBHelperResult InsertNpiProposalForm(TempModel model)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void lkbFileDown_Click(object sender, EventArgs e)
         {
-            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.INSERT_NPI_PROPOSAL_FORM_SP";
-            AddInputParameter("V_FORMCODE", OracleType.VarChar, model.Property02, 2000);
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property03, 2000);
-            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property04, 2000);
-            AddInputParameter("V_FORM_ID", OracleType.VarChar, model.Property05, 2000);
-            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property06, 2000);
-            AddInputParameter("V_FACTORY", OracleType.VarChar, model.Property07, 2000);
-            AddInputParameter("V_POST_LEVEL", OracleType.VarChar, model.Property08, 2000);
-            AddInputParameter("V_MANAGE", OracleType.VarChar, model.Property09, 2000);
-            AddInputParameter("V_DEPT_ID", OracleType.VarChar, model.Property10, 2000);
-            AddInputParameter("V_DEPT_NAME", OracleType.VarChar, model.Property11, 2000);
-            AddInputParameter("V_COST_CODE", OracleType.VarChar, model.Property12, 2000);
-            AddInputParameter("V_PHONE_NO", OracleType.VarChar, model.Property13, 2000);
-            AddInputParameter("V_EMAIL", OracleType.VarChar, model.Property14, 2000);
-
-            AddInputParameter("V_SITE_ID", OracleType.VarChar, model.Property15, 2000);
-            AddInputParameter("V_SITE_NAME", OracleType.VarChar, model.Property16, 2000);
-            AddInputParameter("V_AREA", OracleType.VarChar, model.Property37, 2000);
-            AddInputParameter("V_AREA_ID", OracleType.VarChar, model.Property36, 2000);
-            AddInputParameter("V_BUILD", OracleType.VarChar, model.Property33, 2000);
-            AddInputParameter("V_BUILD_ID", OracleType.VarChar, model.Property17, 2000);
-            AddInputParameter("V_FLOOR", OracleType.VarChar, model.Property34, 2000);
-            AddInputParameter("V_FLOOR_ID", OracleType.VarChar, model.Property18, 2000);
-            AddInputParameter("V_LAB_NAME", OracleType.VarChar, model.Property35, 2000);
-            AddInputParameter("V_LAB_ID", OracleType.VarChar, model.Property19, 2000);
-            AddInputParameter("V_DRI_EMP", OracleType.VarChar, model.Property20, 2000);
-            AddInputParameter("V_DRI_EMAIL", OracleType.VarChar, model.Property22, 2000);
-            AddInputParameter("V_HOD_EMP", OracleType.VarChar, model.Property21, 2000);
-            AddInputParameter("V_HOD_EMAIL", OracleType.VarChar, model.Property23, 2000);
-            AddInputParameter("V_PC_QTY", OracleType.VarChar, model.Property24, 2000);
-            AddInputParameter("V_NPS_APPROVED", OracleType.VarChar, model.Property25, 2000);
-            AddInputParameter("V_REASON", OracleType.VarChar, model.Property26, 2000);
-            AddInputParameter("V_CATEGORY", OracleType.VarChar, model.Property29, 2000);
-            AddInputParameter("V_ATTACH_TYPE", OracleType.VarChar, model.Property30, 2000);
-            AddInputParameter("V_ATTACH_NAME", OracleType.VarChar, model.Property31, 2000);
-            AddInputParameter("V_FILE_PATH", OracleType.VarChar, model.Property32, 2000);
-
-            AddIOutParameter("R_OK", OracleType.VarChar, 2000);
-            AddIOutParameter("R_MSG", OracleType.VarChar, 2000);
-            return Execute_Non_Return(Sp);
+            try
+            {
+                CommonFunction.Util.ExcelUtil.DownloadExcelFromFile(ViewState["TempPath"].ToString(), Path.GetFileName(ViewState["TempPath"].ToString()), this);
+            }
+            catch (Exception ex)
+            {
+                Alert(ex.ToString());
+            }
         }
 
         /// <summary>
-        /// 刪除
+        /// 獲取申請人信息
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public DBHelperResult DelNpiProposalForm(TempModel model)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GetEmpInfo(string strEmpNo)
         {
-            Sp = "HRM_IAM.HRM_NPI_PROPOSAL_PK.DEL_NPI_PROPOSAL_FORM_SP";
-            AddInputParameter("V_FORMCODE", OracleType.VarChar, model.Property01, 2000);
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
-            AddIOutParameter("R_OK", OracleType.VarChar, 2000);
-            AddIOutParameter("R_MSG", OracleType.VarChar, 2000);
-            return Execute_Non_Return(Sp);
+            var empno = strEmpNo;
+            if (!string.IsNullOrEmpty(empno))
+            {
+                var result = db.GetEmpInfo(new TempModel() { Property01 = empno });
+                if (result.dt != null && result.dt.Rows.Count > 0)
+                {
+                    txtEmpNo.Text = empno;
+                    txtEmpName.Text = result.dt.Rows[0]["EMP_NAME"].ToString();
+                    txtCostCode.Text = result.dt.Rows[0]["COST_CODE"].ToString();
+                    txtDept.Text = result.dt.Rows[0]["DEPT"].ToString();
+                    txtPhoneNo.Text = result.dt.Rows[0]["TEL"].ToString();
+                    txtMail.Text = result.dt.Rows[0]["EMAIL"].ToString();
+                    txtFactory.Text = result.dt.Rows[0]["FACTORY"].ToString();
+                    hfFactoryId.Value = result.dt.Rows[0]["FACTORY_ID"].ToString();
+                    DeptId.Value = result.dt.Rows[0]["DEPT_ID"].ToString();
+
+                    lblEmpNo.Text = empno;
+                    lbl_EmpName.Text = result.dt.Rows[0]["EMP_NAME"].ToString();
+                    lbl_Dept_Cost.Text = result.dt.Rows[0]["COST_CODE"].ToString();
+                    lbl_DeptName.Text = result.dt.Rows[0]["DEPT"].ToString();
+                    lbl_factor.Text = result.dt.Rows[0]["FACTORY"].ToString();
+                    EISP.Web.PublicOutWorkFlow.PClass.FormClass dal = new PublicOutWorkFlow.PClass.FormClass();
+                    DataTable dts = dal.GetEmpInfo3(lblEmpNo.Text);
+                    if (dts != null && dts.Rows.Count > 0)
+                    {
+                        lbl_PostLevel.Text = dts.Rows[0]["POST_LEVEL"].ToString();//資位
+                        lbl_glz.Text = dts.Rows[0]["POST_RANK"].ToString();//職務
+
+                    }
+
+                    ViewState["FACTORY_ID"] = result.dt.Rows[0]["FACTORY_ID"].ToString();
+                }
+            }
+            else
+            {
+                txtEmpName.Text = "";
+                txtCostCode.Text = "";
+                txtDept.Text = "";
+                txtPhoneNo.Text = "";
+                txtMail.Text = "";
+                txtFactory.Text = "";
+            }
+            //GetWorkFlow();
         }
-        /// <summary>
-        /// 獲取明細
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public DBHelperResult GetDNLPerDetail(TempModel model)
+        #endregion
+
+
+        private void BindForm(DataTable dt)
         {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_DNL_PER_DETAIL_SP";
-            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property01, 2000);
-            AddCursorParameter("P_CURSOR");
-            AddCursorParameter("P_CURSOR1");
-            return Execute_Return_DataTable(Sp);
+            ID.Value = dt.Rows[0]["ID"].ToString();
+            txtEmpNo.Text = dt.Rows[0]["USER_NO"].ToString();
+            txtEmpName.Text = dt.Rows[0]["USER_NAME"].ToString();
+            txtCostCode.Text = dt.Rows[0]["COST_CODE"].ToString();
+            txtDept.Text = dt.Rows[0]["DEPT_NAME"].ToString();
+            txtPhoneNo.Text = dt.Rows[0]["OFFICE_TEL"].ToString();
+            txtMail.Text = dt.Rows[0]["EMAIL"].ToString();
+
+            lblEmpNo.Text = dt.Rows[0]["USER_NO"].ToString();
+            lbl_EmpName.Text = dt.Rows[0]["USER_NAME"].ToString();
+            lbl_Dept_Cost.Text = dt.Rows[0]["COST_CODE"].ToString();
+            lbl_DeptName.Text = dt.Rows[0]["DEPT_NAME"].ToString();
+
+            EISP.Web.PublicOutWorkFlow.PClass.FormClass dal = new PublicOutWorkFlow.PClass.FormClass();
+            DataTable dts = dal.GetEmpInfo3(lblEmpNo.Text);
+            if (dts != null && dts.Rows.Count > 0)
+            {
+                lbl_PostLevel.Text = dts.Rows[0]["POST_LEVEL"].ToString();//資位
+                lbl_glz.Text = dts.Rows[0]["POST_RANK"].ToString();//職務
+                lbl_factor.Text = dts.Rows[0]["FACTORY_NAME"].ToString();//廠區名稱
+            }
+            ViewState["FACTORY_ID"] = dt.Rows[0]["FACTORY_ID"].ToString();
         }
 
         /// <summary>
-        /// 收件箱
+        /// 綁定下拉框
         /// </summary>
-        /// <returns></returns>
-        public DBHelperResult GetReceive(TempModel model)
+        private void BindDDLData()
         {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_RECEIVE_SP";
-            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
-            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
-            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
-            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
-            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
-            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
-            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            DBHelperResult result;
+            DBHelperResult category;
+           
+
+            //廠區
+            result = db.GetSiteMessage();
+            //Category
+            category = db.GetCategoryMessage();
+            if (result.dt != null && result.dt.Rows.Count > 0) {
+                BindDDLData(DropDownList1, result.dt, "CODE", "ID", true);
+
+                //DropDownList1.Items.Insert(0, placeholderItem);
+               // DropDownList1.SelectedIndex = 0;  // 默认选中该项
+            }
+
+
+            if (category.dt != null && category.dt.Rows.Count > 0) {
+                BindDDLData(DropDownList3, category.dt, "CODE", "ID", true);
+
+                //DropDownList3.Items.Insert(0, placeholderItem);
+                //DropDownList3.SelectedIndex = 0;  // 默认选中该项
+            }
+
+            AreaList.Items.Insert(0, placeholderItem);
+            AreaList.SelectedIndex = 0;  // 默认选中该项
+
+            txt_build.Items.Insert(0, placeholderItem);
+            txt_build.SelectedIndex = 0;  // 默认选中该项
+
+            txt_floor.Items.Insert(0, placeholderItem);
+            txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+            TextBox1.Items.Insert(0, placeholderItem);
+            TextBox1.SelectedIndex = 0;  // 默认选中该项
+
+
+            //dicParams.Clear(); awxData = null;
+            //dicParams.Add("ShifCode", ShifCode);
+            //dicParams.Add("DateType", dateType);
+
+            //GetDataFromAWX_ID(dicParams, "659", ref awxData);
+            //if (awxData["IsOK"].ToString() == "1")
+            //{
+            //    2if (awxData != null && awxData["List"].Count() > 0)
+            //    {
+
+            //        MinHours = awxData["List"][0]["MinHour"].ToString();
+            //        Min_hours.Text = awxData["List"][0]["MinHour"].ToString();
+
+            //        MaxHours = awxData["List"][0]["MaxHour"].ToString();
+            //        Max_hours.Text = awxData["List"][0]["MaxHour"].ToString();
+
+            //        if (MinHours == MaxHours && MinHours != "0")
+            //        {
+            //            Min_hours.Text = "0.5";
+            //            MinHours = "0.5";
+            //        }
+
+            //    }
+            //}
+
+        }
+
+        protected void txt_Site_TextChanged(object sender, EventArgs e)
+        {
+            var factoryId = DropDownList1.SelectedValue;
+
+            GetWorkFlow();
+
+            var awxId = "";
+            if (!string.IsNullOrEmpty(factoryId))
+            {
+                if (factoryId == "95326")
+                {//BL
+                    awxId = "739";
+                }
+                else
+                {
+                    awxId = "735";
+                }
+                dicParams.Clear(); awxData = null;
+                dicParams.Add("FactoryId", factoryId);
+                GetDataFromAWX_ID(dicParams, awxId, ref awxData);
+                if (awxData["IsOK"].ToString() == "1")
+                {
+                    JToken listToken = awxData["List"];
+                    if (listToken is JArray jArray && jArray.Count > 0)
+                    {
+                        DataTable dt = ConvertJArrayToDataTable(jArray);
+                        BindDDLData(AreaList, dt, "CODE", "ID", true);
+
+                        txt_build.Items.Clear();
+                        txt_floor.Items.Clear();
+                        TextBox1.Items.Clear();
+                        AreaList.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_build.Items.Insert(0, placeholderItem);
+                        txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_floor.Items.Insert(0, placeholderItem);
+                        txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                    else
+                    {
+                        AreaList.Items.Clear();
+                        txt_build.Items.Clear();
+                        txt_floor.Items.Clear();
+                        TextBox1.Items.Clear();
+                        AreaList.Items.Insert(0, placeholderItem);
+                        AreaList.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_build.Items.Insert(0, placeholderItem);
+                        txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_floor.Items.Insert(0, placeholderItem);
+                        txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                }
+            }
+            else
+            {
+                AreaList.Items.Clear();
+                txt_build.Items.Clear();
+                txt_floor.Items.Clear();
+                TextBox1.Items.Clear();
+                AreaList.Items.Insert(0, placeholderItem);
+                AreaList.SelectedIndex = 0;  // 默认选中该项
+
+                txt_build.Items.Insert(0, placeholderItem);
+                txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                txt_floor.Items.Insert(0, placeholderItem);
+                txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                TextBox1.Items.Insert(0, placeholderItem);
+                TextBox1.SelectedIndex = 0;  // 默认选中该项
+            }
+        }
+
+        protected void list_Area_TextChanged(object sender, EventArgs e)
+        {
+            var areaId = AreaList.SelectedValue;
+            var factoryId = DropDownList1.SelectedValue;
+            var awxId = "";
+            if (!string.IsNullOrEmpty(areaId) && !string.IsNullOrEmpty(factoryId))
+            {
+                if (factoryId == "95326")
+                {//BL
+                    awxId = "740";
+                }
+                else
+                {
+                    awxId = "736";
+                }
+
+                dicParams.Clear(); awxData = null;
+                dicParams.Add("SiteareaId", areaId);
+                GetDataFromAWX_ID(dicParams, awxId, ref awxData);
+                if (awxData["IsOK"].ToString() == "1")
+                {
+                    JToken listToken = awxData["List"];
+                    if (listToken is JArray jArray && jArray.Count > 0)
+                    {
+                        DataTable dt = ConvertJArrayToDataTable(jArray);
+                        BindDDLData(txt_build, dt, "CODE", "ID", true);
+
+                        txt_floor.Items.Clear();
+                        TextBox1.Items.Clear();
+                        txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_floor.Items.Insert(0, placeholderItem);
+                        txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                    else
+                    {
+                        txt_build.Items.Clear();
+                        txt_floor.Items.Clear();
+                        TextBox1.Items.Clear();
+                        txt_build.Items.Insert(0, placeholderItem);
+                        txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                        txt_floor.Items.Insert(0, placeholderItem);
+                        txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                }
+            }
+            else
+            {
+                txt_build.Items.Clear();
+                txt_floor.Items.Clear();
+                TextBox1.Items.Clear();
+                txt_build.Items.Insert(0, placeholderItem);
+                txt_build.SelectedIndex = 0;  // 默认选中该项
+
+                txt_floor.Items.Insert(0, placeholderItem);
+                txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                TextBox1.Items.Insert(0, placeholderItem);
+                TextBox1.SelectedIndex = 0;  // 默认选中该项
+            }
+        }
+
+        protected void txt_Build_TextChanged(object sender, EventArgs e)
+        {
+            var buildId = txt_build.SelectedValue;
+            var areaId = AreaList.SelectedValue;
+            var factoryId = DropDownList1.SelectedValue;
+            var awxId = "";
+            if (!string.IsNullOrEmpty(areaId) && !string.IsNullOrEmpty(buildId) && !string.IsNullOrEmpty(factoryId))
+            {
+                if (factoryId == "95326")
+                {//BL
+                    awxId = "741";
+                }
+                else
+                {
+                    awxId = "737";
+                }
+                dicParams.Clear(); awxData = null;
+                dicParams.Add("SiteareaId", areaId);
+                dicParams.Add("BuildId", buildId);
+                GetDataFromAWX_ID(dicParams, awxId, ref awxData);
+                if (awxData["IsOK"].ToString() == "1")
+                {
+                    JToken listToken = awxData["List"];
+                    if (listToken is JArray jArray && jArray.Count > 0)
+                    {
+                        DataTable dt = ConvertJArrayToDataTable(jArray);
+                        BindDDLData(txt_floor, dt, "CODE", "ID", true);
+
+                        TextBox1.Items.Clear();
+                        txt_floor.SelectedIndex = 0;
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                    else
+                    {
+                        txt_floor.Items.Clear();
+                        TextBox1.Items.Clear();
+                        txt_floor.Items.Insert(0, placeholderItem);
+                        txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                }
+            }
+            else
+            {
+                txt_floor.Items.Clear();
+                TextBox1.Items.Clear();
+                txt_floor.Items.Insert(0, placeholderItem);
+                txt_floor.SelectedIndex = 0;  // 默认选中该项
+
+                TextBox1.Items.Insert(0, placeholderItem);
+                TextBox1.SelectedIndex = 0;  // 默认选中该项
+            }
+        }
+
+        protected void txt_Floor_TextChanged(object sender, EventArgs e)
+        {
+            var factoryId = DropDownList1.SelectedValue;
+            var site = DropDownList1.SelectedItem.Text;
+            var buildId = txt_build.SelectedValue;
+            var areaId = AreaList.SelectedValue;
+            var floorId = txt_floor.SelectedValue;
+            var awxId = "";
+            if (!string.IsNullOrEmpty(areaId) && !string.IsNullOrEmpty(buildId) && !string.IsNullOrEmpty(floorId) && !string.IsNullOrEmpty(factoryId))
+            {
+                if (factoryId == "95326")
+                {//BL
+                    awxId = "742";
+                }
+                else
+                {
+                    awxId = "738";
+                }
+                dicParams.Clear(); awxData = null;
+                dicParams.Add("Site", site);
+                dicParams.Add("Areaid", areaId);
+                dicParams.Add("Buildid", buildId);
+                dicParams.Add("Floorid", floorId);
+                GetDataFromAWX_ID(dicParams, awxId, ref awxData);
+                if (awxData["IsOK"].ToString() == "1")
+                {
+                    JToken listToken = awxData["List"];
+                    if (listToken is JArray jArray && jArray.Count > 0)
+                    {
+                        DataTable dt = ConvertJArrayToDataTable(jArray);
+                        BindDDLData(TextBox1, dt, "CODE", "ID", true);
+                        TextBox1.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        TextBox1.Items.Clear();
+                        TextBox1.Items.Insert(0, placeholderItem);
+                        TextBox1.SelectedIndex = 0;  // 默认选中该项
+                    }
+                }
+            }
+            else
+            {
+                TextBox1.Items.Clear();
+                TextBox1.Items.Insert(0, placeholderItem);
+                TextBox1.SelectedIndex = 0;  // 默认选中该项
+            }
+        }
+
+        public static DataTable ConvertJArrayToDataTable(JArray jArray)
+        {
+            DataTable dt = new DataTable();
+
+            if (jArray == null || !jArray.Any())
+                return dt;
+
+            // 1. 根据第一个元素动态创建列
+            var firstObj = jArray[0] as JObject;
+            if (firstObj != null)
+            {
+                foreach (var prop in firstObj.Properties())
+                {
+                    dt.Columns.Add(prop.Name, typeof(string)); // 为了通用，全部设为 string；可根据实际类型调整
+                }
+            }
+
+            // 2. 填充数据行
+            foreach (var item in jArray)
+            {
+                var obj = item as JObject;
+                if (obj == null) continue;
+
+                DataRow row = dt.NewRow();
+                foreach (DataColumn col in dt.Columns)
+                {
+                    JToken token = obj[col.ColumnName];
+                    row[col.ColumnName] = (token == null) ? "" : token.ToString();
+                }
+                dt.Rows.Add(row);
+            }
+
+            return dt;
+        }
+
+        private string GetDataFromAWX_ID(Dictionary<string, string> Data, string strID, ref JObject awxData)
+        {
+            string res = "";
+            try
+            {
+                res = awx.GetDataFromAWX_ID(Data, strID);
+                awxData = JObject.Parse(res);
+            }
+            catch (System.Exception ex)
+            {
+                Alert(ex.Message);
+            }
+            return res;
+        }
+
+        protected void rb_BI_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // 根据选中的值控制 reminder 的可见性
+            if (rb_BI.SelectedValue == "0")   // 选中 "No"
+            {
+                reminder.Visible = true;
+            }
+            else   // 选中 "Yes"
+            {
+                reminder.Visible = false;
+            }
+        }
+
+
+        private void BindDDLData(DropDownList ddl, DataTable dt, string text, string value, bool isAll = false)
+        {
+            ddl.Items.Clear();
+            ddl.DataSource = dt;
+            ddl.DataTextField = text;
+            ddl.DataValueField = value;
+            ddl.DataBind();
+            if (isAll)
+            {
+                ddl.Items.Insert(0, placeholderItem);
+                ddl.SelectedIndex = 0;  // 默认选中该项
+            }
         }
 
         /// <summary>
-        /// 發件箱/草稿箱
+        /// 獲取批量上傳模板（Table）
         /// </summary>
-        /// <param name="model"></param>
         /// <returns></returns>
-        public DBHelperResult GetSendForm(TempModel model)
+        private DataTable GetTable()
         {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_SEND_FORM_SP";
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property01, 2000);
-            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property02, 2000);
-            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property03, 2000);
-            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property04, 2000);
-            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property05, 2000);
-            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property06, 2000);
-            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property07, 2000);
-            AddInputParameter("V_USER", OracleType.VarChar, model.Property08, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            DataTable dt = ViewState["DNL"] as DataTable;
+            if (dt == null)
+            {
+                dt = new DataTable();
+                dt.Columns.Add("SORT", typeof(decimal));//序號
+                dt.Columns.Add("EMP_NO");//工號
+                dt.Columns.Add("EMP_NAME");//姓名
+                dt.Columns.Add("OFFICE_TEL");//分機
+                dt.Columns.Add("EMAIL");//郵箱
+                dt.Columns.Add("FACTORY_ID");//廠區ID
+                dt.Columns.Add("FACTORY");//廠區
+                dt.Columns.Add("DEPT_NAME");//部門
+                dt.Columns.Add("TEAM");//Team
+                dt.Columns.Add("IP");//固定IP
+                dt.Columns.Add("TARGET");//目錄
+                dt.Columns.Add("FLOOR");//樓層
+                ViewState["DNL"] = dt;
+            }
+            return dt;
         }
 
         /// <summary>
-        /// 快速查詢-表單追蹤
+        /// 設置表單參數
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public DBHelperResult GetQueryForm(TempModel model)
+        private void SetParameter()
         {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_QUERY_FORM_SP";
-            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
-            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
-            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
-            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
-            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
-            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
-            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            formCode = Request.QueryString["formcode"] ?? "";
+            var status = Request.QueryString["status"] ?? "";
+            FormStatus = string.IsNullOrEmpty(status) ? FormState.Create :
+                "0".Equals(status) ? FormState.Draft :
+                "1".Equals(status) ? FormState.Send :
+                "2".Equals(status) ? FormState.Receive : FormState.Other;
         }
 
         /// <summary>
-        /// 快速查詢-已签核
+        /// 保存/提交
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="status"></param>
         /// <returns></returns>
-        public DBHelperResult GetQuerySignForm(TempModel model)
+        private bool Save(int status)
         {
-            Sp = "HRM_IAM.HRM_DOCNOTLAND_PER_MAINTAIN_PK.GET_QUERY_SIGN_FORM_SP";
-            AddInputParameter("V_USER", OracleType.VarChar, model.Property01, 2000);
-            AddInputParameter("V_EMP_NO", OracleType.VarChar, model.Property02, 2000);
-            AddInputParameter("V_EMP_NAME", OracleType.VarChar, model.Property03, 2000);
-            AddInputParameter("V_FORM_CODE", OracleType.VarChar, model.Property04, 2000);
-            AddInputParameter("V_TIME_FORM", OracleType.VarChar, model.Property05, 2000);
-            AddInputParameter("V_TIME_TO", OracleType.VarChar, model.Property06, 2000);
-            AddInputParameter("V_FORM_STATUS", OracleType.VarChar, model.Property07, 2000);
-            AddInputParameter("V_FACTORY_ID", OracleType.VarChar, model.Property08, 2000);
-            AddCursorParameter("P_CURSOR");
-            return Execute_Return_DataTable(Sp);
+            TempModel model = GetData(status);
+            db = new DBClass(true);
+            try
+            {
+                var result = db.InsertNpiProposalForm(model);
+                if (result.IsSuccess)
+                {
+                    if (result.OutVal != null && result.OutVal.Count > 0 && result.OutVal[0] == "0")
+                    {
+                        db.Commit();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw; // 保留堆栈跟踪
+            }
+            finally { db.Close(); }
+            return false;
         }
 
-        public DBHelperResult CheckApplyUserNo(string empNO, string user)
+        protected void btn_Insert_Clother2_Click(object sender, ImageClickEventArgs e)
         {
-            Sp = "HRM_WF.HRM_DATA_QUERY_CONTROL_PK.CHECK_DATA_QUERY_CONTROL_SP";
-            AddInputParameter("v_emp_no", OracleType.VarChar, empNO.ToUpper().Trim(), 100);
-            AddInputParameter("v_user_no", OracleType.VarChar, user.ToUpper().Trim(), 100);
-            AddInputParameter("v_type_id", OracleType.VarChar, "1", 100);
-            AddCursorParameter("p_cursor");
-            return Execute_Return_DataTable(Sp);
+            string fullname = this.FindFile2.PostedFile.FileName;//所選文件的路徑
+            String strFileURL = String.Empty;           //上傳后的文件路徑  文件夾+名稱   
+            string strUpName = "";                      //上傳后的名稱
+
+            if (fullname != "")
+            {
+                string fileType = Path.GetExtension(FindFile2.PostedFile.FileName).ToLower().TrimStart('.');
+                if (!("pptx" == fileType.Trim()))
+                {
+                    Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('Attachment format must be pptx！')</script>");
+                    return;
+                }
+                string selectedId = DropDownList3.SelectedValue;
+                if (string.IsNullOrEmpty(selectedId))
+                {
+                    Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('Category must be selected！')</script>");
+                    return;
+                }
+                //判斷上傳文件是否符合要求
+                if ("491553".Equals(selectedId))
+                {
+                    if (!"NpiLabProposalTemplate.pptx".Equals(fullname))
+                    {
+                        Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('The attached file does not meet the requirements！')</script>");
+                        return;
+                    }
+                }
+                else if ("491554".Equals(selectedId))
+                {
+                    if (!"NpiDeviceProposalTemplate.pptx".Equals(fullname))
+                    {
+                        Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('The attached file does not meet the requirements！')</script>");
+                        return;
+                    }
+                }
+                else if ("491555".Equals(selectedId))
+                {
+                    if (!"NpiSoftwareProposalTemplate.pptx".Equals(fullname))
+                    {
+                        Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('The attached file does not meet the requirements！')</script>");
+                        return;
+                    }
+                }
+                else if ("491556".Equals(selectedId))
+                {
+                    if (!"NpiLabProposalTemplate.pptx".Equals(fullname))
+                    {
+                        Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('The attached file does not meet the requirements！')</script>");
+                        return;
+                    }
+                }
+                // 保存上传的文件到服务器
+               
+
+                string year = DateTime.Now.Year.ToString();
+                string month = DateTime.Now.Month.ToString();
+
+                upfile.createFolder(Server.MapPath("~\\UploadFiles\\" + year + month));
+                String strFolder = "UploadFiles\\" + year + month + "\\";
+                string filetype = System.IO.Path.GetExtension(fullname);
+                String strFileName = Server.MapPath("~\\") + strFolder + Guid.NewGuid().ToString("n") + filetype;
+
+                string strSource = strFileName;
+                FindFile2.PostedFile.SaveAs(strSource);
+
+                bool isOK = sftp.TransferFile(strSource, out strFileURL, out strUpName);
+                if (!isOK)
+                {
+                    Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "<script>alert('File upload failed！')</script>");
+                    return;
+                }
+                else {
+                    //暫存文件信息
+                    ViewState["FILE_PATH"] = strFileURL;
+                    ViewState["FILE_NAME"] = strUpName + filetype;
+
+                    fileNameTd.InnerText = fullname;
+                    fileNameTd.Attributes["title"] = fullname;
+                }
+               
+            }
+            else
+            {
+                Alert(alert.ResourceManager.GetString("Common_Choose_Attah"));
+            }
+        }
+
+        private bool CheckForm()
+        {
+            if (string.IsNullOrWhiteSpace(txtPhoneNo.Text.Trim())) {
+                Alert("Ext. Number is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txtMail.Text.Trim()))
+            {
+                Alert("Email is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(DropDownList1.SelectedValue))
+            {
+                Alert("Site is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(AreaList.SelectedValue))
+            {
+                Alert("Area is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_build.SelectedValue))
+            {
+                Alert("Building is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_floor.SelectedValue))
+            {
+                Alert("Floor is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(TextBox1.SelectedValue))
+            {
+                Alert("Lab Name is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_Dri_Emp.Text.Trim()))
+            {
+                Alert("DRI Employee ID is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_Hod_Emp.Text.Trim()))
+            {
+                Alert("HOD Employee ID is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_Dri_Email.Text.Trim()))
+            {
+                Alert("DRI Email ID is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txt_Hod_Email.Text.Trim()))
+            {
+                Alert("DRI Email ID is empty!");  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(DropDownList3.SelectedValue))
+            {
+                Alert(sys.ResourceManager.GetString("Category is empty!"));  //
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(rb_BI.SelectedValue))
+            {
+                Alert(sys.ResourceManager.GetString("NPS Approved Date is empty"));  //
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(input_yy.Value))
+            {
+                Alert(sys.ResourceManager.GetString("Reason is empty"));  //
+                return false;
+            }
+
+            string filePath = ViewState["FILE_PATH"] as string;
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                Alert(sys.ResourceManager.GetString("ML_KEY_EISP_3726"));  //請上傳文件
+                return false;
+            }
+            string input = txt_PcQty.Text.Trim();
+            if (!string.IsNullOrEmpty(input)) {
+                if (int.TryParse(input, out int quantity))
+                {
+                    // 判断是否为正整数（大于 0）
+                    if (quantity < 0)
+                    {
+                        Alert(sys.ResourceManager.GetString(sys.ResourceManager.GetString("ML_KEY_EISP_70377"))); //PC 数量必须是正整数
+                        return false;
+                    }
+                }
+                else
+                {
+                    Alert(sys.ResourceManager.GetString(sys.ResourceManager.GetString("ML_KEY_EISP_70377"))); //PC 数量必须是正整数
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 獲取表單數據
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private TempModel GetData(int status)
+        {
+            TempModel model = new TempModel();
+            model.Property01 = ID.Value;
+            model.Property02 = ViewState["FormCode"] as string;
+            model.Property03 = txtEmpNo.Text.Trim();
+            model.Property04 = txtEmpName.Text.Trim();
+            model.Property05 = strFormID;
+            model.Property06 = hfFactoryId.Value; //提單人廠區ID
+            model.Property07 = txtFactory.Text.Trim(); //提單人廠區
+            model.Property08 = lbl_PostLevel.Text.Trim();//資位
+            model.Property09 = lbl_glz.Text.Trim();//職務
+            model.Property10 = DeptId.Value;
+            model.Property11 = txtDept.Text.Trim();
+            model.Property12 = txtCostCode.Text.Trim();
+            model.Property13 = txtPhoneNo.Text.Trim();
+            model.Property14 = txtMail.Text.Trim();
+
+            model.Property15 = DropDownList1.SelectedValue;//廠區ID
+            model.Property16 = DropDownList1.SelectedItem.Text;//廠區
+            model.Property36 = AreaList.SelectedValue;//
+            model.Property37 = AreaList.SelectedItem.Text;//
+
+            model.Property17 = txt_build.SelectedValue;//樓棟ID
+            model.Property33 = txt_build.SelectedItem.Text;//樓棟
+            model.Property18 = txt_floor.SelectedValue;//樓層ID
+            model.Property34 = txt_floor.SelectedItem.Text;//樓層
+
+            model.Property19 = TextBox1.SelectedItem != null ? TextBox1.SelectedValue : "";//Lab Name ID
+            model.Property35 = TextBox1.SelectedItem != null ? TextBox1.SelectedItem.Text : "";//Lab Name
+
+            model.Property20 = txt_Dri_Emp.Text.Trim();//需求人工號
+            model.Property21 = txt_Hod_Emp.Text.Trim();//需求人主管工號
+            model.Property22 = txt_Dri_Email.Text.Trim();//需求人郵箱
+            model.Property23 = txt_Hod_Email.Text.Trim();//需求人主管郵箱
+            model.Property24 = txt_PcQty.Text.Trim();
+
+            model.Property25 = rb_BI.SelectedValue; //NPS_APPROVED
+            model.Property26 = input_yy.Value;
+            model.Property27 = UserNo;
+            model.Property28 = status.ToString();  //1：簽核中
+            model.Property29 = DropDownList3.SelectedValue; //Category
+            string fileName = ViewState["FILE_NAME"] as string;
+            string fileType = string.IsNullOrEmpty(fileName) ? string.Empty : System.IO.Path.GetExtension(fileName).TrimStart('.');
+            // 提取纯文件名（不含路径、不含扩展名）
+            string fileNameWithoutExt = string.IsNullOrEmpty(fileName)
+                ? string.Empty
+                : System.IO.Path.GetFileNameWithoutExtension(fileName);
+
+            model.Property30 = fileType;//文件類型
+            model.Property31 = fileNameWithoutExt;
+            string filePath = ViewState["FILE_PATH"] as string;
+            model.Property32 = string.IsNullOrEmpty(filePath) ? "" : filePath;
+
+            return model;
+        }
+
+
+        #region 簽核流程
+
+        private void Sign(SignCode signcode)
+        {
+            string str;
+            if (OptAataApply(signcode, txtComments.Text.Trim(), out str))
+            {
+                //AlertAndClose(str, "imgQuery");
+                RefreshWindowNull();
+            }
+            else
+            {
+                Alert(str);
+            }
+        }
+
+        private void GetWorkFlow()
+        {
+            //string html = "", err = "";
+            //if (!GetWorkFlow(out html, out err))
+            //{
+            //    Alert(err);
+            //}
+            //div_EngFlowShow.InnerHtml = html;
+            
+            string txt_factory = DropDownList1.SelectedValue;//廠區ID;
+            string liuchen = DropDownList3.SelectedValue; //Category
+            string deptID = this.DeptId.Value;
+            formCode = ViewState["FormCode"] == null ? "" : ViewState["FormCode"] as string;
+            string status = ViewState["FormStatus"] == null ? "" : ViewState["FormStatus"].ToString();
+            ViewState["first_show"] = "1";
+
+            try
+            {
+
+                ViewState["PROCESS_ID"] = null;
+                ViewState["PRE_ID"] = null;
+
+                DataTable dtShowFlow = WFEngine.GetEngineShowFlow5(strFormID, ref formCode, "", "N", liuchen, txt_factory, deptID, this.UserNo, "", this.UserNo, GetMac(), out strID, out string strResult);
+
+                if (dtShowFlow.Rows.Count > 0)
+                {
+                    //ViewState["PROCESS_ID"] = strProcessID;
+                    //ViewState["PRE_ID"] = strSignID;
+                    div_EngFlowShow.InnerHtml = dtShowFlow.Rows[0][4].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Alert(sys.ResourceManager.GetString("ML_KEY_EISP_2875") + ex.Message);
+                return;
+            }
+            /**
+            if (formCode.Length > 0 && (status.Length >= 0 && status != "0"))
+            {
+                DataTable dtShowFlow = WFEngine.GetEngineShowFlow5(strFormID, ref formCode, "2", "", "", "", "", "", "", "", "", out strID, out string strResult);
+                if (dtShowFlow.Rows.Count > 0)
+                {
+                    div_EngFlowShow.InnerHtml = dtShowFlow.Rows[0][4].ToString();
+                }
+            }
+            else
+            {
+
+                try
+                {
+                    
+                    ViewState["PROCESS_ID"] = null;
+                    ViewState["PRE_ID"] = null;
+                   // string strProcessID = WFEngine.GetProcessID(strFormID, "N", liuchen, "", "", "", "");
+                    //if (strProcessID == "")
+                    //{
+                    //    Alert(sys.ResourceManager.GetString("ML_KEY_EISP_4810"));
+                    //    return;
+                    //}
+                    string strErr = "";
+                    string strSignID ="";
+
+                    //strSignID += WFEngine.GetSignID(strFormID, strProcessID, txt_factory, "", "", "", "", out strErr) + ",";
+
+                    //DataTable dtShowFlow = WFEngine.GetEngineShowFlow2(strFormID, strProcessID, "", strSignID, this.UserNo, formCode, "", out string strResult);
+
+                    DataTable dtShowFlow = WFEngine.GetEngineShowFlow5(strFormID, ref formCode, "", "N", liuchen, txt_factory, deptID, this.UserNo, "", this.UserNo, GetMac(), out strID, out string strResult);
+
+                    if (dtShowFlow.Rows.Count > 0)
+                    {
+                        //ViewState["PROCESS_ID"] = strProcessID;
+                        //ViewState["PRE_ID"] = strSignID;
+                        div_EngFlowShow.InnerHtml = dtShowFlow.Rows[0][4].ToString();
+                    }   
+                }
+                catch (Exception ex)
+                {
+                    Alert(sys.ResourceManager.GetString("ML_KEY_EISP_2875") + ex.Message);
+                    return;
+                }
+            }
+    **/
+
+            ViewState["FormCode"] = formCode;
+            ViewState["LOG_ID"] = strID;
+        }
+
+        #endregion
+
+        protected void txt_Dri_ENo_TextChanged(object sender, EventArgs e)
+        {
+            var empno = txt_Dri_Emp.Text.Trim();
+            if (!string.IsNullOrEmpty(empno))
+            {
+                var result = db.GetEmpBaseInfo(new TempModel() { Property01 = empno });
+                if (result.dt != null && result.dt.Rows.Count > 0)
+                {
+                    txt_Dri_Email.Text = result.dt.Rows[0]["EMP_GROUP_EMAIL"].ToString();
+                }
+                else
+                {
+                    txt_Dri_Email.Text = "";
+                    txt_Dri_Emp.Text = "";
+                    Alert(sys.ResourceManager.GetString("ML_KEY_EISP_10004"));
+                }
+            }
+            else
+            {
+                txt_Dri_Email.Text = "";
+                txt_Dri_Emp.Text = "";
+            }
+        }
+
+        protected void txt_Category_TextChanged(object sender, EventArgs e)
+        {
+            GetWorkFlow();
+        }
+
+        protected void txt_Hod_ENo_TextChanged(object sender, EventArgs e)
+        {
+            var empno = txt_Hod_Emp.Text.Trim();
+            if (!string.IsNullOrEmpty(empno))
+            {
+                var result = db.GetEmpBaseInfo(new TempModel() { Property01 = empno });
+                if (result.dt != null && result.dt.Rows.Count > 0)
+                {
+                    txt_Hod_Email.Text = result.dt.Rows[0]["EMP_GROUP_EMAIL"].ToString();
+                }
+                else
+                {
+                    txt_Hod_Email.Text = "";
+                    txt_Hod_Emp.Text = "";
+                    Alert(sys.ResourceManager.GetString("ML_KEY_EISP_10004"));
+                }
+            }
+            else
+            {
+                txt_Hod_Email.Text = "";
+                txt_Hod_Emp.Text = "";
+            }
+        }
+
+        protected void imb_Back_Click(object sender, ImageClickEventArgs e)
+        {
+            string strModuleId = this.Request.QueryString["Module_ID"] == null ? "" : this.Request.QueryString["Module_ID"]; //菜單 Module ID 
+            string strPageType = this.Request.QueryString["TopPage"] == null ? "" : this.Request.QueryString["TopPage"];     //TopPage 判斷是否返回首頁， TopPage = 1 時 返回首頁，其他就 Module ID 不能為空返回上一層頁面
+            BackListPage(strModuleId, strPageType);
         }
     }
 }
