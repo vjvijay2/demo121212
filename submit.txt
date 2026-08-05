@@ -1,32 +1,10 @@
-PS E:\NPISP-Project\backend code DMS\DMS-Code> npm start
+const encrypt_pass = "...";
+const encrypt_connection_string = "...";
 
-> DORM MANAGEMENT SYSTEM@1.0.0 start
-> nodemon index.js
+const decodedString = Buffer.from(encrypt_pass, "base64").toString("utf8");
+const Conn_String = Buffer.from(encrypt_connection_string, "base64").toString("utf8");
 
-[nodemon] 3.0.1 
-[nodemon] to restart at any time, enter `rs` 
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: js,mjs,cjs,json
-[nodemon] starting `node index.js`
-node:internal/modules/cjs/loader:1031 
-  throw err;
-  ^
-
-Error: Cannot find module './app'
-Require stack:
-- E:\NPISP-Project\backend code DMS\DMS-Code\index.js
-    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1028:15)        
-    at Function.Module._load (node:internal/modules/cjs/loader:873:27)
-    at Module.require (node:internal/modules/cjs/loader:1100:19)
-    at require (node:internal/modules/cjs/helpers:119:18)
-    at Object.<anonymous> (E:\NPISP-Project\backend code DMS\DMS-Code\index.js:1:17)      
-    at Module._compile (node:internal/modules/cjs/loader:1198:14)
-    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1252:10)
-    at Module.load (node:internal/modules/cjs/loader:1076:32)
-    at Function.Module._load (node:internal/modules/cjs/loader:911:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12) 
-{
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [ 'E:\\NPISP-Project\\backend code DMS\\DMS-Code\\index.js' ]
-}
-[nodemon] app crashed - waiting for file changes before starting...
+module.exports = {
+    decodedString,
+    Conn_String
+};
