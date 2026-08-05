@@ -1,172 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+<nz-table
+  #basicTable
+  [nzData]="employees"
+  [nzBordered]="true"
+  [nzSize]="'middle'"
+  [nzShowPagination]="false">
 
-interface EmployeeStatusRow {
-  name: string;
-  ongoing: number;
-  closed: number;
-}
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th>Pending</th>
+      <th>Closed</th>
+    </tr>
+  </thead>
 
-@Component({
-  selector: 'app-employee-status',
-  templateUrl: './employee-status.component.html',
-  styleUrls: ['./employee-status.component.less']
-})
-export class EmployeeStatusComponent implements OnInit {
+  <tbody>
+    <tr *ngFor="let item of basicTable.data">
+      <td>{{ item.name }}</td>
+      <td>{{ item.ongoing }}</td>
+      <td>{{ item.closed }}</td>
+    </tr>
+  </tbody>
 
-  private readonly EMPLOYEE_STATUS_URL =
-    'http://10.208.193.125:8089/mock/trueExam.do?id=ffff-1783663681896-10208193125-1822';
-
-  private readonly EMPLOYEE_STATUS_API_ID =
-    'ffff-1783663681896-10208193125-1822';
-
-  private readonly EMPLOYEE_STATUS_USER_KEY =
-    'facd81g656fcd8p7a7lkh6dfa81gf4ik';
-
-  loading = true;
-  error = false;
-
-  employees: EmployeeStatusRow[] = [];
-
-  chartOption: any = {};
-
-  constructor(private http: HttpClient) {}
-
-  ngOnInit(): void {
-    this.fetchEmployeeStatus();
-  }
-
-  fetchEmployeeStatus(): void {
-
-    this.loading = true;
-    this.error = false;
-
-    const headers = new HttpHeaders()
-      .set('apiID', this.EMPLOYEE_STATUS_API_ID)
-      .set('userKey', this.EMPLOYEE_STATUS_USER_KEY);
-
-    this.http.get<any>(this.EMPLOYEE_STATUS_URL, { headers }).subscribe({
-
-      next: (res) => {
-
-        const list = res?.List || [];
-
-        const grouped: { [key: string]: EmployeeStatusRow } = {};
-
-        list.forEach((row: any) => {
-
-          const status = (row.FormStatue || '').toLowerCase();
-
-          // Remove duplicate approvers inside same form
-          const approvers = [...new Set(
-            (row.CurApprovename || '')
-              .split(',')
-              .map((x: string) => x.trim())
-              .filter((x: string) => x !== '')
-          )];
-
-          approvers.forEach((name: any) => {
-
-            if (!grouped[name]) {
-
-              grouped[name] = {
-                name: name,
-                ongoing: 0,
-                closed: 0
-              };
-
-            }
-
-            if (status === 'signing' || status === 'pending') {
-
-              grouped[name].ongoing++;
-
-            } else if (
-              status === 'completed' ||
-              status === 'rejected' ||
-              status === 'closed'
-            ) {
-
-              grouped[name].closed++;
-
-            }
-
-          });
-
-        });
-
-        this.employees = Object.values(grouped)
-          .sort((a, b) => b.ongoing - a.ongoing);
-
-        console.log("Total Forms :", list.length);
-        console.log("Unique Approvers :", this.employees.length);
-        console.log(this.employees);
-
-        this.chartOption = {
-
-          tooltip: {
-            trigger: 'axis'
-          },
-
-          legend: {
-            data: ['Pending', 'Closed']
-          },
-
-          grid: {
-            left: '25%',
-            right: '5%',
-            bottom: '5%',
-            containLabel: true
-          },
-
-          xAxis: {
-            type: 'value'
-          },
-
-          yAxis: {
-            type: 'category',
-            data: this.employees.map(x => x.name)
-          },
-
-          series: [
-            {
-              name: 'Pending',
-              type: 'bar',
-              data: this.employees.map(x => x.ongoing)
-            },
-            {
-              name: 'Closed',
-              type: 'bar',
-              data: this.employees.map(x => x.closed)
-            }
-          ]
-
-        };
-
-        this.loading = false;
-
-      },
-
-      error: (err) => {
-
-        console.error(err);
-
-        this.loading = false;
-        this.error = true;
-
-      }
-
-    });
-
-  }
-
-}
-
-
-<div
-  echarts
-  [options]="chartOption"
-  class="chart"
-  style="height:500px;width:100%;">
-</div>
-
+</nz-table>
