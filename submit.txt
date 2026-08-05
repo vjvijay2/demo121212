@@ -1,7 +1,20 @@
-const { app } = require('./app');
+const oracledb = require('oracledb');
+const dbConfig = require('../config/dbConfig');
 
-const PORT = 5665;
+async function runQuery(sql, binds = {}) {
+    let conn;
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+    try {
+        conn = await oracledb.getConnection(dbConfig);
+        const result = await conn.execute(sql, binds, {
+            outFormat: oracledb.OUT_FORMAT_OBJECT
+        });
+        return result.rows;
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+}
+
+module.exports = { runQuery };
