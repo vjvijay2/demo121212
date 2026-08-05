@@ -1,986 +1,172 @@
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-Electronic signature
-ConsoleHi Renuka A Logout
-INDIA
-Current Position：：
-API / EISP / WorkFormNew / ITForm / NPIProposalForm
-Basic Info
-API Name 
-VersionNum 
-1.0
-Explain 
-GetNPiProposalInfo
+interface EmployeeStatusRow {
+  name: string;
+  ongoing: number;
+  closed: number;
+}
 
-Header
-Request URL 
-http://10.208.193.125:8086/gateway/manager
-Request Way 
-System Code 
-apiID 
-ffff-1783663681896-10208193125-1822
-* userKey 
-encryptKey 
-••••••••••••••••••••••••••••••••
-Input parameter
-Form-DataJson
-FormCode 
-* Is Encrypt：true
-EmpNo 
-* Is Encrypt：true
-Category 
-* Is Encrypt：true
-EmpName 
-* Is Encrypt：true
-StartDate 
-* Is Encrypt：true
-EndDate 
-* Is Encrypt：true
-FormStatus 
-* Is Encrypt：true
-Factory 
-* Is Encrypt：true
+@Component({
+  selector: 'app-employee-status',
+  templateUrl: './employee-status.component.html',
+  styleUrls: ['./employee-status.component.less']
+})
+export class EmployeeStatusComponent implements OnInit {
 
-Whether to call formal API
- Reminder：
-1、Before debugging, please confirm whether the parameters are encrypted and whether the encryption has a secret key！
-2、Debugging supports Xform normal parameter submission, form data file submission and JSON parameter submission. If you need other debugging methods, please contact the system service personnel
-3、Common abnormal error reporting analysis, for details, please refer to Documentation 
-Debug informationSDKQuery LogSwagger Editor
-message:
+  private readonly EMPLOYEE_STATUS_URL =
+    'http://10.208.193.125:8089/mock/trueExam.do?id=ffff-1783663681896-10208193125-1822';
 
-              
-IsOK: "1"
-Msg: ""
-List:
-0:
-Id: 59
-FormCode: "WF10056260805286045"
-FormStatus: 1
-EmpNo: "HH0002231"
-EmpName: "Devaraj Murugan"
-FormId: "10056"
-DeptId: 4764
-DeptName: "Onsite-Support_FXCN"
-Email: "idpbg-it-tn-dev@mail.foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "26038"
-SalaryGrade: "ENG 1"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "11"
-Floor: "2F"
-LabName: "B11-2F-CP3"
-DriEmp: "HH0000010"
-DriEmpEmail: "jeeva.k@foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 1
-NpsApproved: 0
-Reason: "test"
-CreateBy: "HH0002231"
-CreateDt: "/Date(1785917921000)/"
-LastEditBy: "HH0002231"
-LastEditDt: "/Date(1785917921000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "802"
-FloorId: "1601"
-LabId: "5408"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 1"
-Job: "NA"
-CurApprovename: "JEEVA"
-RouteName: "First Level"
-1:
-Id: 58
-FormCode: "WF10056260804286034"
-FormStatus: 1
-EmpNo: "HH0004467"
-EmpName: "Santhosh K"
-FormId: "10056"
-DeptId: 4763
-DeptName: "ISM Team_FXCN"
-Email: "santhosh.ism@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "533-26610"
-SalaryGrade: "ENG 1"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "HH0004467"
-DriEmpEmail: "santhosh.ism@mail.foxconn.com"
-HodEmp: "HH0000067"
-HodEmpEmail: "neethi.rajan@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "Need to setup 10 PC in DCC for camera purpose and usage"
-CreateBy: "HH0004467"
-CreateDt: "/Date(1785819294000)/"
-LastEditBy: "HH0004467"
-LastEditDt: "/Date(1785819294000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 1"
-Job: "NA"
-CurApprovename: "Saravana Karthikeyan S,Prince Ronald E,Santhosh K"
-RouteName: "ISM Engineer 1"
-2:
-Id: 57
-FormCode: "WF10056260804286031"
-FormStatus: 3
-EmpNo: "HH0003261"
-EmpName: "Dineshbabu Karuppiya"
-FormId: "10056"
-DeptId: 860
-DeptName: "Development Team_FXCN"
-Email: "a-it-wf-dev@mail.foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "579-88888"
-SalaryGrade: "TECH 3"
-ManagementTitle: "NA"
-SiteId: 95326
-SiteName: "FXBL"
-Build: "31"
-Floor: "2FLNORMALDAYS"
-LabName: "A31-2FLNORMALDAYS-Office Area CP3_Normaldays"
-DriEmp: "HH0000010"
-DriEmpEmail: "jeeva.k@foxconn.com"
-HodEmp: "HH0000004"
-HodEmpEmail: "kalidasan.asr@foxconn.com"
-Category: 491553
-TotalPcQty: 1
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0003261"
-CreateDt: "/Date(1785804366000)/"
-LastEditBy: "HH0003261"
-LastEditDt: "/Date(1785804366000)/"
-Area: "A"
-AreaId: "2205"
-BuildId: "3601"
-FloorId: "8832"
-LabId: "13014"
-FormStatue: "Rejected"
-Category1: "NPI Lab Proposal"
-Class: "TECH 3"
-Job: "NA"
-CurApprovename: ""
-RouteName: "Closed"
-3:
-Id: 56
-FormCode: "WF10056260721285804"
-FormStatus: 2
-EmpNo: "HH0004467"
-EmpName: "Santhosh K"
-FormId: "10056"
-DeptId: 4763
-DeptName: "ISM Team_FXCN"
-Email: "santhosh.ism@mail.foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "533-26610"
-SalaryGrade: "ENG 1"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-REL LAB"
-DriEmp: "HH0004467"
-DriEmpEmail: "santhosh.ism@mail.foxconn.com"
-HodEmp: "HH0000067"
-HodEmpEmail: "neethi.rajan@foxconn.com"
-Category: 491553
-TotalPcQty: 2
-NpsApproved: 1
-Reason: "Setting up Level 1 PC to connect HSV camera for drop ( Test)"
-CreateBy: "HH0004467"
-CreateDt: "/Date(1784628572000)/"
-LastEditBy: "HH0004467"
-LastEditDt: "/Date(1784628572000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13471"
-FormStatue: "Completed"
-Category1: "NPI Lab Proposal"
-Class: "ENG 1"
-Job: "NA"
-CurApprovename: ""
-RouteName: "Closed"
-4:
-Id: 55
-FormCode: "WF10056260714285708"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-99887"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "11"
-Floor: "4F"
-LabName: "B11-4F-NPI CP3"
-DriEmp: "HH0000010"
-DriEmpEmail: "jeeva.k@foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491555
-TotalPcQty: ""
-NpsApproved: 1
-Reason: "tets"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783993293000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783993293000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "802"
-FloorId: "1204"
-LabId: "14647"
-FormStatue: "Signing"
-Category1: "NPI Software/URL Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-5:
-Id: 54
-FormCode: "WF10056260714285703"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-00998"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "11"
-Floor: "2F"
-LabName: "B11-2F-CP3"
-DriEmp: "HH0000325"
-DriEmpEmail: "Sivakumar.a@mail.foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491554
-TotalPcQty: ""
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783989974000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783989974000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "802"
-FloorId: "1601"
-LabId: "5408"
-FormStatue: "Signing"
-Category1: "NPI Device Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-6:
-Id: 53
-FormCode: "WF10056260714285686"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-99889"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "07"
-Floor: "1F"
-LabName: "A07-1F-NORTH LOG CP"
-DriEmp: "HH0000325"
-DriEmpEmail: "Sivakumar.a@mail.foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783988530000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783988530000)/"
-Area: "A"
-AreaId: "204"
-BuildId: "202"
-FloorId: "202"
-LabId: "15122"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-7:
-Id: 52
-FormCode: "WF10056260713285676"
-FormStatus: 2
-EmpNo: "HH0004467"
-EmpName: "Santhosh K"
-FormId: "10056"
-DeptId: 4763
-DeptName: "ISM Team_FXCN"
-Email: "santhosh.ism@mail.foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "533-26610"
-SalaryGrade: "ENG 1"
-ManagementTitle: "NA"
-SiteId: 95326
-SiteName: "FXBL"
-Build: "01"
-Floor: "GFL"
-LabName: "A01-GFL-XRAY"
-DriEmp: "HH0004467"
-DriEmpEmail: "santhosh.ism@mail.foxconn.com"
-HodEmp: "HH0000067"
-HodEmpEmail: "neethi.rajan@foxconn.com"
-Category: 491553
-TotalPcQty: 2
-NpsApproved: 1
-Reason: "Need to share equipment image to PC ,to sharing that image into Level PC with radar access"
-CreateBy: "HH0004467"
-CreateDt: "/Date(1783916612000)/"
-LastEditBy: "HH0004467"
-LastEditDt: "/Date(1783916612000)/"
-Area: "A"
-AreaId: "2205"
-BuildId: "2801"
-FloorId: "8621"
-LabId: "13338"
-FormStatue: "Completed"
-Category1: "NPI Lab Proposal"
-Class: "ENG 1"
-Job: "NA"
-CurApprovename: ""
-RouteName: "Closed"
-8:
-Id: 51
-FormCode: "WF10056260710285673"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-78777"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "HH0000325"
-DriEmpEmail: "Sivakumar.a@mail.foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 13
-NpsApproved: 1
-Reason: "te"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783681092000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783681092000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-9:
-Id: 50
-FormCode: "WF10056260710285672"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-99999"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "HH0000325"
-DriEmpEmail: "HH0000010"
-HodEmp: "Sivakumar.a"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 15
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783680678000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783680678000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-10:
-Id: 48
-FormCode: "WF10056260710285670"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-66656"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 15
-NpsApproved: 1
-Reason: "te"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783680386000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783680386000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-11:
-Id: 45
-FormCode: "WF10056260710285669"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-56665"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "10"
-Floor: "1F"
-LabName: "B10-1F-IOT RM"
-DriEmp: "HH0000010"
-DriEmpEmail: "Sivakumar.a@mail.foxconn.com"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 15
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783680160000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783680160000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "804"
-FloorId: "2802"
-LabId: "15231"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-12:
-Id: 43
-FormCode: "WF10056260710285668"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-66556"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "HH0000325"
-DriEmpEmail: "Sivakumar.a@mail.foxconn.com"
-HodEmp: "HH0000010"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 15
-NpsApproved: 1
-Reason: "tet"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783679402000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783679402000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "CHEN CHUN TA"
-RouteName: "First Level"
-13:
-Id: 28
-FormCode: "WF10056260710285651"
-FormStatus: 2
-EmpNo: "HH0004467"
-EmpName: "Santhosh K"
-FormId: "10056"
-DeptId: 4763
-DeptName: "ISM Team_FXCN"
-Email: "santhosh.ism@mail.foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "533-26610"
-SalaryGrade: "ENG 1"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "06"
-Floor: "1.5F"
-LabName: "B06-1.5F-ORT DCC"
-DriEmp: "Sivakumar"
-DriEmpEmail: "HH0000010"
-HodEmp: "N"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 15
-NpsApproved: 1
-Reason: "Setting Up NPI lab for storing device and use in the lab with the pc count of 5 which we will access it "
-CreateBy: "HH0004467"
-CreateDt: "/Date(1783664950000)/"
-LastEditBy: "HH0004467"
-LastEditDt: "/Date(1783664950000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "206"
-FloorId: "222"
-LabId: "13541"
-FormStatue: "Completed"
-Category1: "NPI Lab Proposal"
-Class: "ENG 1"
-Job: "NA"
-CurApprovename: ""
-RouteName: "Closed"
-14:
-Id: 20
-FormCode: "WF10056260707285627"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-87787"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "12"
-Floor: "1F"
-LabName: "A12-1F-MAIN ENT"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783423391000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783423391000)/"
-Area: "A"
-AreaId: "204"
-BuildId: "801"
-FloorId: "1802"
-LabId: "6204"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan,Kalidasan"
-RouteName: "Second Level"
-15:
-Id: 19
-FormCode: "WF10056260707285622"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-99989"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "10"
-Floor: "1F"
-LabName: "B10-1F-IOT RM"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 3
-NpsApproved: 1
-Reason: "te"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783395648000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783395648000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "804"
-FloorId: "2802"
-LabId: "15231"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
-16:
-Id: 18
-FormCode: "WF10056260707285621"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "569-55544"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "07"
-Floor: "1F"
-LabName: "C07-1F-CP2"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 2
-NpsApproved: 1
-Reason: "tes"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783395353000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783395353000)/"
-Area: "C"
-AreaId: "206"
-BuildId: "207"
-FloorId: "221"
-LabId: "16405"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
-17:
-Id: 17
-FormCode: "WF10056260707285620"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "676-65776"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "12"
-Floor: "1F"
-LabName: "A12-1F-PQC SPARE ROO"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783394797000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783394797000)/"
-Area: "A"
-AreaId: "204"
-BuildId: "801"
-FloorId: "1802"
-LabId: "13601"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
-18:
-Id: 16
-FormCode: "WF10056260707285619"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-09998"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "10"
-Floor: "1F"
-LabName: "B10-1F-IOT RM"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783393489000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783393489000)/"
-Area: "B"
-AreaId: "205"
-BuildId: "804"
-FloorId: "2802"
-LabId: "15231"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
-19:
-Id: 15
-FormCode: "WF10056260703285591"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "568-88878"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "12"
-Floor: "1F"
-LabName: "A12-1F-MAIN ENT"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783070982000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783070982000)/"
-Area: "A"
-AreaId: "204"
-BuildId: "801"
-FloorId: "1802"
-LabId: "6204"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
-20:
-Id: 14
-FormCode: "WF10056260703285584"
-FormStatus: 1
-EmpNo: "HH0000010"
-EmpName: "Jeeva K"
-FormId: "10056"
-DeptId: 443
-DeptName: "IT_FXCN"
-Email: "jeeva.k@foxconn.com"
-CostCode: "Q5E0170007"
-FactoryId: 69941
-Factory: "FXCN"
-OfficeTel: "569-96865"
-SalaryGrade: "ENG 6"
-ManagementTitle: "NA"
-SiteId: 69941
-SiteName: "FXCN"
-Build: "12"
-Floor: "1F"
-LabName: "A12-1F-MAIN ENT"
-DriEmp: "HH0000010"
-DriEmpEmail: "HH0000010"
-HodEmp: "jeeva.k@foxconn.com"
-HodEmpEmail: "jeeva.k@foxconn.com"
-Category: 491553
-TotalPcQty: 10
-NpsApproved: 1
-Reason: "test"
-CreateBy: "HH0000010"
-CreateDt: "/Date(1783048548000)/"
-LastEditBy: "HH0000010"
-LastEditDt: "/Date(1783048548000)/"
-Area: "A"
-AreaId: "204"
-BuildId: "801"
-FloorId: "1802"
-LabId: "6204"
-FormStatue: "Signing"
-Category1: "NPI Lab Proposal"
-Class: "ENG 6"
-Job: "NA"
-CurApprovename: "Kalidasan"
-RouteName: "Second Level"
+  private readonly EMPLOYEE_STATUS_API_ID =
+    'ffff-1783663681896-10208193125-1822';
 
-            
-Telephone: 0755-28128988  Transfer  568-89283   |   Email: winly.fe.dang@foxconn.com
-Copyright © 2018-2025 Foxconn A Business Group IT. All Rights Reserved
+  private readonly EMPLOYEE_STATUS_USER_KEY =
+    'facd81g656fcd8p7a7lkh6dfa81gf4ik';
 
-操作指引
-使用文档
+  loading = true;
+  error = false;
+
+  employees: EmployeeStatusRow[] = [];
+
+  chartOption: any = {};
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.fetchEmployeeStatus();
+  }
+
+  fetchEmployeeStatus(): void {
+
+    this.loading = true;
+    this.error = false;
+
+    const headers = new HttpHeaders()
+      .set('apiID', this.EMPLOYEE_STATUS_API_ID)
+      .set('userKey', this.EMPLOYEE_STATUS_USER_KEY);
+
+    this.http.get<any>(this.EMPLOYEE_STATUS_URL, { headers }).subscribe({
+
+      next: (res) => {
+
+        const list = res?.List || [];
+
+        const grouped: { [key: string]: EmployeeStatusRow } = {};
+
+        list.forEach((row: any) => {
+
+          const status = (row.FormStatue || '').toLowerCase();
+
+          // Remove duplicate approvers inside same form
+          const approvers = [...new Set(
+            (row.CurApprovename || '')
+              .split(',')
+              .map((x: string) => x.trim())
+              .filter((x: string) => x !== '')
+          )];
+
+          approvers.forEach((name: any) => {
+
+            if (!grouped[name]) {
+
+              grouped[name] = {
+                name: name,
+                ongoing: 0,
+                closed: 0
+              };
+
+            }
+
+            if (status === 'signing' || status === 'pending') {
+
+              grouped[name].ongoing++;
+
+            } else if (
+              status === 'completed' ||
+              status === 'rejected' ||
+              status === 'closed'
+            ) {
+
+              grouped[name].closed++;
+
+            }
+
+          });
+
+        });
+
+        this.employees = Object.values(grouped)
+          .sort((a, b) => b.ongoing - a.ongoing);
+
+        console.log("Total Forms :", list.length);
+        console.log("Unique Approvers :", this.employees.length);
+        console.log(this.employees);
+
+        this.chartOption = {
+
+          tooltip: {
+            trigger: 'axis'
+          },
+
+          legend: {
+            data: ['Pending', 'Closed']
+          },
+
+          grid: {
+            left: '25%',
+            right: '5%',
+            bottom: '5%',
+            containLabel: true
+          },
+
+          xAxis: {
+            type: 'value'
+          },
+
+          yAxis: {
+            type: 'category',
+            data: this.employees.map(x => x.name)
+          },
+
+          series: [
+            {
+              name: 'Pending',
+              type: 'bar',
+              data: this.employees.map(x => x.ongoing)
+            },
+            {
+              name: 'Closed',
+              type: 'bar',
+              data: this.employees.map(x => x.closed)
+            }
+          ]
+
+        };
+
+        this.loading = false;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        this.loading = false;
+        this.error = true;
+
+      }
+
+    });
+
+  }
+
+}
+
+
+<div
+  echarts
+  [options]="chartOption"
+  class="chart"
+  style="height:500px;width:100%;">
+</div>
 
