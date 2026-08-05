@@ -1,10 +1,84 @@
-const encrypt_pass = "...";
-const encrypt_connection_string = "...";
 
-const decodedString = Buffer.from(encrypt_pass, "base64").toString("utf8");
-const Conn_String = Buffer.from(encrypt_connection_string, "base64").toString("utf8");
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-module.exports = {
-    decodedString,
-    Conn_String
-};
+interface EmployeeStatusRow {
+  name: string;
+  ongoing: number;
+  closed: number;
+}
+
+@Component({
+  selector: 'app-employee-status',
+  templateUrl: './employee-status.component.html',
+  styleUrls: ['./employee-status.component.less'],
+})
+export class EmployeeStatusComponent implements OnInit {
+  private readonly EMPLOYEE_STATUS_URL =
+    'http://10.208.193.125:8089/mock/trueExam.do?id=ffff-1783663681896-10208193125-1822';
+
+  private readonly EMPLOYEE_STATUS_API_ID = 'ffff-1783663681896-10208193125-1822';
+  private readonly EMPLOYEE_STATUS_USER_KEY = 'facd81g656fcd8p7a7lkh6dfa81gf4ik';
+
+  loading = true;
+  error = false;
+  employees: EmployeeStatusRow[] = [];
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.fetchEmployeeStatus();
+  }
+
+  fetchEmployeeStatus(): void {
+    this.loading = true;
+    this.error = false;
+
+    const headers = new HttpHeaders()
+      .set('apiID', this.EMPLOYEE_STATUS_API_ID)
+      .set('userKey', this.EMPLOYEE_STATUS_USER_KEY);
+
+    this.http.get<any>(this.EMPLOYEE_STATUS_URL, { headers }).subscribe({
+      next: (res: any) => {
+        const list: any[] =
+          (res && res.List) ||
+          (res && res.data) ||
+          (Array.isArray(res) ? res : []);
+
+        const grouped: { [approverName: string]: EmployeeStatusRow } = {};
+
+        list.forEach((row) => {
+          const approverName =
+            row.CurApprovename ||
+            row.CurApproveName ||
+            row.curApprovename ||
+            row.curApproveName ||
+            'Unknown';
+
+          const statusText = (row.FormStatue || row.FormStatus || row.formStatus || '').toString().toLowerCase();
+
+          if (!grouped[approverName]) {
+            grouped[approverName] = { name: approverName, ongoing: 0, closed: 0 };
+          }
+
+          if (statusText.indexOf('signing') !== -1 || statusText.indexOf('pending') !== -1) {
+            grouped[approverName].ongoing++;
+          } else {
+            grouped[approverName].closed++;
+          }
+        });
+
+        this.employees = Object.keys(grouped).map(function (key) {
+          return grouped[key];
+        });
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Employee Status API error:', err);
+        this.error = true;
+        this.loading = false;
+      },
+    });
+  }
+}
