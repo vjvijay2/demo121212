@@ -1,16 +1,51 @@
-const encrypt_pass='dG5pc2QhQCMxMjM0NS4=';
+const { runQuery } = require('../db/oracle');
 
-const encrypt_connection_string='MTAuMjA4LjE5Mi4xMjE6MTUyMS90bnRlc3RkYg==';
+exports.getProposals = async (req, res) => {
+  try {
+    const sql = `
+      SELECT *
+      FROM HRM_IAM.NPI_PROPOSAL_INFO
+      ORDER BY ID DESC
+    `;
 
-const decodedBuffer = Buffer.from(encrypt_pass, 'base64');
-const decodedString = decodedBuffer.toString('utf8');
+    const rows = await runQuery(sql);
+
+    res.json({
+      IsOK: "1",
+      List: rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      IsOK: "0",
+      Msg: err.message
+    });
+  }
+};
 
 
 
-const Conn_String_Buffer = Buffer.from(encrypt_connection_string, 'base64');
-const Conn_String = Conn_String_Buffer.toString('utf8');
 
-module.exports={
-    decodedString,
-    Conn_String
-}
+
+
+
+
+
+
+const express = require('express');
+const router = express.Router();
+const proposalController = require('../controllers/proposalController');
+
+router.get('/', proposalController.getProposals);
+
+module.exports = router;
+
+
+
+
+
+
+
+
+
+
