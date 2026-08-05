@@ -1,192 +1,211 @@
-import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+const oracledb = require('oracledb');
 
-interface ProposalRow {
-  item: number;
-  formCode: string;
-  formStatus: string;
-  empNo: string;
-  empName: string;
-  Factory: string;
-  labName: string;
-  category: string;
-  salaryGrade: string;
-  managementTitle: string;
-  DeptName: string;
+// Return rows as plain JS objects (column_name -> value) instead of arrays.
+oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+
+let pool;
+
+async function initPool() {
+  if (pool) return pool;
+
+  pool = await oracledb.createPool({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    connectString: process.env.DB_CONNECT_STRING,
+    poolMin: 2,
+    poolMax: 10,
+    poolIncrement: 1,
+  });
+
+  console.log('Oracle connection pool created');
+  return pool;
 }
 
-@Component({
-  selector: 'app-all-proposals',
-  templateUrl: './all-proposals.component.html',
-  styleUrls: ['./all-proposals.component.less'],
-})
-export class AllProposalsComponent implements OnInit {
-  private readonly TEST_URL = 'http://10.208.193.125:8089/mock/trueExam.do?id=ffff-1783663681896-10208193125-1822';
-  private readonly LIVE_URL = 'https://microservice.abgind.foxconn.com/india/gateway';
-  private readonly API_ID = 'ffff-1783663681896-10208193125-1822';
-  private readonly USER_KEY = 'E9785F13CCEAFB251A6AB147AFD24336';
+async function runQuery(sql, binds = {}) {
+  const p = await initPool();
+  let connection;
+  try {
+    connection = await p.getConnection();
+    const result = await connection.execute(sql, binds);
+    return result.rows;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error('Error closing Oracle connection:', err);
+      }
+    }
+  }
+}
 
-  loading = true;
-  error = false;
+async function closePool() {
+  if (pool) {
+    await pool.close(10);
+    pool = undefined;
+  }
+}
 
-  proposals: ProposalRow[] = [];
-  filteredProposals: ProposalRow[] = [];
+module.exports = { runQuery, initPool, closePool };
 
-  currentPage = 1;  
-  pageSize = 10;
 
-  filters = {
-    formNo: '',
-    empId: '',
-    name: '',
-    dateFrom: null as Date | null,
-    dateTo: null as Date | null,
-    formStatus: 'ALL',
-    Factory: 'ALL',
-    category: 'ALL',
+
+
+
+
+
+const express = require('express');
+const { runQuery } = require('../db/oracle');
+
+const router = express.Router();
+
+/**
+ * GET /api/proposals
+ * Optional query params (all optional — pass only what you want to filter on):
+ *   formCode, empNo, empName, category, formStatus, factory, startDate, endDate
+ *   (startDate/endDate expected as 'DD-MM-YYYY', matching the rest of this codebase)
+ *
+ * TODO: Replace WF_STRUCTURE.WF_NPI_PROPOSAL_T below with the REAL table (or view)
+ * name that backs the actual GetNPiProposalInfo API. This is a placeholder —
+ * I don't have visibility into your Oracle schema for this specific form, only
+ * the DORM_EXIT tables you shared earlier. Column names here are chosen to
+ * match the confirmed real API response field names, so the SELECT list should
+ * mostly hold even once the real table name is filled in — but double check
+ * each column actually exists in that table.
+ */
+router.get('/', async (req, res) => {
+  const {
+    formCode = '',
+    empNo = '',
+    empName = '',
+    category = '',
+    formStatus = '',
+    factory = '',
+    startDate = '',
+    endDate = '',
+  } = req.query;
+
+  const sql = `
+    SELECT
+      ID,
+      FORM_CODE       AS "FormCode",
+      FORM_STATUS     AS "FormStatus",
+      FORM_STATUE     AS "FormStatue",
+      ROUTE_NAME      AS "RouteName",
+      EMP_NO          AS "EmpNo",
+      EMP_NAME        AS "EmpName",
+      FACTORY         AS "Factory",
+      SITE_NAME       AS "SiteName",
+      LAB_NAME        AS "LabName",
+      CATEGORY        AS "Category",
+      CATEGORY1       AS "Category1",
+      SALARY_GRADE    AS "SalaryGrade",
+      MANAGEMENT_TITLE AS "ManagementTitle",
+      DEPT_NAME       AS "DeptName",
+      CUR_APPROVENAME AS "CurApprovename",
+      CREATE_DT       AS "CreateDt"
+    FROM WF_STRUCTURE.WF_NPI_PROPOSAL_T
+    WHERE
+      UPPER(FORM_CODE) LIKE UPPER('%' || :formCode || '%')
+      AND UPPER(EMP_NO) LIKE UPPER('%' || :empNo || '%')
+      AND UPPER(EMP_NAME) LIKE UPPER('%' || :empName || '%')
+      AND (:category = '' OR CATEGORY1 = :category)
+      AND (:formStatus = '' OR FORM_STATUE = :formStatus)
+      AND (:factory = '' OR FACTORY = :factory)
+      AND (:startDate = '' OR CREATE_DT >= TO_DATE(:startDate, 'DD-MM-YYYY'))
+      AND (:endDate = '' OR CREATE_DT <= TO_DATE(:endDate, 'DD-MM-YYYY') + 1)
+    ORDER BY CREATE_DT DESC
+  `;
+
+  const binds = {
+    formCode,
+    empNo,
+    empName,
+    category,
+    formStatus,
+    factory,
+    startDate,
+    endDate,
   };
 
-  formStatusOptions = ['ALL', 'Completed', 'Signing', 'Pending', 'Rejected', 'Closed'];
-  FactoryOptions = ['ALL', 'FXCN', 'FXBL'];
-  categoryOptions = ['ALL', 'NPI Lab Proposal', 'NPI Device Proposal', 'NPI Software Proposal', 'Other'];
-
-  constructor(private location: Location, private http: HttpClient) { }
-
-  ngOnInit(): void {
-    this.fetchProposals();
+  try {
+    const rows = await runQuery(sql, binds);
+    res.json({ IsOK: '1', Msg: '', List: rows });
+  } catch (err) {
+    console.error('Error fetching proposals:', err);
+    res.status(500).json({ IsOK: '0', Msg: 'Failed to fetch proposals', List: [] });
   }
+});
 
-  private formatDate(date: Date | null): string {
-    if (!date) return '';
-    const day = ('0' + date.getDate()).slice(-2);
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const year = date.getFullYear();
-    return day + '-' + month + '-' + year;
-  }
-
-  fetchProposals(): void {
-    this.loading = true;
-    this.error = false;
-
-    const url = this.TEST_URL;
-
-    this.http.get<any>(url, {
-      headers: {
-        apiID: this.API_ID,
-        userKey: this.USER_KEY,
-      },
-    }).subscribe({
-      next: (res: any) => {
-        const list: any[] =
-          (res && res.List) ||
-          (res && res.data) ||
-          (Array.isArray(res) ? res : []);
-
-        this.proposals = list.map((item, idx) => ({
-          item: idx + 1,
-          formCode: item.FormCode || item.formCode || '',
-          formStatus: item.FormStatue || item.FormStatus || item.formStatus || '',
-          empNo: item.EmpNo || item.empNo || '',
-          empName: item.EmpName || item.empName || '',
-          Factory: item.Factory || item.factory || '',
-          labName: item.LabName || item.labName || '',
-         category: item.Category1 || item.Category || item.category || '',
-          salaryGrade: item.SalaryGrade || item.salaryGrade || '',
-          managementTitle: item.ManagementTitle || item.managementTitle || '',
-          DeptName: item.DeptName || item.deptName || item.Dept || item.dept || '',
-        }));
-
-        this.applyFilters();
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('NPI Proposal list API error:', err);
-        this.error = true;
-        this.loading = false;
-      },
-    });
-   console.log(this.proposals.map(x => x.formStatus));
-  }
+module.exports = router;
 
 
 
-  applyFilters(): void {
-    const formNo = (this.filters.formNo || '').toLowerCase();
-    const empId = (this.filters.empId || '').toLowerCase();
-    const name = (this.filters.name || '').toLowerCase();
 
-    this.filteredProposals = this.proposals.filter((row) => {
-      const matchFormNo = !formNo || (row.formCode || '').toLowerCase().indexOf(formNo) !== -1;
-      const matchEmpId = !empId || (row.empNo || '').toLowerCase().indexOf(empId) !== -1;
-      const matchName = !name || (row.empName || '').toLowerCase().indexOf(name) !== -1;
 
-      const matchStatus =
-        this.filters.formStatus === 'ALL' ||
-        (row.formStatus || '').toLowerCase() === this.filters.formStatus.toLowerCase();
+require('dotenv').config();
 
-      const matchFactory =
-        this.filters.Factory === 'ALL' ||
-        (row.Factory || '').toLowerCase() === this.filters.Factory.toLowerCase();
+const express = require('express');
+const cors = require('cors');
 
-      const matchCategory =
-        this.filters.category === 'ALL' ||
-        (row.category || '').toLowerCase() === this.filters.category.toLowerCase();
+const proposalsRouter = require('./routes/proposals');
+const { closePool } = require('./db/oracle');
 
-      return matchFormNo && matchEmpId && matchName && matchStatus && matchFactory && matchCategory;
-    });
+const app = express();
+const PORT = process.env.PORT || 4000;
 
-    this.currentPage = 1;
-  }
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+app.use(express.json());
 
-  get pagedProposals(): ProposalRow[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredProposals.slice(start, start + this.pageSize);
-  }
+// Simple health check — hit this first to confirm the server itself is up
+// before worrying about the DB connection.
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.filteredProposals.length / this.pageSize));
-  }
+app.use('/api/proposals', proposalsRouter);
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
+const server = app.listen(PORT, () => {
+  console.log(`NPI backend listening on http://localhost:${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`Proposals API: http://localhost:${PORT}/api/proposals`);
+});
 
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
+// Graceful shutdown — closes the Oracle pool cleanly instead of leaving
+// dangling connections when you stop the server.
+process.on('SIGINT', async () => {
+  console.log('\nShutting down...');
+  await closePool();
+  server.close(() => process.exit(0));
+});
 
-  search(): void {
-    console.log(
-      'Search dates:',
-      this.formatDate(this.filters.dateFrom),
-      this.formatDate(this.filters.dateTo)
-    );
-    this.applyFilters();
-  }
 
-  exportList(): void {
-    console.log('Export requested', this.filters);
-  }
 
-  goBack(): void {
-    this.location.back();
-  }
 
-  openFormCode(formCode: string): void {
-    console.log('Open proposal detail for', formCode);
-  }
-
-  statusClass(status: string): string {
-    const v = (status || '').toLowerCase();
-    if (v.indexOf('completed') !== -1) return 'status--completed';
-    if (v.indexOf('signing') !== -1) return 'status--signing';
-    if (v.indexOf('rejected') !== -1) return 'status--rejected';
-    if (v.indexOf('pending') !== -1) return 'status--pending';
-    return '';
+{
+  "name": "npi-backend",
+  "version": "1.0.0",
+  "description": "Minimal backend API serving NPI Proposal data from Oracle DB to the Angular app",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "oracledb": "^6.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }
+npi-backend/
+├── package.json
+├── .env.example       ← copy to .env, fill in your DB creds
+├── README.md
+└── src/
+    ├── server.js       ← Express app entry point
+    ├── db/oracle.js     ← Oracle connection pool
+    └── routes/proposals.js  ← GET /api/proposals
