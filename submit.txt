@@ -1,10 +1,51 @@
-3682785241	10056	4531	WF10056260804286034	-99	-99	0	10	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785232	10056	4531	WF10056260804286034	0	0	1	1	1	HH0004467	Santhosh K	2026-08-04 10:24:54.000		1341	00:15:5D:0A:32:13		0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785237	10056	4531	WF10056260804286034	5	202	0	6	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785238	10056	4531	WF10056260804286034	6	203	0	7	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785239	10056	4531	WF10056260804286034	7	204	0	8	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785240	10056	4531	WF10056260804286034	8	205	0	9	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-04 10:24:54.000	Santhosh K
-3682785242	10056	4531	WF10056260804286034	1	7	1	2	1	HH0000067	NEETHI RAJAN	2026-08-04 11:16:21.000	Test	1341			0	2026-08-04 11:16:21.000	Santhosh K	2026-08-04 11:16:21.000	NEETHI RAJAN
-3682785245	10056	4531	WF10056260804286034	2	8	1	3	1	HH0000010	JEEVA	2026-08-04 17:36:12.000	test	1341			0	2026-08-04 17:36:12.000	Santhosh K	2026-08-04 17:36:12.000	JEEVA
-3682785271	10056	4531	WF10056260804286034	3	183	1	4	1	HH0004467	Santhosh K	2026-08-05 16:50:26.000	ok to proceed	1341			0	2026-08-05 16:50:26.000	Santhosh K	2026-08-05 16:50:26.000	Santhosh K
-3682785236	10056	4531	WF10056260804286034	4	201	-1	5	1								0	2026-08-04 10:24:54.000	Santhosh K	2026-08-05 16:50:26.000	Santhosh K
+SELECT
+    wrtv.FORM_ID,
+    wrtv.FORM_CODE,
+    wrtv.ROUTE_ORDER,
+    wrtv.STEP_ID,
+    NVL(wrtv.OPT_EMP_NAME, wfocv.APPROVE_EMP_NAME) AS OPT_EMP_NAME,
+    wrtv.IS_FINISHED,
+    wrtv.LAST_EDIT_BY,
+    wrtv.LAST_EDIT_DT
+FROM wf_structure.WF_ROUTE_TRACKING_V wrtv
+LEFT JOIN wf_structure.WF_FORM_OPT_CONDITION_V wfocv
+       ON wrtv.FORM_CODE = wfocv.FORM_CODE
+      AND wrtv.STEP_ID = wfocv.STEP_ID
+ORDER BY wrtv.FORM_ID, wrtv.ROUTE_ORDER;
+
+
+
+steps.forEach((step: any, idx: number) => {
+
+  if (idx >= reachedCount) {
+    return;
+  }
+
+  const empNames = parseEmpNames(
+    step.OPT_EMP_NAME || step.APPROVE_EMP_NAME
+  );
+
+  empNames.forEach((empName) => {
+
+    const status = Number(step.IS_FINISHED);
+
+    if (status === 1) {
+      addToGrouped(empName, 'completed');
+    }
+    else if (status === -1) {
+      addToGrouped(empName, 'signing');
+    }
+
+  });
+
+});
+
+
+
+private readonly ISM_STEP_IDS = [183, 201, 202, 203, 204, 205];
+
+
+
+steps = steps.filter((s: any) =>
+  this.ISM_STEP_IDS.includes(Number(s.STEP_ID))
+);
