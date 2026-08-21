@@ -1,1 +1,1 @@
-Get-ChildItem .\src\Components\Homepage\Home.js | Select-String -Pattern "navigate|Navigate|Link|href|DormMaster|RoomMaster|BedMaster|Check-In|Check-Out"
+Get-Content .\src\Components\Homepage\Home.js | Select-Object -Skip 130 -First 500
