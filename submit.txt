@@ -1,579 +1,82 @@
-
-added 2160 packages, and audited 2247 packages in 10m
- 
-176 packages are looking for funding
-  run `npm fund` for details
-
-183 vulnerabilities (12 low, 53 moderate, 96 high, 22 critical)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
-PS E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree> npm ls lodash
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree 
-├─┬ @angular-devkit/build-angular@0.803.29
-│ ├─┬ @babel/core@7.8.7
-│ │ └── lodash@4.18.1 deduped
-│ ├─┬ source-map-loader@0.2.4
-│ │ └─┬ async@2.6.4
-│ │   └── lodash@4.18.1 deduped
-│ ├─┬ webpack-dev-server@3.11.0
-│ │ └─┬ http-proxy-middleware@0.19.1
-│ │   └── lodash@4.18.1 deduped
-│ └─┬ webpack-merge@4.2.1
-│   └── lodash@4.18.1 deduped
-├─┬ @angular/cli@8.3.29
-│ └─┬ inquirer@6.5.1
-│   └── lodash@4.18.1 deduped
-├─┬ @antv/data-set@0.10.2
-│ └─┬ dagre@0.8.5
-│   ├─┬ graphlib@2.1.8
-│   │ └── lodash@4.18.1 deduped
-│   └── lodash@4.18.1 deduped
-├─┬ karma@4.1.0
-│ ├── lodash@4.18.1
-│ └─┬ log4js@4.5.1
-│   └─┬ streamroller@1.0.6
-│     └── lodash@4.18.1 deduped
-├─┬ lint-staged@8.2.1
-│ ├── lodash@4.18.1 deduped
-│ └─┬ yup@0.27.0
-│   └── lodash@4.18.1 deduped
-├─┬ prettier-stylelint@0.4.2
-│ └─┬ stylelint@8.4.0
-│   ├── lodash@4.18.1 deduped
-│   ├─┬ postcss-reporter@5.0.0
-│   │ └── lodash@4.18.1 deduped
-│   └─┬ table@4.0.3
-│     └── lodash@4.18.1 deduped
-├─┬ quill-image-resize-module@3.0.0
-│ └── lodash@4.18.1 deduped
-├─┬ stylelint-config-rational-order@0.1.2
-│ ├─┬ stylelint-order@2.2.1
-│ │ ├── lodash@4.18.1 deduped
-│ │ └─┬ postcss-sorting@4.1.0
-│ │   └── lodash@4.18.1 deduped
-│ └─┬ stylelint@9.10.1
-│   └── lodash@4.18.1 deduped
-├─┬ stylelint-order@3.1.1
-│ ├── lodash@4.18.1 deduped
-│ └─┬ postcss-sorting@5.0.1
-│   └── lodash@4.18.1 deduped
-├─┬ stylelint@10.1.0
-│ ├── lodash@4.18.1 deduped
-│ ├─┬ postcss-reporter@6.0.1
-│ │ └── lodash@4.18.1 deduped
-│ └─┬ table@5.4.6
-│   └── lodash@4.18.1 deduped
-└─┬ webpack-bundle-analyzer@3.9.0
-  └── lodash@4.18.1 deduped
- 
-PS E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree> npm start
- 
-> ng-alain-pro@0.0.0 start
-> npm run color-less && ng serve -o --host 0.0.0.0 --port 4208
-
- 
-> ng-alain-pro@0.0.0 color-less
-> node scripts/color-less.js
-
-error TypeError: Cannot read properties of undefined (reading 'slice') 
-    at generateTheme (E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree\node_modules\antd-theme-generator\index.js:414:14)
-    at Object.<anonymous> (E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree\scripts\color-less.js:49:1)
-    at Module._compile (node:internal/modules/cjs/loader:1198:14)
-    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1252:10)
-    at Module.load (node:internal/modules/cjs/loader:1076:32)
-    at Function.Module._load (node:internal/modules/cjs/loader:911:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
-    at node:internal/main/run_main_module:22:47
-WARNING: This is a simple server for use in testing or debugging Angular applications 
-locally. It hasn't been reviewed for security issues.
-
-Binding this server to an open connection can result in compromising your application or
-computer. Using a different host than the one passed to the "--host" flag might result in
-websocket connection issues. You might need to use "--disableHostCheck" if that's the
-case.
-10% building 3/3 modules 0 active(node:9428) [DEP0111] DeprecationWarning: Access to process.binding('http_parser') is deprecated. 
-(Use `node --trace-deprecation ...` to show where the warning was created)
-i ｢wds｣: Project is running at http://0.0.0.0:4208/webpack-dev-server/
-i ｢wds｣: webpack output is served from /
-i ｢wds｣: 404s will fallback to //index.html
-
-chunk {main} main.js, main.js.map (main) 2.28 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 127 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
-chunk {scripts} scripts.js, scripts.js.map (scripts) 2.69 MB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 2.81 MB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 452 kB [initial] [rendered]
-Date: 2026-08-21T04:51:22.266Z - Hash: ff8f22c71ef15e87e180 - Time: 16198ms
-
-ERROR in node_modules/@types/jquery/misc.d.ts:7099:23 - error TS1005: ']' expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                           ~~
-node_modules/@types/jquery/misc.d.ts:7099:26 - error TS1005: ';' expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                              ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7099:33 - error TS1005: ';' expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                                     ~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7099:60 - error TS1005: ';' expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                                                                ~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7099:81 - error TS1005: ';' expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                                                                                     ~
-node_modules/@types/jquery/misc.d.ts:7099:82 - error TS1128: Declaration or statement expected.
-
-7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-                                                                                      ~
-node_modules/@types/jquery/misc.d.ts:7112:19 - error TS1110: Type expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                       ~~~
-node_modules/@types/jquery/misc.d.ts:7112:43 - error TS1005: ';' expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                               ~
-node_modules/@types/jquery/misc.d.ts:7112:44 - error TS1128: Declaration or statement expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                ~
-node_modules/@types/jquery/misc.d.ts:7112:48 - error TS1005: ';' expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                    ~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7112:65 - error TS1005: '}' expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                                     ~
-node_modules/@types/jquery/misc.d.ts:7112:66 - error TS1128: Declaration or statement expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                                      ~
-node_modules/@types/jquery/misc.d.ts:7112:67 - error TS1128: Declaration or statement expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                                       ~
-node_modules/@types/jquery/misc.d.ts:7112:69 - error TS1005: ';' expected.
-
-7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
-                                                                         ~
-node_modules/@types/jquery/misc.d.ts:7147:51 - error TS1005: ';' expected.
-
-7147         // No idea why it's necessary to include `object` in the union but otherwise TypeScript complains that
-                                                       ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7173:200 - error TS1005: ';' expected.
-
-7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
-behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
-in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-                                                                         ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7173:262 - error TS1005: ';' expected.
-
-7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
-behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
-in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-
-    ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7173:297 - error TS1005: ';' expected.
-
-7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
-behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
-in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-
-                                       ~~~~
-node_modules/@types/jquery/misc.d.ts:7175:21 - error TS1005: ';' expected.
-
-7175          * As with `fixHooks`, the special event hooks design assumes it will be very rare that two unrelated pieces of code want to process the same event name. Special event authors who need to modify events with existing hooks will need to take precautions to avoid introducing unwanted side-effects by clobbering those hooks.
-                         ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7185:196 - error TS1005: ';' expected.
-
-7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-                                                                     ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7185:258 - error TS1005: ';' expected.
-
-7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-
-~~~~~~
-node_modules/@types/jquery/misc.d.ts:7185:293 - error TS1005: ';' expected.
-
-7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
-     
-
-                                   ~~~~
-node_modules/@types/jquery/misc.d.ts:7187:17 - error TS1005: ';' expected.
-
-7187      * As with `fixHooks`, the special event hooks design assumes it will be very rare that two unrelated pieces of code want 
-to process the same event name. Special event authors who need to modify events with existing hooks will need to take precautions to avoid introducing unwanted side-effects by clobbering those hooks.
-                     ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7193:122 - error TS1005: ';' expected.
-
-7193          * Indicates whether this event type should be bubbled when the `.trigger()` method is called; by default it is `false`, meaning that a triggered event will bubble to the element's parents up to the document (if attached to a document) and then to the window. Note that defining `noBubble` on an event will effectively prevent that event from being used for delegated events with 
-`.trigger()`.
-                                                                                                                              ~~~~~node_modules/@types/jquery/misc.d.ts:7193:289 - error TS1005: ';' expected.
-
-7193          * Indicates whether this event type should be bubbled when the `.trigger()` method is called; by default it is `false`, meaning that a triggered event will bubble to the element's parents up to the document (if attached to a document) and then to the window. Note that defining `noBubble` on an event will effectively prevent that event from being used for delegated events with 
-`.trigger()`.
-     
-
-                               ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7199:156 - error TS1005: ';' expected.
-
-7199          * When defined, these string properties specify that a special event should be handled like another event type until 
-the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
-     
-                             ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7199:218 - error TS1005: ';' expected.
-
-7199          * When defined, these string properties specify that a special event should be handled like another event type until 
-the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
-     
-                                                                                           ~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7205:156 - error TS1005: ';' expected.
-
-7205          * When defined, these string properties specify that a special event should be handled like another event type until 
-the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
-     
-                             ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7205:218 - error TS1005: ';' expected.
-
-7205[0m          * When defined, these string properties specify that a special event should be handled like another event type until the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
-     
-                                                                                           ~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7211:229 - error TS1005: ';' expected.
-
-7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
-hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
-     
-                                                                                                      ~~~~
-node_modules/@types/jquery/misc.d.ts:7211:317 - error TS1005: ';' expected.
-
-7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
-hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
-     
-
-                                                           ~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7211:385 - error TS1005: ';' expected.
-
-7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
-hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
-     
-
-                                                                                                                               ~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7213:203 - error TS1005: ';' expected.
-
-7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
-to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
-     
-                                                                            ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7213:286 - error TS1005: ';' expected.
-
-7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
-to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
-     
-
-                            ~~~~~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7213:308 - error TS1005: ';' expected. 
-
-7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
-to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
-     
-
-                                                  ~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7213:362 - error TS1005: ';' expected.
-
-7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
-to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
-     
-
-                                                                                                        ~~~~~
-node_modules/@types/jquery/misc.d.ts:7213:664 - error TS1005: ';' expected.
-
-7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
-to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
-     
-
-
-
-
-             ~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7220:115 - error TS1005: ';' expected.
-
-7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
-                                                                                                                       ~~~~        
-node_modules/@types/jquery/misc.d.ts:7220:226 - error TS1005: ';' expected.
-
-7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
-     
-                                                                                                   ~~~~~
-node_modules/@types/jquery/misc.d.ts:7220:310 - error TS1005: ';' expected.
-
-7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
-     
-
-                                                    ~~~~~~~~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7220:335 - error TS1005: ';' expected.
-
-7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
-     
-
-                                                                             ~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7222:111 - error TS1005: ';' expected.
-
-7222          * If the setup hook attached event handlers or added data to an element through a mechanism such as `jQuery.data()`, 
-the teardown hook should reverse the process and remove them. jQuery will generally remove the data and events when an element is totally removed from the document, but failing to remove data or events on teardown will cause a memory leak if the element stays in the document.
-                                                                                                                   ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7229:123 - error TS1005: ';' expected.
-
-7229          * Each time an event handler is added to an element through an API such as `.on()`, jQuery calls this hook. The `this` keyword will be the element to which the event handler is being added, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
-                                                                                                                               ~~~~node_modules/@types/jquery/misc.d.ts:7229:209 - error TS1005: ';' expected.
-
-7229          * Each time an event handler is added to an element through an API such as `.on()`, jQuery calls this hook. The `this` keyword will be the element to which the event handler is being added, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
-     
-                                                                                  ~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7235:118 - error TS1005: ';' expected.
-
-7235          * When an event handler is removed from an element using an API such as `.off()`, this hook is called. The `this` keyword will be the element where the handler is being removed, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
-                                                                                                                          ~~~~     
-node_modules/@types/jquery/misc.d.ts:7235:197 - error TS1005: ';' expected.
-
-7235          * When an event handler is removed from an element using an API such as `.off()`, this hook is called. The `this` keyword will be the element where the handler is being removed, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
-     
-                                                                      ~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7241:199 - error TS1005: ';' expected.
-
-7241          * Called when the `.trigger()` or `.triggerHandler()` methods are used to trigger an event for the special type from 
-code, as opposed to events that originate from within the browser. The `this` keyword will be the element being triggered, and the 
-event argument will be a `jQuery.Event` object constructed from the caller's input. At minimum, the event type, data, namespace, and target properties are set on the event. The data argument represents additional data passed by `.trigger()` if present.
-     
-                                                                        ~~~~
-node_modules/@types/jquery/misc.d.ts:7241:284 - error TS1005: ';' expected.
-
-7241          * Called when the `.trigger()` or `.triggerHandler()` methods are used to trigger an event for the special type from 
-code, as opposed to events that originate from within the browser. The `this` keyword will be the element being triggered, and the 
-event argument will be a `jQuery.Event` object constructed from the caller's input. At minimum, the event type, data, namespace, and target properties are set on the event. The data argument represents additional data passed by `.trigger()` if present.
-     
-
-                          ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7243:100 - error TS1005: ';' expected.
-
-7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
-the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
-call event handlers attached to parent elements.
-                                                                                                        ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7243:249 - error TS1005: ';' expected.
-
-7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
-the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
-call event handlers attached to parent elements.
-     
-                                                                                                                          ~~~~~    
-node_modules/@types/jquery/misc.d.ts:7243:278 - error TS1005: ';' expected.
-
-7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
-the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
-call event handlers attached to parent elements.
-     
-
-                    ~~~~~
-node_modules/@types/jquery/misc.d.ts:7243:341 - error TS1005: ';' expected.
-
-7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
-the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
-call event handlers attached to parent elements.
-     
-
-                                                                                   ~~~~~
-node_modules/@types/jquery/misc.d.ts:7243:601 - error TS1005: ';' expected.
-
-7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
-the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
-call event handlers attached to parent elements.
-     
-
-
-
-                                                                                 ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7250:202 - error TS1005: ';' expected.
-
-7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
-checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
-     
-                                                                           ~~~~~
-node_modules/@types/jquery/misc.d.ts:7250:272 - error TS1005: ';' expected.
-
-7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
-checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
-     
-
-              ~~~~~~
-node_modules/@types/jquery/misc.d.ts:7250:327 - 1merror TS1005: ';' expected.
-
-7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
-checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
-     
-
-                                                                     ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7250:478 - error TS1005: ';' expected.
-
-7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
-checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
-     
-
-
-                                                                                         ~~~~~
-node_modules/@types/jquery/misc.d.ts:7257:340 - error TS1005: ';' expected.
-
-7257          * jQuery calls a handle hook when the event has occurred and jQuery would normally call the user's event handler specified by `.on()` or another event binding method. If the hook exists, jQuery calls it _instead_ of that event handler, passing it the event and any data passed from `.trigger()` if it was not a native event. The `this` keyword is the DOM element being handled, and `event.handleObj` property has the detailed event information.
-     
-
-                                                                                  ~~~~
-node_modules/@types/jquery/misc.d.ts:7257:393 - error TS1005: ';' expected.
-
-7257          * jQuery calls a handle hook when the event has occurred and jQuery would normally call the user's event handler specified by `.on()` or another event binding method. If the hook exists, jQuery calls it _instead_ of that event handler, passing it the event and any data passed from `.trigger()` if it was not a native event. The `this` keyword is the DOM element being handled, and `event.handleObj` property has the detailed event information.
-     
-
-
-    ~~~~~
-node_modules/@types/jquery/misc.d.ts:7259:134 - error TS1005: ';' expected.
-
-7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
-is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
-return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
-     
-       ~~~~~
-node_modules/@types/jquery/misc.d.ts:7259:636 - error TS1005: ';' expected.
-
-7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
-is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
-return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
-     
-
-
-
-                                                                                                                    ~~~~~~~~       
-node_modules/@types/jquery/misc.d.ts:7259:651 - error TS1005: ';' expected.
-
-7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
-is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
-return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
-     
-
-
-
-
-~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7259:794 - error TS1005: ';' expected.
-
-7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
-is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
-return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
-     
-
-
-
-
-
-            ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7259:809 - error TS1005: ';' expected.
-
-7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
-is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
-return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
-     
-
-
-
-
-
-                           ~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7281:69 - error TS1005: ';' expected.
-
-7281      * Many of the special event hook functions below are passed a `handleObj` object that provides more information about the event, how it was attached, and its current state. This object and its contents should be treated as read-only data, and only the 
-properties below are documented for use by special event handlers.
-                                                                         ~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7286:40 - error TS1005: ';' expected.
-
-7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
-                                            ~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7286:90 - error TS1005: ';' expected.
-
-7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
-                                                                                              ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7286:104 - error TS1005: ';' expected.
-
-7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
-                                                                                                            ~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7290:76 - error TS1005: ';' expected.
-
-7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
-                                                                                ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7290:90 - error TS1005: ';' expected.
-
-7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
-                                                                                              ~~~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7290:155 - error TS1005: ';' expected.
-
-7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
-     
-                            ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7294:81 - error TS1005: ';' expected.
-
-7294          * Namespace(s), if any, provided when the event was attached, such as `"myPlugin"`. When multiple namespaces are given, they are separated by periods and sorted in ascending alphabetical order. If no namespaces are provided, this property is an empty string.
-                                                                                     ~~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7298:182 - error TS1005: ';' expected.
-
-7298          * For delegated events, this is the selector used to filter descendant elements and determine if the handler should be called. For directly bound events, this property is `null`.
-     
-                                                       ~~~~
-node_modules/@types/jquery/misc.d.ts:7302:75 - error TS1005: ';' expected.
-
-7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
-                                                                               ~
-node_modules/@types/jquery/misc.d.ts:7302:129 - error TS1005: ';' expected.
-
-7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
-     
-  ~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7302:159 - error TS1005: ';' expected.
- 
-7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
-     
-                                ~~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7306:78 - error TS1005: ';' expected.
-
-7306          * Event handler function passed to jQuery during event binding. If `false` was passed during event binding, the handler refers to a single shared function that simply returns `false`.
-                                                                                  ~~~~~
-node_modules/@types/jquery/misc.d.ts:7306:186 - error TS1005: ';' expected.
-
-7306          * Event handler function passed to jQuery during event binding. If `false` was passed during event binding, the handler refers to a single shared function that simply returns `false`.
-     
-                                                           ~~~~~
-node_modules/@types/jquery/misc.d.ts:7374:28 - error TS1005: ';' expected.
-
-7374 // Forward declaration of `Iterable<T>`.
-                                ~~~~~~~~
-node_modules/@types/jquery/misc.d.ts:7389:1 - error TS1160: Unterminated template literal.
-
-7389
-    
-
-** Angular Live Development Server is listening on 0.0.0.0:4208, open your browser on http://localhost:4208/ **
-i ｢wdm｣: Failed to compile. 
+第一步：检查是否安装了 Lodash
+方法一：查看 package.json
+打开项目根目录下的 package.json 文件，在 dependencies 或 devDependencies 字段里寻找 "lodash"
+
+方法二：在终端使用命令检查
+使用 npm：运行 npm ls lodash -a 命令。它会打印出项目的依赖树，并高亮显示 Lodash 的安装版本。如果没安装，则会提示 (empty)
+
+使用 Yarn：运行 yarn list --pattern lodash。这个命令会搜索整个依赖树，不仅会告诉你是否安装，还会显示 Lodash 被哪些包依赖。
+
+第二步：检查代码中是否实际调用了 Lodash
+方法：搜索代码
+在项目源码目录（如 src 或 lib）中，搜索lodash，是否存在以下引用
+ES Module 语法：import _ from 'lodash' 或 import { get, debounce } from 'lodash'
+CommonJS 语法：const _ = require('lodash') 或 const { get } = require('lodash')
+
+如果package.json中没有直接声明lodash，但package-lock.json 里有搜索到lodash ，说明不是开发者主动安装的，而是作为间接依赖被其他几个主要工具或库引用的。常见的依赖包如下：
+@vue/cli-service  Vue CLI 核心服务
+@vue/eslint-config-typescript  ESLint 配置
+ant-design-vue  UI 组件库
+webpack-bundle-analyzer 打包分析工具
+@angular-devkit/build-angular  Angular构建工具
+@angular/cli    Angular CLI 工具
+ng-zorro-antd@18.0  UI 组件库
+stylelint   CSS 检查工具
+lint-staged  代码提交前检查
+prettier-stylelint   格式化工具
+quill-image-resize-module  Quill富文本编辑器中的图片支持拖拽调整大小
+
+第三步：更新lodash到最新版
+方法一：执行 npm install lodash@latest
+说明：只会安装直接依赖，不会改写第三方库带入的子依赖。
+备注：对依赖树进行分析发现，我们的项目lodash全部为间接依赖（传递依赖），如果只更新lodash，打包构建生成时第三方库有可能使用的还是有漏洞的旧版lodash。
+
+方法二：使用 override 强制覆盖所有子依赖的版本（npm 8.3+才支持）
+package.json 添加 overrides，放在 json 根层级，和 dependencies、devDependencies 平级：
+{
+  "overrides": {
+    "lodash": "^4.18.1",
+    "lodash-es": "^4.18.1"  // 如果有使用lodash-es 时加上
+  }
+}
+然后执行：npm install
+备注：不会重装全部依赖，npm 只会处理被 overrides 影响的 lodash 子依赖，其余包保持原样。
+
+第四部：再次查看确认lodash版本
+1. npm ls lodash –a  
+完整查看全部依赖，确认没有任何lodash 4.0.0 至 4.17.x 版本
+2. 检查 package lock.json
+确认 lodash和lodash-es的版本号是最新版本4.18.1
+3. 执行构建打包：npm run build
+打开 dist 下面的 js 文件，如果搜索不到lodash旧版本字符串（比如"4.17.21"），此时漏洞版本 lodash 完全不存在。
+
+第五步：测试验证
+在升级后，重新运行项目，进行充分的功能测试验证，最后再执行构建命令打包更新上线。
+
+注意事项：
+1. lodash es 和 lodash 
+lodash es 和 lodash是两个独立包，如果业务中有使用lodash es，要单独确认它的版本，升级lodash不会自动更新 lodash es。
+更新lodash-es到最新版：
+npm install lodash-es@latest
+
+2. quill image resize module
+是一个用于 Quill.js 富文本编辑器的扩展模块，主要功能是让编辑器中的图片支持拖拽调整大小。
+更新完成后，该包自己子 node_modules 下嵌套的仍然是 lodash@4.17.4，因为安装时锁死了 4.17.4，导致即使根目录有更新的 Lodash，npm 仍然会在该包的 node_modules 下嵌套安装一个旧版本。
+
+方法1：卸载老旧不再维护的 quill‑image‑resize‑module
+全局源码搜索关键词：quill-image-resize-module、ImageResize、modules/imageResize、imageResize，如果搜不到任何匹配，则没有引用这个包，项目没有使用该插件，可以直接执行命令卸载
+卸载：npm uninstall quill-image-resize-module
+
+方法2：替换成quill-image-resize-module-rebuild
+它主要是为了解决原版模块在现代前端工程化中的导出（export）问题。
+卸载原包：npm uninstall quill-image-resize-module
+安装 rebuild 版本：npm install quill-image-resize-module-rebuild
+
+方法3：升级迁移 
+1. @mgreminger/quill-image-resize-module：这是官方原版的一个活跃分支，专为 Quill v2 设计，由社区积极维护
+npm install @mgreminger/quill-image-resize-module
+
+2. quill-image-resizor：这是一个为 Quill v2 重构的流行分支，支持图片、视频、iframe 等多种元素的缩放
+npm install quill-image-resizor
+
+讯小通vue3-xxt 更新lodash 之后，项目的依赖树如下：
