@@ -1,26 +1,65 @@
-PS E:\Original Code\FMS\FMS> ng update @angular/core
-Your global Angular CLI version (8.3.29) is greater than your local 
-version (8.3.8). The local Angular CLI version is used.
- 
-To disable this warning use "ng config -g cli.warnings.versionMismatch false".
-Using package manager: 'npm' 
-Collecting installed dependencies...
-Found 104 dependencies. 
-Fetching dependency metadata from registry...
-                  Package "codelyzer" has an incompatible peer dependency to "@angular/core" 
-(requires ">=2.3.1 <10.0.0 || >9.0.0-beta <10.0.0 || >9.1.0-beta <10.0.0 || >9.2.0-beta <10.0.0" (extended), would install "22.1.3").
-                  Package "ngx-image-gallery" has an incompatible peer dependency to "zone.js" (requires "^0.8.4", would install "0.16.2").
-                  Package "ngx-image-gallery" has an incompatible peer dependency to "rxjs" (requires "^5.1.0", would install "7.8.2").
-                  Package "codelyzer" has an incompatible peer dependency to "@angular/compiler" (requires ">=2.3.1 <10.0.0 || >9.0.0-beta <10.0.0 || >9.1.0-beta <10.0.0 || >9.2.0-beta <10.0.0" (extended), would install "22.1.3").
-                  Package "@angular/material" has an incompatible peer dependency to "@angular/forms" (requires "^12.0.0 || ^13.0.0-0" (extended), would install "22.1.3").
-                  Package "ngx-trend" has an incompatible peer dependency to "@angular/animations" (requires ">=8.0.0 <9.0.0" (extended), would install "22.1.3").
-                  Package "ng-zorro-antd" has an incompatible peer dependency to "@angular/platform-browser" (requires "^8.0.0" (extended), would install "22.1.3").
-                  Package "@swimlane/ngx-charts" has an incompatible peer dependency to "@angular/platform-browser-dynamic" (requires "7.x || 8.x" (extended), would install "22.1.3").   
-                  Package "ng-zorro-antd" has an incompatible peer dependency to "@angular/router" (requires "^8.0.0" (extended), would install "22.1.3").
-                  Package "@angular-devkit/build-angular" has an incompatible peer dependency to "@angular/compiler-cli" (requires "^8.0.0-beta.0 || ^8.1.0-beta.0 || ^8.2.0-beta.0 || ^8.3.0-beta.0 || ^8.4.0-beta.0 || >=9.0.0-beta < 9" (extended), would install "22.1.3").        
-                  Package "ngx-cookie-service" has an incompatible peer dependency to "@angular/common" (requires "^11.0.2" (extended), would install "22.1.3").
-                  Package "@angular-devkit/build-angular" has an incompatible peer dependency to "typescript" (requires ">=3.1 < 3.6", would install "6.0.3").
-Incompatible peer dependencies found.
-Peer dependency warnings when installing dependencies means that those dependencies might not work correctly together.
-You can use the '--force' option to ignore incompatible peer dependencies and instead address these warnings later.
+PS E:\Original Code\FMS\FMS> npm install @angular/material@8.2.3 @angular/cdk@8.2.3 --save   
+npm ERR! code ERESOLVE 
+npm ERR! ERESOLVE could not resolve 
+npm ERR!
+npm ERR! While resolving: ng-zorro-antd@8.3.1
+npm ERR! Found: rxjs@6.4.0
+npm ERR! node_modules/rxjs
+npm ERR!   rxjs@"6.4.0" from @angular-devkit/architect@0.803.8
+npm ERR!   node_modules/@angular-devkit/architect
+npm ERR!     @angular-devkit/architect@"0.803.8" from @angular-devkit/build-angular@0.803.8  
+npm ERR!     node_modules/@angular-devkit/build-angular 
+npm ERR!       dev @angular-devkit/build-angular@"~0.803.1" from the root project
+npm ERR!     @angular-devkit/architect@"0.803.8" from @angular-devkit/build-webpack@0.803.8  
+npm ERR!     node_modules/@angular-devkit/build-webpack
+npm ERR!       @angular-devkit/build-webpack@"0.803.8" from @angular-devkit/build-angular@0.803.8
+npm ERR!       node_modules/@angular-devkit/build-angular
+npm ERR!         dev @angular-devkit/build-angular@"~0.803.1" from the root project
+npm ERR!     1 more (@angular/cli)
+npm ERR!   rxjs@"6.4.0" from @angular-devkit/build-angular@0.803.8
+npm ERR!   node_modules/@angular-devkit/build-angular
+npm ERR!     dev @angular-devkit/build-angular@"~0.803.1" from the root project
+npm ERR!   17 more (@angular-devkit/build-webpack, @angular-devkit/core, ...)
+npm ERR!
+npm ERR! Could not resolve dependency:
+npm ERR! peer rxjs@"^6.5.2" from ng-zorro-antd@8.3.1
+npm ERR! node_modules/ng-zorro-antd
+npm ERR!   ng-zorro-antd@"^8.2.1" from @delon/theme@8.4.0 
+npm ERR!   node_modules/@delon/theme
+npm ERR!     @delon/theme@"^8.4.0" from @delon/abc@8.4.0
+npm ERR!     node_modules/@delon/abc
+npm ERR!       @delon/abc@"^8.4.0" from great-zorroutils@8.0.1-alpha3
+npm ERR!       node_modules/great-zorroutils
+npm ERR!       1 more (the root project)
+npm ERR!     4 more (@delon/chart, @delon/form, great-zorroutils, the root project)
+npm ERR!   ng-zorro-antd@"^8.2.1" from great-zorroutils@8.0.1-alpha3
+npm ERR!   node_modules/great-zorroutils
+npm ERR!     great-zorroutils@"^8.0.1-alpha3" from the root project
+npm ERR!   1 more (the root project)
+npm ERR!
+npm ERR! Conflicting peer dependency: rxjs@6.6.7
+npm ERR! node_modules/rxjs
+npm ERR!   peer rxjs@"^6.5.2" from ng-zorro-antd@8.3.1
+npm ERR!   node_modules/ng-zorro-antd
+npm ERR!     ng-zorro-antd@"^8.2.1" from @delon/theme@8.4.0
+npm ERR!     node_modules/@delon/theme
+npm ERR!       @delon/theme@"^8.4.0" from @delon/abc@8.4.0
+npm ERR!       node_modules/@delon/abc
+npm ERR!         @delon/abc@"^8.4.0" from great-zorroutils@8.0.1-alpha3
+npm ERR!         node_modules/great-zorroutils
+npm ERR!         1 more (the root project)
+npm ERR!       4 more (@delon/chart, @delon/form, great-zorroutils, the root project)        
+npm ERR!     ng-zorro-antd@"^8.2.1" from great-zorroutils@8.0.1-alpha3
+npm ERR!     node_modules/great-zorroutils
+npm ERR!       great-zorroutils@"^8.0.1-alpha3" from the root project
+npm ERR!     1 more (the root project)
+npm ERR!
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force, or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR!
+npm ERR! See C:\Users\HH0023768\AppData\Local\npm-cache\eresolve-report.txt for a full report.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T10_47_19_052Z-debug-0.log
 PS E:\Original Code\FMS\FMS>  
