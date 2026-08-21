@@ -1,3 +1,1 @@
-Get-ChildItem .\src -Recurse -File | Where-Object {
-    $_.Name -match 'Bed.*Shift|Shift.*Bed'
-} | Select-Object FullName
+git diff -- package.json package-lock.json
