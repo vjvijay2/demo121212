@@ -1,63 +1,40 @@
+PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1> npm install lodash@4.18.1 --legacy-peer-deps
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'conf@15.0.2',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'dot-prop@10.1.0',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'tagged-tag@1.0.0',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'type-fest@5.3.1',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
 
-PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1> npm install lodash@4.18.1
-npm error code ERESOLVE
-npm error ERESOLVE could not resolve
-npm error
-npm error While resolving: @material-ui/core@4.12.4
-npm error Found: @types/react@19.2.7
-npm error node_modules/@types/react
-npm error   peerOptional @types/react@"*" from @material-ui/types@5.1.0   
-npm error   node_modules/@material-ui/types
-npm error     @material-ui/types@"5.1.0" from @material-ui/core@4.12.4    
-npm error     node_modules/@material-ui/core
-npm error       peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
-npm error       node_modules/@material-ui/pickers
-npm error         @material-ui/pickers@"^3.3.10" from the root project    
-npm error       1 more (the root project)
-npm error     @material-ui/types@"5.1.0" from @material-ui/styles@4.11.5  
-npm error     node_modules/@material-ui/styles
-npm error       @material-ui/styles@"^4.11.5" from @material-ui/core@4.12.4
-npm error       node_modules/@material-ui/core
-npm error         peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
-npm error         node_modules/@material-ui/pickers
-npm error         1 more (the root project)
-npm error   peerOptional @types/react@"^17.0.0 || ^18.0.0 || ^19.0.0" from @mui/base@5.0.0-beta.70
-npm error   node_modules/@mui/base
-npm error     @mui/base@"^5.0.0-beta.22" from @mui/x-date-pickers@6.20.2  
-npm error     node_modules/@mui/x-date-pickers
-npm error       @mui/x-date-pickers@"6.20.2" from @mui/x-date-pickers-pro@6.20.2
-npm error       node_modules/@mui/x-date-pickers-pro
-npm error         @mui/x-date-pickers-pro@"^6.10.0" from the root project 
-npm error       1 more (the root project)
-npm error     @mui/base@"^5.0.0-beta.22" from @mui/x-date-pickers-pro@6.20.2
-npm error     node_modules/@mui/x-date-pickers-pro
-npm error       @mui/x-date-pickers-pro@"^6.10.0" from the root project   
-npm error     1 more (@mui/x-tree-view)
-npm error   12 more (@mui/utils, @mui/icons-material, @mui/material, ...) 
-npm error
-npm error Could not resolve dependency:
-npm error peerOptional @types/react@"^16.8.6 || ^17.0.0" from @material-ui/core@4.12.4
-npm error node_modules/@material-ui/core
-npm error   peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
-npm error   node_modules/@material-ui/pickers
-npm error     @material-ui/pickers@"^3.3.10" from the root project        
-npm error   @material-ui/core@"^4.12.4" from the root project
-npm error
-npm error Conflicting peer dependency: @types/react@17.0.93
-npm error node_modules/@types/react
-npm error   peerOptional @types/react@"^16.8.6 || ^17.0.0" from @material-ui/core@4.12.4
-npm error   node_modules/@material-ui/core
-npm error     peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
-npm error     node_modules/@material-ui/pickers
-npm error       @material-ui/pickers@"^3.3.10" from the root project      
-npm error     @material-ui/core@"^4.12.4" from the root project
-npm error
-npm error Fix the upstream dependency conflict, or retry
-npm error this command with --force or --legacy-peer-deps
-npm error to accept an incorrect (and potentially broken) dependency resolution.
-npm error
-npm error
-npm error For a full report see:
-npm error C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T08_43_18_726Z-eresolve-report.txt
-npm error A complete log of this run can be found in: C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T08_43_18_726Z-debug-0.log
-PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1>
+changed 1 package, and audited 1903 packages in 22s
+
+314 packages are looking for funding
+  run `npm fund` for details
+
+71 vulnerabilities (14 low, 17 moderate, 36 high, 4 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1>  
