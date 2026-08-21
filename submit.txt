@@ -1,1 +1,1 @@
-Get-ChildItem .\src -Recurse -File | Select-String -Pattern "Dorm Master|Room Master|Bed Master|Check-In|Check-Out|Dorm Shifting"
+Get-ChildItem .\src -Recurse -File | Select-String -Pattern "MiniDrawer"
