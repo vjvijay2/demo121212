@@ -1,3 +1,1 @@
-Get-ChildItem .\src -Recurse -File | Where-Object {
-    $_.Name -match 'Dorm|Floor|Room|Bed|Check'
-} | Select-Object FullName
+Get-ChildItem .\src\Components -Recurse -File -Include *.js,*.jsx | Select-Object FullName
