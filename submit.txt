@@ -1,1 +1,1 @@
-Get-ChildItem .\src -Recurse -File | Select-String -Pattern "MiniDrawer"
+Get-ChildItem .\src\Components\Homepage\Home.js | Select-String -Pattern "navigate|Navigate|Link|href|DormMaster|RoomMaster|BedMaster|Check-In|Check-Out"
