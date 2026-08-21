@@ -1,549 +1,63 @@
 
-PS E:\NPISP-Project\LMS-260825> npm start
-
-> ng-alain-pro@0.0.0 start
-> npm run color-less && ng serve -o --host 0.0.0.0 --port 4208
- 
-
-> ng-alain-pro@0.0.0 color-less
-> node scripts/color-less.js
-
-(node:5844) [DEP0128] DeprecationWarning: Invalid 'main' field in 'E:\NPISP-Project\LMS-260825\node_modules\less-bundle-promise\package.json' of 'build/index.js'. Please either fix that or report it to the module author
-(Use `node --trace-deprecation ...` to show where the warning was created)
-�🌈 Theme generated successfully. OutputFile: E:\NPISP-Project\LMS-260825\src\assets\alain-pro.les
-Browserslist: caniuse-lite is outdated. Please run next command `npm update` 
-WARNING: This is a simple server for use in testing or debugging Angular applications 
-locally. It hasn't been reviewed for security issues.
-
-Binding this server to an open connection can result in compromising your application or
-computer. Using a different host than the one passed to the "--host" flag might result in
-websocket connection issues. You might need to use "--disableHostCheck" if that's the
-case.
-10% building 3/3 modules 0 activei ｢wds｣: Project is running at http://0.0.0.0:4208/webpack-dev-server/ 
-i ｢wds｣: webpack output is served from /
-i ｢wds｣: 404s will fallback to //index.html
-
-chunk {main} main.js, main.js.map (main) 1.99 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 122 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
-chunk {scripts} scripts.js, scripts.js.map (scripts) 2.43 MB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 2.74 MB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 339 kB [initial] [rendered]
-Date: 2026-08-21T08:23:12.196Z - Hash: 447b90726f22669b3bcc - Time: 13594ms
-
-ERROR in node_modules/@delon/abc/reuse-tab/reuse-tab-context.service.d.ts:1:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-1 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/@delon/abc/table/table.component.d.ts:189:47 - error TS2307: Cannot find module '@angular/cdk/scrolling'.
-
-189     readonly cdkVirtualScrollViewport: import("@angular/cdk/scrolling").CdkVirtualScrollViewport;
-                                                  ~~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/affix/nz-affix.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/anchor/nz-anchor-link.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/anchor/nz-anchor.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/auto-complete/nz-autocomplete-trigger.directive.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/avatar/nz-avatar.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/back-top/nz-back-top.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/badge/nz-badge.component.d.ts:8:33 - error TS2307: Cannot find module '@angular/cdk/observers'.
-
-8 import { ContentObserver } from '@angular/cdk/observers';
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/button/nz-button.component.d.ts:8:33 - error TS2307: Cannot find module '@angular/cdk/observers'.
-
-8 import { ContentObserver } from '@angular/cdk/observers';
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/carousel/nz-carousel.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/cascader/nz-cascader.component.d.ts:8:93 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay, ConnectedOverlayPositionChange, ConnectionPositionPair } from '@angular/cdk/overlay';                                                                                              ~~~~~~~~~~~~~~~~~~~~~~ 
-node_modules/ng-zorro-antd/checkbox/nz-checkbox-group.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/checkbox/nz-checkbox.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/comment/nz-comment-cells.d.ts:8:49 - error TS2307: Cannot find module '@angular/cdk/portal'.
-
-8 import { CdkPortalOutlet, TemplatePortal } from '@angular/cdk/portal';
-                                                  ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/core/overlay/nz-connected-overlay.d.ts:8:37 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay } from '@angular/cdk/overlay';
-                                      ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/core/overlay/overlay-position.d.ts:8:72 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { ConnectedOverlayPositionChange, ConnectionPositionPair } from '@angular/cdk/overlay';
-                                                                         ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/date-picker/picker.component.d.ts:8:111 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedOverlayPositionChange, ConnectionPositionPair } from '@angular/cdk/overlay';
-                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/descriptions/nz-descriptions.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-8 import { MediaMatcher } from '@angular/cdk/layout';
-                               ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/descriptions/nz-descriptions.component.d.ts:9:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-9 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/drawer/nz-drawer.component.d.ts:9:45 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-9 import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
-                                              ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/drawer/nz-drawer.component.d.ts:10:64 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-10 import { Overlay, OverlayKeyboardDispatcher, OverlayRef } from '@angular/cdk/overlay';
-                                                                  ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/drawer/nz-drawer.component.d.ts:11:49 - error TS2307: Cannot find module '@angular/cdk/portal'.
-
-11 import { CdkPortalOutlet, TemplatePortal } from '@angular/cdk/portal';
-                                                   ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/drawer/nz-drawer.service.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-context-menu.service.d.ts:9:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-9 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-dropdown-context.component.d.ts:8:48 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
-                                                 ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-dropdown.component.d.ts:8:72 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { ConnectedOverlayPositionChange, ConnectionPositionPair } from '@angular/cdk/overlay';
-                                                                         ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-dropdown.directive.d.ts:8:64 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { ConnectionPositionPair, Overlay, OverlayConfig } from '@angular/cdk/overlay';
-                                                                 ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-dropdown.directive.d.ts:9:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-9 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/dropdown/nz-dropdown.service.d.ts:9:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-9 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/empty/nz-embed-empty.component.d.ts:8:24 - error TS2307: Cannot find module '@angular/cdk/portal'.
-
-8 import { Portal } from '@angular/cdk/portal';
-                         ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/form/nz-form-item.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-8 import { MediaMatcher } from '@angular/cdk/layout';
-                               ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/form/nz-form-item.component.d.ts:9:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-9 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/grid/nz-row.directive.d.ts:9:30 - error TS2307: Cannot find module '@angular/cdk/layout'. 
-
-9 import { MediaMatcher } from '@angular/cdk/layout';
-                               ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/grid/nz-row.directive.d.ts:10:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-10 import { Platform } from '@angular/cdk/platform';
-                            ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/icon/nz-icon.directive.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/input-number/nz-input-number.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/input/nz-autosize.directive.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/layout/nz-sider.component.d.ts:9:30 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-9 import { MediaMatcher } from '@angular/cdk/layout';
-                               ~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/layout/nz-sider.component.d.ts:10:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-10 import { Platform } from '@angular/cdk/platform';
-                            ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/mention/nz-mention.component.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/menu/nz-submenu.component.d.ts:8:69 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay, ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
-                                                                      ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/menu/nz-submenu.component.d.ts:9:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-9 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/menu/nz-submenu.component.d.ts:36:30 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-36     overlayPositions: import("@angular/cdk/overlay").ConnectionPositionPair[];
-                                ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/message/nz-message-base.service.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/message/nz-message.service.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/modal/nz-modal.component.d.ts:8:34 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-8 import { FocusTrapFactory } from '@angular/cdk/a11y';
-                                   ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/modal/nz-modal.component.d.ts:9:64 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-9 import { Overlay, OverlayKeyboardDispatcher, OverlayRef } from '@angular/cdk/overlay';
-                                                                 ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/modal/nz-modal.service.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/modal/nz-modal.type.d.ts:8:28 - error TS2307: Cannot find module '@angular/cdk/overlay'.  
-
-8 import { OverlayRef } from '@angular/cdk/overlay'; 
-                             ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/notification/nz-notification.service.d.ts:8:25 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { Overlay } from '@angular/cdk/overlay';
-                          ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/radio/nz-radio-button.component.d.ts:9:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-9 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/radio/nz-radio.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/select/nz-select.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/select/nz-select.component.d.ts:9:87 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-9 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedOverlayPositionChange } from '@angular/cdk/overlay';      
-                                                                                        ~~~~~~~~~~~~~~~~~~~~~~       
-node_modules/ng-zorro-antd/select/nz-select.component.d.ts:10:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-10 import { Platform } from '@angular/cdk/platform';
-                            ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/slider/nz-slider.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/statistic/nz-countdown.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/switch/nz-switch.component.d.ts:8:30 - error TS2307: Cannot find module '@angular/cdk/a11y'.
-
-8 import { FocusMonitor } from '@angular/cdk/a11y';
-                               ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/table/nz-table.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/table/nz-table.component.d.ts:9:42 - error TS2307: Cannot find module '@angular/cdk/scrolling'.
-
-9 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-                                           ~~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/tabs/nz-tabs-nav.component.d.ts:9:43 - error TS2307: Cannot find module '@angular/cdk/bidi'.
-
-9 import { Direction, Directionality } from '@angular/cdk/bidi';
-                                            ~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/tabs/nz-tabs-nav.component.d.ts:10:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-10[0m import { Platform } from '@angular/cdk/platform'; 
-                            ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/time-picker/nz-time-picker.component.d.ts:8:58 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkOverlayOrigin, ConnectionPositionPair } from '@angular/cdk/overlay';
-                                                           ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/timeline/nz-timeline.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/tooltip/base/nz-tooltip-base-legacy.component.d.ts:8:37 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay } from '@angular/cdk/overlay';
-                                      ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/tooltip/base/nz-tooltip-base.component.d.ts:8:111 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedOverlayPositionChange, ConnectionPositionPair } from '@angular/cdk/overlay';
-                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/tree-select/nz-tree-select.component.d.ts:8:87 - error TS2307: Cannot find module '@angular/cdk/overlay'.
-
-8 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedOverlayPositionChange } from '@angular/cdk/overlay';      
-                                                                                        ~~~~~~~~~~~~~~~~~~~~~~ 
-node_modules/ng-zorro-antd/typography/nz-typography.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-node_modules/ng-zorro-antd/upload/nz-upload-list.component.d.ts:8:26 - error TS2307: Cannot find module '@angular/cdk/platform'.
-
-8 import { Platform } from '@angular/cdk/platform';
-                           ~~~~~~~~~~~~~~~~~~~~~~~
-src/app/app.module.ts:11:32 - error TS2307: Cannot find module '@angular/cdk/drag-drop'.
-
-11 import { DragDropModule } from '@angular/cdk/drag-drop';
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/app.module.ts:97:30 - error TS2307: Cannot find module './routes/routes.module'.
-
-97 import { RoutesModule } from './routes/routes.module';
-                                ~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/app.module.ts:99:32 - error TS2307: Cannot find module './routes/a_Public_net/Public_net.service'.
-
-99 import {PublicNetService} from "./routes/a_Public_net/Public_net.service";
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/layout.module.ts:2:49 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-2 import { LayoutModule as CDKLayoutModule } from '@angular/cdk/layout';
-                                                  ~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/menu/menu.component.ts:13:32 - error TS2307: Cannot find module '../../../../routes/a_Public_net/Public_net.service'.
-
-13 import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service";
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/search/search.component.ts:13:32 - error TS2307: Cannot find module '../../../../routes/a_Public_net/Public_net.service'.
-
-13 import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service"
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/searchMenu/searchMenu.component.ts:6:32 - error TS2307: Cannot find module '../../../../routes/a_Public_net/Public_net.service'.
-
-6 import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service"
-                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/tabs/tabs.component.ts:25:50 - error TS2307: Cannot find module '@angular/cdk/layout'. 
-
-25 import { BreakpointObserver, MediaMatcher } from "@angular/cdk/layout";
-                                                    ~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/tabs/tabs.component.ts:39:34 - error TS2307: Cannot find module '../../../../routes/a_Public_net/Public_net.service'.
-
-39 import { PublicNetService } from "../../../../routes/a_Public_net/Public_net.service";
-                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/components/user/user.component.ts:12:32 - error TS2307: Cannot find module '../../../../routes/a_Public_net/Public_net.service'.
-
-12 import {PublicNetService} from "../../../../routes/a_Public_net/Public_net.service";
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/pro.component.ts:17:50 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-17 import { BreakpointObserver, MediaMatcher } from '@angular/cdk/layout';
-                                                    ~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/pro.component.ts:32:32 - error TS2307: Cannot find module '../../routes/a_Public_net/Public_net.service'.
-
-32 import {PublicNetService} from "../../routes/a_Public_net/Public_net.service";
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/pro.component.ts:34:26 - error TS2307: Cannot find module '../../routes/a_Public_net/Url'.        
-
-34 import {serviceUrl} from "../../routes/a_Public_net/Url";
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/layout/pro/pro.service.ts:3:36 - error TS2307: Cannot find module '@angular/cdk/layout'.
-
-3 import { BreakpointObserver } from '@angular/cdk/layout';
-                                     ~~~~~~~~~~~~~~~~~~~~~
-src/app/routes/passport/lock/lock.component.ts:6:32 - error TS2307: Cannot find module '../../a_Public_net/Public_net.service'.
-
-6 import {PublicNetService} from "../../a_Public_net/Public_net.service"
-                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/routes/passport/login/login.component.ts:19:32 - error TS2307: Cannot find module '../../a_Public_net/Public_net.service'.
-
-19 import {PublicNetService} from "../../a_Public_net/Public_net.service"; 
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/routes/passport/login/login.component.ts:21:41 - error TS2307: Cannot find module '../../a_Public_net/Url'.  
-
-21 import {serviceUrl,ouacServiceUrl} from "../../a_Public_net/Url";
-                                           ~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/shared/components/img/img.component.ts:6:46 - error TS2307: Cannot find module '@angular/cdk/drag-drop'.     
- 
-6 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-                                               ~~~~~~~~~~~~~~~~~~~~~~~~
-src/app/shared/shared.module.ts:19:32 - error TS2307: Cannot find module '@angular/cdk/drag-drop'.
-
-19 import { DragDropModule } from '@angular/cdk/drag-drop';
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~
-
-** Angular Live Development Server is listening on 0.0.0.0:4208, open your browser on http://localhost:4208/ **      
-i ｢wdm｣: Failed to compile.
-
-
-{
-  "name": "ng-alain-pro",
-  "version": "0.0.0",
-  "description": "Ng-alain business theme, ng-zorro-antd admin panel front-end framework",
-  "author": "cipchk <cipchk@qq.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ng-alain/ng-alain.git"
-  },
-  "homepage": "https://e.ng-alain.com/theme/pro",
-  "scripts": {
-    "ng": "ng",
-    "start": "npm run color-less && ng serve -o --host 0.0.0.0 --port 4208",
-    "hmr": "npm run color-less && ng serve -c=hmr --host=0.0.0.0",
-    "build": "npm run color-less && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --output-Path ./dist-LMS && javascript-obfuscator ./dist-LMS --output ./dist-LMS --compact true --self-defending true",
-    "buildpublish": "npm run color-less && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --output-Path d:/publish/dist-LMS",
-    "analyze": "node --max_old_space_size=5120 ./node_modules/@angular/cli/bin/ng build --prod --stats-json",
-    "lint": "npm run lint:ts && npm run lint:style",
-    "lint:ts": "tslint -p tsconfig.app.json -c tslint.json \"src/**/*.ts\" --fix",
-    "lint:style": "stylelint \"src/**/*.less\" --syntax less --fix",
-    "lint-staged": "lint-staged",
-    "tslint-check": "tslint-config-prettier-check ./tslint.json",
-    "e2e": "ng e2e",
-    "test": "ng test --watch",
-    "test-coverage": "ng test --code-coverage --watch=false",
-    "color-less": "node scripts/color-less.js",
-    "icon": "ng g ng-alain:plugin icon"
-  },
-  "dependencies": {
-    "@agm/core": "^1.0.0-beta.5",
-    "@angular/animations": "~8.2.3",
-    "@angular/cdk": "^8.2.3",
-    "@angular/common": "~8.2.3",
-    "@angular/compiler": "~8.2.3",
-    "@angular/core": "~8.2.3",
-    "@angular/forms": "~8.2.3",
-    "@angular/material": "^12.2.1",
-    "@angular/platform-browser": "~8.2.3",
-    "@angular/platform-browser-dynamic": "~8.2.3",
-    "@angular/router": "~8.2.3",
-    "@antv/data-set": "^0.10.2",
-    "@antv/g2": "^3.5.3",
-    "@antv/g2-plugin-slider": "^2.1.1",
-    "@delon/abc": "^8.4.0",
-    "@delon/acl": "^8.4.0",
-    "@delon/auth": "^8.4.0",
-    "@delon/cache": "^8.4.0",
-    "@delon/chart": "^8.4.0",
-    "@delon/form": "^8.4.0",
-    "@delon/mock": "^8.4.0",
-    "@delon/theme": "^8.4.0",
-    "@delon/util": "^8.4.0",
-    "@fullcalendar/core": "^4.3.0",
-    "@fullcalendar/daygrid": "^4.3.0",
-    "@fullcalendar/interaction": "^4.3.0",
-    "@fullcalendar/list": "^4.3.0",
-    "@fullcalendar/timegrid": "^4.3.0",
-    "@ngx-translate/core": "^11.0.1",
-    "@ngx-translate/http-loader": "^4.0.0",
-    "@swimlane/ngx-charts": "^12.0.1",
-    "ajv": "^6.10.2",
-    "angular-baidu-maps": "^3.0.0",
-    "classlist.js": "^1.1.20150312",
-    "crypto-js": "^3.1.9-1",
-    "element-closest": "^3.0.1",
-    "file-saver": "^2.0.2",
-    "great-zorroutils": "^8.0.1-alpha3",
-    "inversify": "^8.1.0",
-    "jquery": "^3.6.0",
-    "jquery-ui": "^1.13.2",
-    "js-base64": "^2.5.1",
-    "jspdf": "^2.5.1",
-    "masonry-layout": "^4.2.2",
-    "moment": "^2.29.4",
-    "ng-zorro-antd": "^8.2.1",
-    "ngx-cookie-service": "^11.0.2",
-    "ngx-countdown": "^3.2.0",
-    "ngx-image-gallery": "^1.3.1",
-    "ngx-trend": "^4.0.0",
-    "perfect-scrollbar": "^1.4.0",
-    "qrious": "^4.0.2",
-    "quill": "^1.3.6",
-    "quill-image-resize-module": "^3.0.0",
-    "rxjs": "~6.4.0",
-    "screenfull": "^4.2.1",
-    "tslib": "^1.10.0",
-    "wangeditor": "^4.7.12",
-    "zone.js": "~0.9.1"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "~0.803.1",
-    "@angular/cli": "~8.3.1",
-    "@angular/compiler-cli": "~8.2.3",
-    "@angular/language-service": "~8.2.3",
-    "@angularclass/hmr": "^2.1.3",
-    "@delon/testing": "^8.4.0",
-    "@types/jasmine": "~3.3.8",
-    "@types/jasminewd2": "~2.0.3",
-    "@types/jquery": "3.5.5",
-    "@types/js-base64": "^2.3.1",
-    "@types/jszip": "^3.1.6",
-    "@types/mockjs": "^1.0.2",
-    "@types/node": "~8.9.4",
-    "antd-theme-generator": "^1.1.7",
-    "codecov": "^3.5.0",
-    "codelyzer": "^5.0.0",
-    "husky": "^3.0.4",
-    "jasmine-core": "~3.4.0",
-    "jasmine-spec-reporter": "~4.2.1",
-    "javascript-obfuscator": "^4.1.1",
-    "karma": "~4.1.0",
-    "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "~2.0.1",
-    "karma-jasmine": "~2.0.1",
-    "karma-jasmine-html-reporter": "1.4.2",
-    "less-bundle-promise": "^1.0.7",
-    "lint-staged": "^8.2.1",
-    "mockjs": "^1.0.1-beta3",
-    "ng-alain": "^8.4.0",
-    "ng-alain-codelyzer": "^0.0.1",
-    "prettier": "^1.18.2",
-    "prettier-stylelint": "^0.4.2",
-    "protractor": "~5.4.0",
-    "stylelint": "^10.1.0",
-    "stylelint-config-prettier": "^5.2.0",
-    "stylelint-config-rational-order": "^0.1.2",
-    "stylelint-config-standard": "^18.3.0",
-    "stylelint-declaration-block-no-ignored-properties": "^2.1.0",
-    "stylelint-order": "^3.0.0",
-    "ts-node": "~7.0.0",
-    "tslint": "~5.15.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.5.3",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "xlsx": "^0.15.6"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint-staged"
-    }
-  },
-  "lint-staged": {
-    "linters": {
-      "src/**/*.ts": [
-        "npm run lint:ts",
-        "git add"
-      ]
-    },
-    "ignore": [
-      "src/assets/*"
-    ]
-  },
-  "private": true,
-  "theme": {
-    "name": "pro",
-    "version": "8.2.0"
-  }
-}
+PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1> npm install lodash@4.18.1
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: @material-ui/core@4.12.4
+npm error Found: @types/react@19.2.7
+npm error node_modules/@types/react
+npm error   peerOptional @types/react@"*" from @material-ui/types@5.1.0   
+npm error   node_modules/@material-ui/types
+npm error     @material-ui/types@"5.1.0" from @material-ui/core@4.12.4    
+npm error     node_modules/@material-ui/core
+npm error       peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
+npm error       node_modules/@material-ui/pickers
+npm error         @material-ui/pickers@"^3.3.10" from the root project    
+npm error       1 more (the root project)
+npm error     @material-ui/types@"5.1.0" from @material-ui/styles@4.11.5  
+npm error     node_modules/@material-ui/styles
+npm error       @material-ui/styles@"^4.11.5" from @material-ui/core@4.12.4
+npm error       node_modules/@material-ui/core
+npm error         peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
+npm error         node_modules/@material-ui/pickers
+npm error         1 more (the root project)
+npm error   peerOptional @types/react@"^17.0.0 || ^18.0.0 || ^19.0.0" from @mui/base@5.0.0-beta.70
+npm error   node_modules/@mui/base
+npm error     @mui/base@"^5.0.0-beta.22" from @mui/x-date-pickers@6.20.2  
+npm error     node_modules/@mui/x-date-pickers
+npm error       @mui/x-date-pickers@"6.20.2" from @mui/x-date-pickers-pro@6.20.2
+npm error       node_modules/@mui/x-date-pickers-pro
+npm error         @mui/x-date-pickers-pro@"^6.10.0" from the root project 
+npm error       1 more (the root project)
+npm error     @mui/base@"^5.0.0-beta.22" from @mui/x-date-pickers-pro@6.20.2
+npm error     node_modules/@mui/x-date-pickers-pro
+npm error       @mui/x-date-pickers-pro@"^6.10.0" from the root project   
+npm error     1 more (@mui/x-tree-view)
+npm error   12 more (@mui/utils, @mui/icons-material, @mui/material, ...) 
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional @types/react@"^16.8.6 || ^17.0.0" from @material-ui/core@4.12.4
+npm error node_modules/@material-ui/core
+npm error   peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
+npm error   node_modules/@material-ui/pickers
+npm error     @material-ui/pickers@"^3.3.10" from the root project        
+npm error   @material-ui/core@"^4.12.4" from the root project
+npm error
+npm error Conflicting peer dependency: @types/react@17.0.93
+npm error node_modules/@types/react
+npm error   peerOptional @types/react@"^16.8.6 || ^17.0.0" from @material-ui/core@4.12.4
+npm error   node_modules/@material-ui/core
+npm error     peer @material-ui/core@"^4.0.0" from @material-ui/pickers@3.3.11
+npm error     node_modules/@material-ui/pickers
+npm error       @material-ui/pickers@"^3.3.10" from the root project      
+npm error     @material-ui/core@"^4.12.4" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T08_43_18_726Z-eresolve-report.txt
+npm error A complete log of this run can be found in: C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T08_43_18_726Z-debug-0.log
+PS E:\NPISP-Project\DMS FRONTEND\New folder\Dorm V1>
