@@ -1,89 +1,687 @@
-PS E:\NPISP-Project\LMS-260825> npm ls @angular/core @angular/cdk @angular/material ng-zorro-antd @delon/abc wangeditor
-ng-alain-pro@0.0.0 E:\NPISP-Project\LMS-260825 
-├─┬ @agm/core@1.0.0
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/animations@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/common@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├── @angular/core@8.2.9
-├─┬ @angular/forms@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/platform-browser-dynamic@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/platform-browser@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/router@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├── @delon/abc@8.4.0
-│ └── ng-zorro-antd@8.3.1 deduped
-├─┬ @ngx-translate/core@11.0.1
-│ └── @angular/core@8.2.9 deduped
-├─┬ @swimlane/ngx-charts@12.0.1
-│ └── @angular/core@8.2.9 deduped
-├─┬ codelyzer@5.1.2
-│ └── @angular/core@8.2.9 deduped
-├─┬ great-zorroutils@8.0.1-alpha3
-│ ├── @delon/abc@8.4.0 deduped
-│ └── ng-zorro-antd@8.3.1 deduped
-├─┬ ng-zorro-antd@8.3.1
-│ ├── @angular/core@8.2.9 deduped
-│ └─┬ @ant-design/icons-angular@8.0.3
-│   └── @angular/core@8.2.9 deduped invalid: "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-├─┬ ngx-cookie-service@11.0.2
-├─┬ ngx-image-gallery@1.3.1
-│ └── @angular/core@8.2.9 deduped invalid: "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-├─┬ ngx-trend@4.0.0
-│ └── @angular/core@8.2.9 deduped invalid: "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-└── wangeditor@4.7.11 invalid: "^4.7.12" from the root project
-
-npm ERR! code ELSPROBLEMS
-npm ERR! invalid: wangeditor@4.7.11 E:\NPISP-Project\LMS-260825\node_modules\wangeditor
-npm ERR! invalid: @angular/core@8.2.9 E:\NPISP-Project\LMS-260825\node_modules\@angular\core
+package-lock.json:13858:      "resolved": "http://localhost:4873/promise-inflight/-/promise-inflight-1.0.1.tgz",     
+package-lock.json:13864:      "resolved": "http://localhost:4873/promise-retry/-/promise-retry-1.1.1.tgz",
+package-lock.json:13874:          "resolved": "http://localhost:4873/retry/-/retry-0.10.1.tgz",
+package-lock.json:13882:      "resolved": "http://localhost:4873/property-expr/-/property-expr-1.5.1.tgz", 
+package-lock.json:13888:      "resolved": "http://localhost:4873/protoduck/-/protoduck-5.0.1.tgz",
+package-lock.json:13897:      "resolved": "http://localhost:4873/protractor/-/protractor-5.4.2.tgz",
+package-lock.json:13920:          "resolved": "http://localhost:4873/del/-/del-2.2.2.tgz",
+package-lock.json:13935:          "resolved": "http://localhost:4873/globby/-/globby-5.0.0.tgz",
+package-lock.json:13949:          "resolved": "http://localhost:4873/is-path-cwd/-/is-path-cwd-1.0.0.tgz",
+package-lock.json:13955:          "resolved": "http://localhost:4873/is-path-in-cwd/-/is-path-in-cwd-1.0.1.tgz",     
+package-lock.json:13964:          "resolved": "http://localhost:4873/is-path-inside/-/is-path-inside-1.0.1.tgz",     
+package-lock.json:13973:          "resolved": "http://localhost:4873/pify/-/pify-2.3.0.tgz",
+package-lock.json:13979:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz",
+package-lock.json:13985:          "resolved": "http://localhost:4873/source-map/-/source-map-0.5.7.tgz",
+package-lock.json:13991:          "resolved":
+"http://localhost:4873/source-map-support/-/source-map-support-0.4.18.tgz",
+package-lock.json:14000:          "resolved":
+"http://localhost:4873/webdriver-manager/-/webdriver-manager-12.1.7.tgz",
+package-lock.json:14021:      "resolved": "http://localhost:4873/proxy-addr/-/proxy-addr-2.0.5.tgz", 
+package-lock.json:14031:      "resolved": "http://localhost:4873/prr/-/prr-1.0.1.tgz",
+package-lock.json:14037:      "resolved": "http://localhost:4873/pseudomap/-/pseudomap-1.0.2.tgz",
+package-lock.json:14043:      "resolved": "http://localhost:4873/psl/-/psl-1.4.0.tgz",
+package-lock.json:14049:      "resolved": "http://localhost:4873/public-encrypt/-/public-encrypt-4.0.3.tgz", 
+package-lock.json:14063:      "resolved": "http://localhost:4873/pump/-/pump-3.0.0.tgz",
+package-lock.json:14073:      "resolved": "http://localhost:4873/pumpify/-/pumpify-1.5.1.tgz",
+package-lock.json:14084:          "resolved": "http://localhost:4873/pump/-/pump-2.0.1.tgz",
+package-lock.json:14096:      "resolved": "http://localhost:4873/punycode/-/punycode-2.1.1.tgz", 
+package-lock.json:14101:      "resolved": "http://localhost:4873/q/-/q-1.4.1.tgz",
+package-lock.json:14107:      "resolved": "http://localhost:4873/qjobs/-/qjobs-1.2.0.tgz",
+package-lock.json:14113:      "resolved": "http://localhost:4873/qrious/-/qrious-4.0.2.tgz",
+package-lock.json:14118:      "resolved": "http://localhost:4873/qs/-/qs-6.5.2.tgz",
+package-lock.json:14124:      "resolved": "http://localhost:4873/query-string/-/query-string-4.3.4.tgz",
+package-lock.json:14134:      "resolved": "http://localhost:4873/querystring/-/querystring-0.2.0.tgz",
+package-lock.json:14140:      "resolved": "http://localhost:4873/querystring-es3/-/querystring-es3-0.2.1.tgz", 
+package-lock.json:14146:      "resolved": "http://localhost:4873/querystringify/-/querystringify-2.1.1.tgz",
+package-lock.json:14152:      "resolved": "http://localhost:4873/quick-lru/-/quick-lru-1.1.0.tgz",
+package-lock.json:14158:      "resolved": "http://localhost:4873/quill/-/quill-1.3.7.tgz",
+package-lock.json:14171:      "resolved": "http://localhost:4873/quill-delta/-/quill-delta-3.6.3.tgz",
+package-lock.json:14181:      "resolved":
+"http://localhost:4873/quill-image-resize-module/-/quill-image-resize-module-3.0.0.tgz",
+package-lock.json:14191:          "resolved": "http://localhost:4873/clone/-/clone-2.1.1.tgz",
+package-lock.json:14196:          "resolved": "http://localhost:4873/deep-equal/-/deep-equal-1.0.1.tgz",
+package-lock.json:14201:          "resolved": "http://localhost:4873/eventemitter3/-/eventemitter3-2.0.3.tgz",       
+package-lock.json:14206:          "resolved": "http://localhost:4873/extend/-/extend-3.0.0.tgz",
+package-lock.json:14211:          "resolved": "http://localhost:4873/fast-diff/-/fast-diff-1.1.1.tgz",
+package-lock.json:14216:          "resolved": "http://localhost:4873/lodash/-/lodash-4.17.4.tgz",
+package-lock.json:14221:          "resolved": "http://localhost:4873/parchment/-/parchment-1.0.8.tgz",
+package-lock.json:14226:          "resolved": "http://localhost:4873/quill/-/quill-1.2.3.tgz", 
+package-lock.json:14239:          "resolved": "http://localhost:4873/quill-delta/-/quill-delta-3.5.0.tgz",
+package-lock.json:14249:          "resolved": "http://localhost:4873/raw-loader/-/raw-loader-0.5.1.tgz",
+package-lock.json:14265:      "resolved": "http://localhost:4873/randomatic/-/randomatic-3.1.1.tgz",
+package-lock.json:14276:          "resolved": "http://localhost:4873/is-number/-/is-number-4.0.0.tgz",
+package-lock.json:14282:          "resolved": "http://localhost:4873/kind-of/-/kind-of-6.0.2.tgz",
+package-lock.json:14290:      "resolved": "http://localhost:4873/randombytes/-/randombytes-2.1.0.tgz", 
+package-lock.json:14299:      "resolved": "http://localhost:4873/randomfill/-/randomfill-1.0.4.tgz",
+package-lock.json:14309:      "resolved": "http://localhost:4873/range-parser/-/range-parser-1.2.1.tgz",
+package-lock.json:14315:      "resolved": "http://localhost:4873/raw-body/-/raw-body-2.4.0.tgz",
+package-lock.json:14327:          "resolved": "http://localhost:4873/bytes/-/bytes-3.1.0.tgz",
+package-lock.json:14335:      "resolved": "http://localhost:4873/raw-loader/-/raw-loader-3.1.0.tgz",
+package-lock.json:14345:          "resolved": "http://localhost:4873/schema-utils/-/schema-utils-2.4.1.tgz",
+package-lock.json:14357:      "resolved": "http://localhost:4873/rc/-/rc-1.2.8.tgz",
+package-lock.json:14369:      "resolved": "http://localhost:4873/read-cache/-/read-cache-1.0.0.tgz",
+package-lock.json:14378:          "resolved": "http://localhost:4873/pify/-/pify-2.3.0.tgz",
+package-lock.json:14386:      "resolved": "http://localhost:4873/read-package-json/-/read-package-json-2.1.0.tgz",   
+package-lock.json:14399:      "resolved": "http://localhost:4873/read-package-tree/-/read-package-tree-5.3.1.tgz", 
+package-lock.json:14410:      "resolved": "http://localhost:4873/read-pkg/-/read-pkg-5.2.0.tgz",
+package-lock.json:14422:          "resolved": "http://localhost:4873/parse-json/-/parse-json-5.0.0.tgz",
+package-lock.json:14434:          "resolved": "http://localhost:4873/type-fest/-/type-fest-0.6.0.tgz",
+package-lock.json:14442:      "resolved": "http://localhost:4873/read-pkg-up/-/read-pkg-up-1.0.1.tgz",
+package-lock.json:14452:          "resolved": "http://localhost:4873/find-up/-/find-up-1.1.2.tgz",
+package-lock.json:14462:          "resolved": "http://localhost:4873/path-exists/-/path-exists-2.1.0.tgz",
+package-lock.json:14471:          "resolved": "http://localhost:4873/path-type/-/path-type-1.1.0.tgz", 
+package-lock.json:14482:          "resolved": "http://localhost:4873/pify/-/pify-2.3.0.tgz",
+package-lock.json:14488:          "resolved": "http://localhost:4873/read-pkg/-/read-pkg-1.1.0.tgz",
+package-lock.json:14501:      "resolved": "http://localhost:4873/readable-stream/-/readable-stream-2.3.6.tgz",       
+package-lock.json:14516:          "resolved": "http://localhost:4873/isarray/-/isarray-1.0.0.tgz",
+package-lock.json:14524:      "resolved":
+"http://localhost:4873/readdir-scoped-modules/-/readdir-scoped-modules-1.1.0.tgz",
+package-lock.json:14536:      "resolved": "http://localhost:4873/readdirp/-/readdirp-3.1.3.tgz",
+package-lock.json:14545:      "resolved": "http://localhost:4873/redent/-/redent-1.0.0.tgz",
+package-lock.json:14555:          "resolved": "http://localhost:4873/indent-string/-/indent-string-2.1.0.tgz",       
+package-lock.json:14566:      "resolved": "http://localhost:4873/reflect-metadata/-/reflect-metadata-0.1.13.tgz",    
+package-lock.json:14572:      "resolved": "http://localhost:4873/regenerate/-/regenerate-1.4.0.tgz",
+package-lock.json:14578:      "resolved":
+"http://localhost:4873/regenerate-unicode-properties/-/regenerate-unicode-properties-8.1.0.tgz",
+package-lock.json:14587:      "resolved":  
+"http://localhost:4873/regenerator-runtime/-/regenerator-runtime-0.13.3.tgz",
+package-lock.json:14593:      "resolved":
+"http://localhost:4873/regenerator-transform/-/regenerator-transform-0.14.1.tgz",
+package-lock.json:14602:      "resolved": "http://localhost:4873/regex-cache/-/regex-cache-0.4.4.tgz",
+package-lock.json:14611:      "resolved": "http://localhost:4873/regex-not/-/regex-not-1.0.2.tgz",
+package-lock.json:14621:      "resolved": "http://localhost:4873/regexpu-core/-/regexpu-core-4.6.0.tgz", 
+package-lock.json:14635:      "resolved":
+"http://localhost:4873/registry-auth-token/-/registry-auth-token-3.4.0.tgz",
+package-lock.json:14645:      "resolved": "http://localhost:4873/registry-url/-/registry-url-3.1.0.tgz",
+package-lock.json:14654:      "resolved": "http://localhost:4873/regjsgen/-/regjsgen-0.5.0.tgz",
+package-lock.json:14660:      "resolved": "http://localhost:4873/regjsparser/-/regjsparser-0.6.0.tgz",
+package-lock.json:14669:          "resolved": "http://localhost:4873/jsesc/-/jsesc-0.5.0.tgz",
+package-lock.json:14677:      "resolved": "http://localhost:4873/regression/-/regression-2.0.1.tgz",
+package-lock.json:14682:      "resolved": "http://localhost:4873/remark/-/remark-8.0.0.tgz",
+package-lock.json:14693:      "resolved": "http://localhost:4873/remark-parse/-/remark-parse-4.0.0.tgz", 
+package-lock.json:14716:      "resolved": "http://localhost:4873/remark-stringify/-/remark-stringify-4.0.0.tgz",     
+package-lock.json:14738:      "resolved":
+"http://localhost:4873/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz",
+package-lock.json:14744:      "resolved": "http://localhost:4873/repeat-element/-/repeat-element-1.1.3.tgz",
+package-lock.json:14750:      "resolved": "http://localhost:4873/repeat-string/-/repeat-string-1.6.1.tgz",
+package-lock.json:14755:      "resolved": "http://localhost:4873/repeating/-/repeating-2.0.1.tgz",
+package-lock.json:14764:      "resolved": "http://localhost:4873/replace-ext/-/replace-ext-1.0.0.tgz",
+package-lock.json:14770:      "resolved": "http://localhost:4873/request/-/request-2.88.0.tgz",
+package-lock.json:14798:      "resolved": "http://localhost:4873/require-directory/-/require-directory-2.1.1.tgz",   
+package-lock.json:14804:      "resolved":
+"http://localhost:4873/require-from-string/-/require-from-string-2.0.2.tgz",
+package-lock.json:14810:      "resolved":
+"http://localhost:4873/require-main-filename/-/require-main-filename-1.0.1.tgz",
+package-lock.json:14816:      "resolved": "http://localhost:4873/requires-port/-/requires-port-1.0.0.tgz",
+package-lock.json:14822:      "resolved": "http://localhost:4873/resolve/-/resolve-1.11.1.tgz",
+package-lock.json:14830:      "resolved": "http://localhost:4873/resolve-cwd/-/resolve-cwd-2.0.0.tgz",
+package-lock.json:14839:      "resolved": "http://localhost:4873/resolve-from/-/resolve-from-3.0.0.tgz",
+package-lock.json:14845:      "resolved": "http://localhost:4873/resolve-url/-/resolve-url-0.2.1.tgz",
+package-lock.json:14851:      "resolved": "http://localhost:4873/restore-cursor/-/restore-cursor-3.1.0.tgz",
+package-lock.json:14861:      "resolved": "http://localhost:4873/resumer/-/resumer-0.0.0.tgz",
+package-lock.json:14869:      "resolved": "http://localhost:4873/ret/-/ret-0.1.15.tgz",
+package-lock.json:14875:      "resolved": "http://localhost:4873/retry/-/retry-0.12.0.tgz",
+package-lock.json:14881:      "resolved": "http://localhost:4873/rfdc/-/rfdc-1.1.4.tgz",
+package-lock.json:14893:      "resolved": "http://localhost:4873/right-align/-/right-align-0.1.3.tgz",
+package-lock.json:14901:      "resolved": "http://localhost:4873/rimraf/-/rimraf-2.7.1.tgz",
+package-lock.json:14910:      "resolved": "http://localhost:4873/ripemd160/-/ripemd160-2.0.2.tgz",
+package-lock.json:14920:      "resolved": "http://localhost:4873/rollup/-/rollup-0.25.8.tgz",
+package-lock.json:14930:      "resolved": "http://localhost:4873/run-async/-/run-async-2.3.0.tgz",
+package-lock.json:14939:      "resolved": "http://localhost:4873/run-node/-/run-node-1.0.0.tgz",
+package-lock.json:14945:      "resolved": "http://localhost:4873/run-queue/-/run-queue-1.0.3.tgz",
+package-lock.json:14954:      "resolved": "http://localhost:4873/rw/-/rw-1.3.3.tgz",
+package-lock.json:14959:      "resolved": "http://localhost:4873/rxjs/-/rxjs-6.4.0.tgz",
+package-lock.json:14967:      "resolved": "http://localhost:4873/safe-buffer/-/safe-buffer-5.1.2.tgz",
+package-lock.json:14973:      "resolved": "http://localhost:4873/safe-regex/-/safe-regex-1.1.0.tgz",
+package-lock.json:15007:      "resolved": "http://localhost:4873/safer-buffer/-/safer-buffer-2.1.2.tgz",
+package-lock.json:15012:      "resolved": "http://localhost:4873/sass/-/sass-1.22.9.tgz",
+package-lock.json:15021:      "resolved": "http://localhost:4873/sass-loader/-/sass-loader-7.2.0.tgz",
+package-lock.json:15034:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz",
+package-lock.json:15042:      "resolved": "http://localhost:4873/saucelabs/-/saucelabs-1.5.0.tgz",
+package-lock.json:15051:      "resolved": "http://localhost:4873/sax/-/sax-0.5.8.tgz",
+package-lock.json:15057:      "resolved": "http://localhost:4873/schema-utils/-/schema-utils-1.0.0.tgz",
+package-lock.json:15068:      "resolved": "http://localhost:4873/screenfull/-/screenfull-4.2.1.tgz",
+package-lock.json:15073:      "resolved": "http://localhost:4873/select-hose/-/select-hose-2.0.0.tgz",
+package-lock.json:15079:      "resolved": "http://localhost:4873/selenium-webdriver/-/selenium-webdriver-3.6.0.tgz", 
+package-lock.json:15091:          "resolved": "http://localhost:4873/tmp/-/tmp-0.0.30.tgz",
+package-lock.json:15102:      "resolved": "http://localhost:4873/selfsigned/-/selfsigned-1.10.7.tgz",
+package-lock.json:15111:      "resolved": "http://localhost:4873/semver/-/semver-6.3.0.tgz",
+package-lock.json:15117:      "resolved": "http://localhost:4873/semver-compare/-/semver-compare-1.0.0.tgz",
+package-lock.json:15123:      "resolved": "http://localhost:4873/semver-diff/-/semver-diff-2.1.0.tgz",
+package-lock.json:15132:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz",
+package-lock.json:15140:      "resolved": "http://localhost:4873/semver-dsl/-/semver-dsl-1.0.1.tgz",
+package-lock.json:15149:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz",
+package-lock.json:15157:      "resolved": "http://localhost:4873/semver-intersect/-/semver-intersect-1.4.0.tgz",     
+package-lock.json:15166:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz",
+package-lock.json:15174:      "resolved": "http://localhost:4873/send/-/send-0.17.1.tgz",
+package-lock.json:15195:          "resolved": "http://localhost:4873/debug/-/debug-2.6.9.tgz",
+package-lock.json:15204:              "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15212:          "resolved": "http://localhost:4873/ms/-/ms-2.1.1.tgz",
+package-lock.json:15220:      "resolved":
+"http://localhost:4873/serialize-javascript/-/serialize-javascript-1.9.1.tgz",
+package-lock.json:15226:      "resolved": "http://localhost:4873/serve-index/-/serve-index-1.9.1.tgz",
+package-lock.json:15241:          "resolved": "http://localhost:4873/debug/-/debug-2.6.9.tgz",
+package-lock.json:15250:          "resolved": "http://localhost:4873/http-errors/-/http-errors-1.6.3.tgz",
+package-lock.json:15262:          "resolved": "http://localhost:4873/inherits/-/inherits-2.0.3.tgz",
+package-lock.json:15268:          "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15274:          "resolved": "http://localhost:4873/setprototypeof/-/setprototypeof-1.1.0.tgz",     
+package-lock.json:15282:      "resolved": "http://localhost:4873/serve-static/-/serve-static-1.14.1.tgz", 
+package-lock.json:15294:      "resolved": "http://localhost:4873/set-blocking/-/set-blocking-2.0.0.tgz",
+package-lock.json:15322:      "resolved": "http://localhost:4873/set-immediate-shim/-/set-immediate-shim-1.0.1.tgz", 
+package-lock.json:15328:      "resolved": "http://localhost:4873/set-value/-/set-value-2.0.1.tgz",
+package-lock.json:15340:          "resolved": "http://localhost:4873/extend-shallow/-/extend-shallow-2.0.1.tgz",     
+package-lock.json:15351:      "resolved": "http://localhost:4873/setimmediate/-/setimmediate-1.0.5.tgz",
+package-lock.json:15357:      "resolved": "http://localhost:4873/setprototypeof/-/setprototypeof-1.1.1.tgz",
+package-lock.json:15363:      "resolved": "http://localhost:4873/sha.js/-/sha.js-2.4.11.tgz",
+package-lock.json:15373:      "resolved": "http://localhost:4873/shallow-clone/-/shallow-clone-3.0.1.tgz",
+package-lock.json:15382:          "resolved": "http://localhost:4873/kind-of/-/kind-of-6.0.2.tgz",
+package-lock.json:15390:      "resolved": "http://localhost:4873/shebang-command/-/shebang-command-1.2.0.tgz",       
+package-lock.json:15399:      "resolved": "http://localhost:4873/shebang-regex/-/shebang-regex-1.0.0.tgz",
+package-lock.json:15405:      "resolved": "http://localhost:4873/signal-exit/-/signal-exit-3.0.2.tgz",
+package-lock.json:15411:      "resolved": "http://localhost:4873/simple-git/-/simple-git-1.126.0.tgz",
+package-lock.json:15420:      "resolved": "http://localhost:4873/simple-statistics/-/simple-statistics-6.1.1.tgz",   
+package-lock.json:15425:      "resolved": "http://localhost:4873/slash/-/slash-1.0.0.tgz",
+package-lock.json:15431:      "resolved": "http://localhost:4873/slice-ansi/-/slice-ansi-0.0.4.tgz",
+package-lock.json:15437:      "resolved": "http://localhost:4873/smart-buffer/-/smart-buffer-4.0.2.tgz",
+package-lock.json:15443:      "resolved": "http://localhost:4873/snapdragon/-/snapdragon-0.8.2.tgz", 
+package-lock.json:15459:          "resolved": "http://localhost:4873/debug/-/debug-2.6.9.tgz",
+package-lock.json:15468:          "resolved": "http://localhost:4873/define-property/-/define-property-0.2.5.tgz",   
+package-lock.json:15477:          "resolved": "http://localhost:4873/extend-shallow/-/extend-shallow-2.0.1.tgz",     
+package-lock.json:15486:          "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15492:          "resolved": "http://localhost:4873/source-map/-/source-map-0.5.7.tgz",
+package-lock.json:15500:      "resolved": "http://localhost:4873/snapdragon-node/-/snapdragon-node-2.1.1.tgz", 
+package-lock.json:15511:          "resolved": "http://localhost:4873/define-property/-/define-property-1.0.0.tgz",   
+package-lock.json:15520:          "resolved":
+"http://localhost:4873/is-accessor-descriptor/-/is-accessor-descriptor-1.0.0.tgz",
+package-lock.json:15529:          "resolved":
+"http://localhost:4873/is-data-descriptor/-/is-data-descriptor-1.0.0.tgz",
+package-lock.json:15538:          "resolved": "http://localhost:4873/is-descriptor/-/is-descriptor-1.0.2.tgz",       
+package-lock.json:15549:          "resolved": "http://localhost:4873/kind-of/-/kind-of-6.0.2.tgz",
+package-lock.json:15557:      "resolved": "http://localhost:4873/snapdragon-util/-/snapdragon-util-3.0.1.tgz",       
+package-lock.json:15566:      "resolved": "http://localhost:4873/socket.io/-/socket.io-2.1.1.tgz",
+package-lock.json:15580:          "resolved": "http://localhost:4873/debug/-/debug-3.1.0.tgz",
+package-lock.json:15589:          "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15597:      "resolved": "http://localhost:4873/socket.io-adapter/-/socket.io-adapter-1.1.1.tgz",   
+package-lock.json:15603:      "resolved": "http://localhost:4873/socket.io-client/-/socket.io-client-2.1.1.tgz",     
+package-lock.json:15625:          "resolved":
+"http://localhost:4873/component-emitter/-/component-emitter-1.2.1.tgz",
+package-lock.json:15631:          "resolved": "http://localhost:4873/debug/-/debug-3.1.0.tgz",
+package-lock.json:15640:          "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15648:      "resolved": "http://localhost:4873/socket.io-parser/-/socket.io-parser-3.2.0.tgz",     
+package-lock.json:15659:          "resolved":
+"http://localhost:4873/component-emitter/-/component-emitter-1.2.1.tgz",
+package-lock.json:15665:          "resolved": "http://localhost:4873/debug/-/debug-3.1.0.tgz",
+package-lock.json:15674:          "resolved": "http://localhost:4873/isarray/-/isarray-2.0.1.tgz",
+package-lock.json:15680:          "resolved": "http://localhost:4873/ms/-/ms-2.0.0.tgz",
+package-lock.json:15688:      "resolved": "http://localhost:4873/sockjs/-/sockjs-0.3.19.tgz",
+package-lock.json:15698:      "resolved": "http://localhost:4873/sockjs-client/-/sockjs-client-1.3.0.tgz",
+package-lock.json:15712:          "resolved": "http://localhost:4873/debug/-/debug-3.2.6.tgz",
+package-lock.json:15721:          "resolved": "http://localhost:4873/faye-websocket/-/faye-websocket-0.11.3.tgz",    
+package-lock.json:15732:      "resolved": "http://localhost:4873/socks/-/socks-2.3.2.tgz",
+package-lock.json:15742:      "resolved": "http://localhost:4873/socks-proxy-agent/-/socks-proxy-agent-4.0.2.tgz",   
+package-lock.json:15752:          "resolved": "http://localhost:4873/agent-base/-/agent-base-4.2.1.tgz",
+package-lock.json:15763:      "resolved": "http://localhost:4873/sort-keys/-/sort-keys-1.1.2.tgz",
+package-lock.json:15772:      "resolved": "http://localhost:4873/source-list-map/-/source-list-map-2.0.1.tgz",       
+package-lock.json:15778:      "resolved": "http://localhost:4873/source-map/-/source-map-0.1.32.tgz", 
+package-lock.json:15786:      "resolved": "http://localhost:4873/source-map-loader/-/source-map-loader-0.2.4.tgz",   
+package-lock.json:15796:      "resolved": "http://localhost:4873/source-map-resolve/-/source-map-resolve-0.5.2.tgz", 
+package-lock.json:15809:      "resolved": "http://localhost:4873/source-map-support/-/source-map-support-0.3.3.tgz", 
+package-lock.json:15817:      "resolved": "http://localhost:4873/source-map-url/-/source-map-url-0.4.0.tgz",
+package-lock.json:15823:      "resolved": "http://localhost:4873/sourcemap-codec/-/sourcemap-codec-1.4.6.tgz",       
+package-lock.json:15829:      "resolved": "http://localhost:4873/spdx-correct/-/spdx-correct-3.1.0.tgz", 
+package-lock.json:15839:      "resolved": "http://localhost:4873/spdx-exceptions/-/spdx-exceptions-2.2.0.tgz",       
+package-lock.json:15845:      "resolved":
+"http://localhost:4873/spdx-expression-parse/-/spdx-expression-parse-3.0.0.tgz",
+package-lock.json:15855:      "resolved": "http://localhost:4873/spdx-license-ids/-/spdx-license-ids-3.0.5.tgz",     
+package-lock.json:15861:      "resolved": "http://localhost:4873/spdy/-/spdy-4.0.1.tgz", 
+package-lock.json:15874:      "resolved": "http://localhost:4873/spdy-transport/-/spdy-transport-3.0.0.tgz",
+package-lock.json:15888:          "resolved": "http://localhost:4873/readable-stream/-/readable-stream-3.4.0.tgz",   
+package-lock.json:15901:      "resolved": "http://localhost:4873/specificity/-/specificity-0.3.2.tgz",
+package-lock.json:15907:      "resolved":
+"http://localhost:4873/speed-measure-webpack-plugin/-/speed-measure-webpack-plugin-1.3.1.tgz",
+package-lock.json:15916:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:15925:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:15936:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:15947:      "resolved": "http://localhost:4873/split-string/-/split-string-3.1.0.tgz",
+package-lock.json:15956:      "resolved": "http://localhost:4873/sprintf-js/-/sprintf-js-1.0.3.tgz",
+package-lock.json:15971:      "resolved": "http://localhost:4873/sshpk/-/sshpk-1.16.1.tgz",
+package-lock.json:15988:      "resolved": "http://localhost:4873/ssri/-/ssri-6.0.1.tgz",
+package-lock.json:16003:      "resolved": "http://localhost:4873/staged-git-files/-/staged-git-files-1.1.2.tgz",     
+package-lock.json:16009:      "resolved": "http://localhost:4873/state-toggle/-/state-toggle-1.0.2.tgz",
+package-lock.json:16015:      "resolved": "http://localhost:4873/static-extend/-/static-extend-0.1.2.tgz",
+package-lock.json:16025:          "resolved": "http://localhost:4873/define-property/-/define-property-0.2.5.tgz",   
+package-lock.json:16036:      "resolved": "http://localhost:4873/statuses/-/statuses-1.5.0.tgz",
+package-lock.json:16042:      "resolved": "http://localhost:4873/stream-browserify/-/stream-browserify-2.0.2.tgz",   
+package-lock.json:16052:      "resolved": "http://localhost:4873/stream-each/-/stream-each-1.2.3.tgz",
+package-lock.json:16062:      "resolved": "http://localhost:4873/stream-http/-/stream-http-2.8.3.tgz",
+package-lock.json:16075:      "resolved": "http://localhost:4873/stream-shift/-/stream-shift-1.0.0.tgz", 
+package-lock.json:16081:      "resolved": "http://localhost:4873/streamroller/-/streamroller-1.0.6.tgz",
+package-lock.json:16094:          "resolved": "http://localhost:4873/debug/-/debug-3.2.6.tgz",
+package-lock.json:16105:      "resolved": "http://localhost:4873/strict-uri-encode/-/strict-uri-encode-1.1.0.tgz",   
+package-lock.json:16111:      "resolved": "http://localhost:4873/string-argv/-/string-argv-0.0.2.tgz",
+package-lock.json:16123:      "resolved": "http://localhost:4873/string-width/-/string-width-2.1.1.tgz",
+package-lock.json:16133:          "resolved": "http://localhost:4873/ansi-regex/-/ansi-regex-3.0.0.tgz",
+package-lock.json:16139:          "resolved": "http://localhost:4873/strip-ansi/-/strip-ansi-4.0.0.tgz",
+package-lock.json:16150:      "resolved":
+"http://localhost:4873/string.prototype.trim/-/string.prototype.trim-1.1.2.tgz",
+package-lock.json:16160:      "resolved":
+"http://localhost:4873/string.prototype.trimleft/-/string.prototype.trimleft-2.1.0.tgz",
+package-lock.json:16169:      "resolved":
+"http://localhost:4873/string.prototype.trimright/-/string.prototype.trimright-2.1.0.tgz",
+package-lock.json:16178:      "resolved": "http://localhost:4873/string_decoder/-/string_decoder-1.1.1.tgz",
+package-lock.json:16187:      "resolved": "http://localhost:4873/stringify-entities/-/stringify-entities-1.3.2.tgz", 
+package-lock.json:16199:      "resolved": "http://localhost:4873/stringify-object/-/stringify-object-3.3.0.tgz",     
+package-lock.json:16219:      "resolved": "http://localhost:4873/strip-ansi/-/strip-ansi-3.0.1.tgz",
+package-lock.json:16227:      "resolved": "http://localhost:4873/strip-bom/-/strip-bom-3.0.0.tgz",
+package-lock.json:16233:      "resolved": "http://localhost:4873/strip-eof/-/strip-eof-1.0.0.tgz",
+package-lock.json:16239:      "resolved": "http://localhost:4873/strip-indent/-/strip-indent-1.0.1.tgz",
+package-lock.json:16248:          "resolved": "http://localhost:4873/get-stdin/-/get-stdin-4.0.1.tgz",
+package-lock.json:16256:      "resolved":
+"http://localhost:4873/strip-json-comments/-/strip-json-comments-2.0.1.tgz",
+package-lock.json:16262:      "resolved": "http://localhost:4873/style-loader/-/style-loader-1.0.0.tgz",
+package-lock.json:16272:          "resolved": "http://localhost:4873/schema-utils/-/schema-utils-2.4.1.tgz", 
+package-lock.json:16284:      "resolved": "http://localhost:4873/style-search/-/style-search-0.1.0.tgz",
+package-lock.json:16290:      "resolved": "http://localhost:4873/stylelint/-/stylelint-10.1.0.tgz",
+package-lock.json:16346:          "resolved": "http://localhost:4873/ansi-regex/-/ansi-regex-4.1.0.tgz",
+package-lock.json:16352:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:16361:          "resolved": "http://localhost:4873/camelcase/-/camelcase-4.1.0.tgz",
+package-lock.json:16367:          "resolved": "http://localhost:4873/camelcase-keys/-/camelcase-keys-4.2.0.tgz",     
+package-lock.json:16378:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:16389:          "resolved": "http://localhost:4873/clone-regexp/-/clone-regexp-2.2.0.tgz",
+package-lock.json:16398:          "resolved": "http://localhost:4873/execall/-/execall-2.0.0.tgz",
+package-lock.json:16407:          "resolved": "http://localhost:4873/file-entry-cache/-/file-entry-cache-5.0.1.tgz", 
+package-lock.json:16416:          "resolved": "http://localhost:4873/find-up/-/find-up-2.1.0.tgz",
+package-lock.json:16425:          "resolved": "http://localhost:4873/flat-cache/-/flat-cache-2.0.1.tgz",
+package-lock.json:16436:          "resolved": "http://localhost:4873/globby/-/globby-9.2.0.tgz",
+package-lock.json:16452:              "resolved": "http://localhost:4873/ignore/-/ignore-4.0.6.tgz",
+package-lock.json:16458:              "resolved": "http://localhost:4873/slash/-/slash-2.0.0.tgz",
+package-lock.json:16466:          "resolved": "http://localhost:4873/html-tags/-/html-tags-3.1.0.tgz",
+package-lock.json:16472:          "resolved": "http://localhost:4873/ignore/-/ignore-5.1.4.tgz",
+package-lock.json:16478:          "resolved": "http://localhost:4873/import-lazy/-/import-lazy-4.0.0.tgz",
+package-lock.json:16484:          "resolved":
+"http://localhost:4873/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
+package-lock.json:16490:          "resolved": "http://localhost:4873/is-regexp/-/is-regexp-2.1.0.tgz",
+package-lock.json:16496:          "resolved":
+"http://localhost:4873/known-css-properties/-/known-css-properties-0.14.0.tgz",
+package-lock.json:16502:          "resolved": "http://localhost:4873/load-json-file/-/load-json-file-4.0.0.tgz",     
+package-lock.json:16514:              "resolved": "http://localhost:4873/pify/-/pify-3.0.0.tgz",
+package-lock.json:16522:          "resolved": "http://localhost:4873/locate-path/-/locate-path-2.0.0.tgz",
+package-lock.json:16532:          "resolved": "http://localhost:4873/log-symbols/-/log-symbols-3.0.0.tgz",
+package-lock.json:16541:          "resolved": "http://localhost:4873/map-obj/-/map-obj-2.0.0.tgz",
+package-lock.json:16547:          "resolved": "http://localhost:4873/meow/-/meow-5.0.0.tgz",
+package-lock.json:16564:          "resolved": "http://localhost:4873/micromatch/-/micromatch-4.0.2.tgz",
+package-lock.json:16574:          "resolved": "http://localhost:4873/p-limit/-/p-limit-1.3.0.tgz",
+package-lock.json:16583:          "resolved": "http://localhost:4873/p-locate/-/p-locate-2.0.0.tgz",
+package-lock.json:16592:          "resolved": "http://localhost:4873/p-try/-/p-try-1.0.0.tgz", 
+package-lock.json:16598:          "resolved": "http://localhost:4873/postcss-html/-/postcss-html-0.36.0.tgz",        
+package-lock.json:16607:          "resolved": "http://localhost:4873/postcss-less/-/postcss-less-3.1.4.tgz",
+package-lock.json:16616:          "resolved": "http://localhost:4873/postcss-reporter/-/postcss-reporter-6.0.1.tgz", 
+package-lock.json:16628:              "resolved": "http://localhost:4873/log-symbols/-/log-symbols-2.2.0.tgz", 
+package-lock.json:16639:          "resolved":
+"http://localhost:4873/postcss-safe-parser/-/postcss-safe-parser-4.0.1.tgz",
+package-lock.json:16648:          "resolved": "http://localhost:4873/postcss-sass/-/postcss-sass-0.3.5.tgz",
+package-lock.json:16658:          "resolved": "http://localhost:4873/postcss-scss/-/postcss-scss-2.0.0.tgz",
+package-lock.json:16667:          "resolved":
+"http://localhost:4873/postcss-value-parser/-/postcss-value-parser-3.3.1.tgz",
+package-lock.json:16673:          "resolved": "http://localhost:4873/read-pkg/-/read-pkg-3.0.0.tgz",
+package-lock.json:16684:          "resolved": "http://localhost:4873/read-pkg-up/-/read-pkg-up-3.0.0.tgz",
+package-lock.json:16694:          "resolved": "http://localhost:4873/redent/-/redent-2.0.0.tgz",
+package-lock.json:16704:          "resolved": "http://localhost:4873/resolve-from/-/resolve-from-5.0.0.tgz",
+package-lock.json:16710:          "resolved": "http://localhost:4873/rimraf/-/rimraf-2.6.3.tgz",
+package-lock.json:16719:          "resolved": "http://localhost:4873/slash/-/slash-3.0.0.tgz",
+package-lock.json:16725:          "resolved": "http://localhost:4873/slice-ansi/-/slice-ansi-2.1.0.tgz",
+package-lock.json:16736:              "resolved":
+"http://localhost:4873/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz",
+package-lock.json:16744:          "resolved": "http://localhost:4873/specificity/-/specificity-0.4.1.tgz",
+package-lock.json:16750:          "resolved": "http://localhost:4873/string-width/-/string-width-4.1.0.tgz",
+package-lock.json:16761:          "resolved": "http://localhost:4873/strip-ansi/-/strip-ansi-5.2.0.tgz",
+package-lock.json:16770:          "resolved": "http://localhost:4873/strip-indent/-/strip-indent-2.0.0.tgz",
+package-lock.json:16776:          "resolved": "http://localhost:4873/sugarss/-/sugarss-2.0.0.tgz",
+package-lock.json:16785:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz", 
+package-lock.json:16794:          "resolved": "http://localhost:4873/table/-/table-5.4.6.tgz",
+package-lock.json:16806:              "resolved": "http://localhost:4873/emoji-regex/-/emoji-regex-7.0.3.tgz",       
+package-lock.json:16812:              "resolved":
+"http://localhost:4873/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz",
+package-lock.json:16818:              "resolved": "http://localhost:4873/string-width/-/string-width-3.1.0.tgz",     
+package-lock.json:16831:          "resolved": "http://localhost:4873/trim-newlines/-/trim-newlines-2.0.0.tgz",       
+package-lock.json:16837:          "resolved": "http://localhost:4873/write/-/write-1.0.3.tgz",
+package-lock.json:16846:          "resolved": "http://localhost:4873/yargs-parser/-/yargs-parser-10.1.0.tgz",        
+package-lock.json:16857:      "resolved":  
+"http://localhost:4873/stylelint-config-prettier/-/stylelint-config-prettier-5.3.0.tgz",
+package-lock.json:16863:      "resolved":
+"http://localhost:4873/stylelint-config-rational-order/-/stylelint-config-rational-order-0.1.2.tgz",
+package-lock.json:16873:          "resolved": "http://localhost:4873/ansi-regex/-/ansi-regex-4.1.0.tgz",
+package-lock.json:16879:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:16888:          "resolved": "http://localhost:4873/camelcase/-/camelcase-4.1.0.tgz",
+package-lock.json:16894:          "resolved": "http://localhost:4873/camelcase-keys/-/camelcase-keys-4.2.0.tgz",     
+package-lock.json:16905:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:16916:          "resolved": "http://localhost:4873/emoji-regex/-/emoji-regex-7.0.3.tgz",
+package-lock.json:16922:          "resolved": "http://localhost:4873/file-entry-cache/-/file-entry-cache-4.0.0.tgz", 
+package-lock.json:16931:          "resolved": "http://localhost:4873/find-up/-/find-up-2.1.0.tgz", 
+package-lock.json:16940:          "resolved": "http://localhost:4873/flat-cache/-/flat-cache-2.0.1.tgz",
+package-lock.json:16951:          "resolved": "http://localhost:4873/get-stdin/-/get-stdin-6.0.0.tgz", 
+package-lock.json:16957:          "resolved": "http://localhost:4873/globby/-/globby-9.2.0.tgz",
+package-lock.json:16973:              "resolved": "http://localhost:4873/ignore/-/ignore-4.0.6.tgz",
+package-lock.json:16981:          "resolved": "http://localhost:4873/ignore/-/ignore-5.1.4.tgz", 
+package-lock.json:16987:          "resolved": "http://localhost:4873/import-lazy/-/import-lazy-3.1.0.tgz",
+package-lock.json:16993:          "resolved":
+"http://localhost:4873/known-css-properties/-/known-css-properties-0.11.0.tgz",
+package-lock.json:16999:          "resolved": "http://localhost:4873/leven/-/leven-2.1.0.tgz",
+package-lock.json:17005:          "resolved": "http://localhost:4873/load-json-file/-/load-json-file-4.0.0.tgz", 
+package-lock.json:17017:              "resolved": "http://localhost:4873/pify/-/pify-3.0.0.tgz",
+package-lock.json:17025:          "resolved": "http://localhost:4873/locate-path/-/locate-path-2.0.0.tgz",
+package-lock.json:17035:          "resolved": "http://localhost:4873/map-obj/-/map-obj-2.0.0.tgz",
+package-lock.json:17041:          "resolved": "http://localhost:4873/meow/-/meow-5.0.0.tgz",
+package-lock.json:17058:          "resolved": "http://localhost:4873/p-limit/-/p-limit-1.3.0.tgz",
+package-lock.json:17067:          "resolved": "http://localhost:4873/p-locate/-/p-locate-2.0.0.tgz",
+package-lock.json:17076:          "resolved": "http://localhost:4873/p-try/-/p-try-1.0.0.tgz",
+package-lock.json:17082:          "resolved": "http://localhost:4873/postcss-html/-/postcss-html-0.36.0.tgz",        
+package-lock.json:17091:          "resolved": "http://localhost:4873/postcss-less/-/postcss-less-3.1.4.tgz",
+package-lock.json:17100:          "resolved": "http://localhost:4873/postcss-reporter/-/postcss-reporter-6.0.1.tgz", 
+package-lock.json:17112:          "resolved":
+"http://localhost:4873/postcss-safe-parser/-/postcss-safe-parser-4.0.1.tgz",
+package-lock.json:17121:          "resolved": "http://localhost:4873/postcss-sass/-/postcss-sass-0.3.5.tgz",
+package-lock.json:17131:          "resolved": "http://localhost:4873/postcss-scss/-/postcss-scss-2.0.0.tgz",
+package-lock.json:17140:          "resolved":
+"http://localhost:4873/postcss-value-parser/-/postcss-value-parser-3.3.1.tgz",
+package-lock.json:17146:          "resolved": "http://localhost:4873/read-pkg/-/read-pkg-3.0.0.tgz",
+package-lock.json:17157:          "resolved": "http://localhost:4873/read-pkg-up/-/read-pkg-up-3.0.0.tgz", 
+package-lock.json:17167:          "resolved": "http://localhost:4873/redent/-/redent-2.0.0.tgz",
+package-lock.json:17177:          "resolved": "http://localhost:4873/resolve-from/-/resolve-from-4.0.0.tgz",
+package-lock.json:17183:          "resolved": "http://localhost:4873/rimraf/-/rimraf-2.6.3.tgz",
+package-lock.json:17192:          "resolved": "http://localhost:4873/slash/-/slash-2.0.0.tgz",
+package-lock.json:17198:          "resolved": "http://localhost:4873/slice-ansi/-/slice-ansi-2.1.0.tgz",
+package-lock.json:17209:          "resolved": "http://localhost:4873/specificity/-/specificity-0.4.1.tgz",
+package-lock.json:17215:          "resolved": "http://localhost:4873/string-width/-/string-width-3.1.0.tgz",
+package-lock.json:17226:          "resolved": "http://localhost:4873/strip-ansi/-/strip-ansi-5.2.0.tgz",
+package-lock.json:17235:          "resolved": "http://localhost:4873/strip-indent/-/strip-indent-2.0.0.tgz",
+package-lock.json:17241:          "resolved": "http://localhost:4873/stylelint/-/stylelint-9.10.1.tgz", 
+package-lock.json:17296:          "resolved": "http://localhost:4873/stylelint-order/-/stylelint-order-2.2.1.tgz",   
+package-lock.json:17307:          "resolved": "http://localhost:4873/sugarss/-/sugarss-2.0.0.tgz",
+package-lock.json:17316:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:17325:          "resolved": "http://localhost:4873/table/-/table-5.4.6.tgz",
+package-lock.json:17337:          "resolved": "http://localhost:4873/trim-newlines/-/trim-newlines-2.0.0.tgz",       
+package-lock.json:17343:          "resolved": "http://localhost:4873/write/-/write-1.0.3.tgz",
+package-lock.json:17352:          "resolved": "http://localhost:4873/yargs-parser/-/yargs-parser-10.1.0.tgz",        
+package-lock.json:17363:      "resolved":
+"http://localhost:4873/stylelint-config-recommended/-/stylelint-config-recommended-2.2.0.tgz",
+package-lock.json:17369:      "resolved":  
+"http://localhost:4873/stylelint-config-standard/-/stylelint-config-standard-18.3.0.tgz",
+package-lock.json:17378:      "resolved": "http://localhost:4873/stylelint-declaration-block-no-ignored-properties/- 
+/stylelint-declaration-block-no-ignored-properties-2.1.0.tgz",
+package-lock.json:17387:      "resolved": "http://localhost:4873/stylelint-order/-/stylelint-order-3.1.1.tgz", 
+package-lock.json:17398:          "resolved": "http://localhost:4873/postcss-sorting/-/postcss-sorting-5.0.1.tgz",   
+package-lock.json:17410:      "resolved": "http://localhost:4873/stylus/-/stylus-0.54.5.tgz",
+package-lock.json:17424:          "resolved": "http://localhost:4873/glob/-/glob-7.0.6.tgz",
+package-lock.json:17440:      "resolved": "http://localhost:4873/stylus-loader/-/stylus-loader-3.0.2.tgz",
+package-lock.json:17451:      "resolved": "http://localhost:4873/sugarss/-/sugarss-1.0.1.tgz",
+package-lock.json:17460:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:17469:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:17480:          "resolved": "http://localhost:4873/postcss/-/postcss-6.0.23.tgz",
+package-lock.json:17491:          "resolved": "http://localhost:4873/source-map/-/source-map-0.6.1.tgz", 
+package-lock.json:17497:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:17508:      "resolved": "http://localhost:4873/supports-color/-/supports-color-2.0.0.tgz",
+package-lock.json:17519:      "resolved": "http://localhost:4873/svg-tags/-/svg-tags-1.0.0.tgz",
+package-lock.json:17525:      "resolved": "http://localhost:4873/symbol-observable/-/symbol-observable-1.2.0.tgz",   
+package-lock.json:17531:      "resolved":
+"http://localhost:4873/synchronous-promise/-/synchronous-promise-2.0.10.tgz",
+package-lock.json:17537:      "resolved": "http://localhost:4873/table/-/table-4.0.3.tgz",
+package-lock.json:17551:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:17560:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz", 
+package-lock.json:17571:          "resolved": "http://localhost:4873/slice-ansi/-/slice-ansi-1.0.0.tgz",
+package-lock.json:17580:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:17591:      "resolved": "http://localhost:4873/tapable/-/tapable-1.1.3.tgz",
+package-lock.json:17597:      "resolved": "http://localhost:4873/tape/-/tape-4.11.0.tgz",
+package-lock.json:17617:      "resolved": "http://localhost:4873/tar/-/tar-4.4.13.tgz",
+package-lock.json:17632:      "resolved": "http://localhost:4873/teeny-request/-/teeny-request-3.11.3.tgz",
+package-lock.json:17643:      "resolved": "http://localhost:4873/temp-dir/-/temp-dir-1.0.0.tgz", 
+package-lock.json:17649:      "resolved": "http://localhost:4873/temp-write/-/temp-write-3.4.0.tgz",
+package-lock.json:17663:          "resolved": "http://localhost:4873/make-dir/-/make-dir-1.3.0.tgz",
+package-lock.json:17672:          "resolved": "http://localhost:4873/pify/-/pify-3.0.0.tgz",
+package-lock.json:17680:      "resolved": "http://localhost:4873/tempy/-/tempy-0.2.1.tgz",
+package-lock.json:17690:      "resolved": "http://localhost:4873/term-size/-/term-size-1.2.0.tgz",
+package-lock.json:17699:          "resolved": "http://localhost:4873/cross-spawn/-/cross-spawn-5.1.0.tgz",
+package-lock.json:17710:          "resolved": "http://localhost:4873/execa/-/execa-0.7.0.tgz",
+package-lock.json:17725:          "resolved": "http://localhost:4873/get-stream/-/get-stream-3.0.0.tgz", 
+package-lock.json:17731:          "resolved": "http://localhost:4873/lru-cache/-/lru-cache-4.1.5.tgz",
+package-lock.json:17741:          "resolved": "http://localhost:4873/yallist/-/yallist-2.1.2.tgz",
+package-lock.json:17749:      "resolved": "http://localhost:4873/terser/-/terser-4.1.4.tgz",
+package-lock.json:17760:          "resolved": "http://localhost:4873/source-map/-/source-map-0.6.1.tgz", 
+package-lock.json:17766:          "resolved":
+"http://localhost:4873/source-map-support/-/source-map-support-0.5.13.tgz",
+package-lock.json:17778:      "resolved":
+"http://localhost:4873/terser-webpack-plugin/-/terser-webpack-plugin-1.4.1.tgz",
+package-lock.json:17795:          "resolved": "http://localhost:4873/find-cache-dir/-/find-cache-dir-2.1.0.tgz",     
+package-lock.json:17806:          "resolved": "http://localhost:4873/source-map/-/source-map-0.6.1.tgz",
+package-lock.json:17823:      "resolved": "http://localhost:4873/through/-/through-2.3.8.tgz", 
+package-lock.json:17828:      "resolved": "http://localhost:4873/through2/-/through2-2.0.5.tgz",
+package-lock.json:17838:      "resolved": "http://localhost:4873/thunky/-/thunky-1.0.3.tgz",
+package-lock.json:17844:      "resolved": "http://localhost:4873/timed-out/-/timed-out-4.0.1.tgz",
+package-lock.json:17850:      "resolved": "http://localhost:4873/timers-browserify/-/timers-browserify-2.0.11.tgz", 
+package-lock.json:17859:      "resolved": "http://localhost:4873/tinycolor2/-/tinycolor2-1.4.1.tgz",
+package-lock.json:17864:      "resolved": "http://localhost:4873/tmp/-/tmp-0.0.33.tgz",
+package-lock.json:17873:      "resolved": "http://localhost:4873/to-array/-/to-array-0.1.4.tgz",
+package-lock.json:17879:      "resolved": "http://localhost:4873/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz",
+package-lock.json:17885:      "resolved": "http://localhost:4873/to-fast-properties/-/to-fast-properties-2.0.0.tgz", 
+package-lock.json:17891:      "resolved": "http://localhost:4873/to-object-path/-/to-object-path-0.3.0.tgz",
+package-lock.json:17900:      "resolved": "http://localhost:4873/to-regex/-/to-regex-3.0.2.tgz",
+package-lock.json:17912:      "resolved": "http://localhost:4873/to-regex-range/-/to-regex-range-5.0.1.tgz",
+package-lock.json:17921:      "resolved": "http://localhost:4873/toidentifier/-/toidentifier-1.0.0.tgz", 
+package-lock.json:17927:      "resolved": "http://localhost:4873/topojson-client/-/topojson-client-3.0.1.tgz",       
+package-lock.json:17935:      "resolved": "http://localhost:4873/toposort/-/toposort-2.0.2.tgz",
+package-lock.json:17941:      "resolved": "http://localhost:4873/tough-cookie/-/tough-cookie-2.4.3.tgz", 
+package-lock.json:17951:          "resolved": "http://localhost:4873/punycode/-/punycode-1.4.1.tgz",
+package-lock.json:17959:      "resolved": "http://localhost:4873/tree-kill/-/tree-kill-1.2.1.tgz",
+package-lock.json:17965:      "resolved": "http://localhost:4873/trim/-/trim-0.0.1.tgz",
+package-lock.json:17971:      "resolved": "http://localhost:4873/trim-newlines/-/trim-newlines-1.0.0.tgz",
+package-lock.json:17977:      "resolved": "http://localhost:4873/trim-right/-/trim-right-1.0.1.tgz",
+package-lock.json:17983:      "resolved":
+"http://localhost:4873/trim-trailing-lines/-/trim-trailing-lines-1.1.2.tgz",
+package-lock.json:17989:      "resolved": "http://localhost:4873/trough/-/trough-1.0.4.tgz",
+package-lock.json:17995:      "resolved": "http://localhost:4873/tryer/-/tryer-1.0.1.tgz",
+package-lock.json:18001:      "resolved": "http://localhost:4873/ts-node/-/ts-node-7.0.1.tgz",
+package-lock.json:18017:          "resolved": "http://localhost:4873/source-map/-/source-map-0.6.1.tgz",
+package-lock.json:18023:          "resolved":
+"http://localhost:4873/source-map-support/-/source-map-support-0.5.13.tgz",
+package-lock.json:18035:      "resolved": "http://localhost:4873/tslib/-/tslib-1.10.0.tgz", 
+package-lock.json:18040:      "resolved": "http://localhost:4873/tslint/-/tslint-5.15.0.tgz",
+package-lock.json:18061:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:18070:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:18081:          "resolved": "http://localhost:4873/semver/-/semver-5.7.1.tgz", 
+package-lock.json:18087:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:18098:      "resolved":  
+"http://localhost:4873/tslint-config-prettier/-/tslint-config-prettier-1.18.0.tgz",
+package-lock.json:18104:      "resolved": "http://localhost:4873/tsutils/-/tsutils-2.29.0.tgz",
+package-lock.json:18113:      "resolved": "http://localhost:4873/tty-browserify/-/tty-browserify-0.0.0.tgz",
+package-lock.json:18119:      "resolved": "http://localhost:4873/tunnel-agent/-/tunnel-agent-0.6.0.tgz", 
+package-lock.json:18128:      "resolved": "http://localhost:4873/tweetnacl/-/tweetnacl-0.14.5.tgz",
+package-lock.json:18143:      "resolved": "http://localhost:4873/type-fest/-/type-fest-0.5.2.tgz",
+package-lock.json:18149:      "resolved": "http://localhost:4873/type-is/-/type-is-1.6.18.tgz",
+package-lock.json:18159:      "resolved": "http://localhost:4873/typedarray/-/typedarray-0.0.6.tgz",
+package-lock.json:18165:      "resolved": "http://localhost:4873/typescript/-/typescript-3.5.3.tgz",
+package-lock.json:18171:      "resolved": "http://localhost:4873/uglify-js/-/uglify-js-2.8.29.tgz",
+package-lock.json:18181:          "resolved": "http://localhost:4873/source-map/-/source-map-0.5.7.tgz", 
+package-lock.json:18188:      "resolved":
+"http://localhost:4873/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz",
+package-lock.json:18194:      "resolved": "http://localhost:4873/ultron/-/ultron-1.1.1.tgz", 
+package-lock.json:18200:      "resolved": "http://localhost:4873/unherit/-/unherit-1.1.2.tgz",
+package-lock.json:18210:      "resolved": "http://localhost:4873/unicode-canonical-property-names-ecmascript/-/unico 
+de-canonical-property-names-ecmascript-1.0.4.tgz",
+package-lock.json:18216:      "resolved":
+"http://localhost:4873/unicode-match-property-ecmascript/-/unicode-match-property-ecmascript-1.0.4.tgz",
+package-lock.json:18226:      "resolved":
+"http://localhost:4873/unicode-match-property-value-ecmascript/-/unicode-match-property-value-ecmascript-1.1.0.tgz", 
+package-lock.json:18232:      "resolved":
+"http://localhost:4873/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-1.0.5.tgz",
+package-lock.json:18238:      "resolved": "http://localhost:4873/unified/-/unified-6.2.0.tgz",
+package-lock.json:18252:      "resolved": "http://localhost:4873/union-value/-/union-value-1.0.1.tgz",
+package-lock.json:18264:      "resolved": "http://localhost:4873/uniq/-/uniq-1.0.1.tgz",
+package-lock.json:18270:      "resolved": "http://localhost:4873/unique-filename/-/unique-filename-1.1.1.tgz",       
+package-lock.json:18279:      "resolved": "http://localhost:4873/unique-slug/-/unique-slug-2.0.2.tgz",
+package-lock.json:18288:      "resolved": "http://localhost:4873/unique-string/-/unique-string-1.0.0.tgz",
+package-lock.json:18297:      "resolved":
+"http://localhost:4873/unist-util-find-all-after/-/unist-util-find-all-after-1.0.4.tgz",
+package-lock.json:18306:      "resolved": "http://localhost:4873/unist-util-is/-/unist-util-is-3.0.0.tgz",
+package-lock.json:18312:      "resolved":
+"http://localhost:4873/unist-util-remove-position/-/unist-util-remove-position-1.1.3.tgz",
+package-lock.json:18321:      "resolved":  
+"http://localhost:4873/unist-util-stringify-position/-/unist-util-stringify-position-1.1.2.tgz", 
+package-lock.json:18327:      "resolved": "http://localhost:4873/unist-util-visit/-/unist-util-visit-1.4.1.tgz",     
+package-lock.json:18336:      "resolved":
+"http://localhost:4873/unist-util-visit-parents/-/unist-util-visit-parents-2.1.2.tgz",
+package-lock.json:18345:      "resolved":
+"http://localhost:4873/universal-analytics/-/universal-analytics-0.4.20.tgz",
+package-lock.json:18356:          "resolved": "http://localhost:4873/debug/-/debug-3.2.6.tgz", 
+package-lock.json:18367:      "resolved": "http://localhost:4873/universalify/-/universalify-0.1.2.tgz",
+package-lock.json:18373:      "resolved": "http://localhost:4873/unpipe/-/unpipe-1.0.0.tgz",
+package-lock.json:18379:      "resolved": "http://localhost:4873/unset-value/-/unset-value-1.0.0.tgz", 
+package-lock.json:18389:          "resolved": "http://localhost:4873/has-value/-/has-value-0.3.1.tgz",
+package-lock.json:18400:              "resolved": "http://localhost:4873/isobject/-/isobject-2.1.0.tgz",
+package-lock.json:18411:          "resolved": "http://localhost:4873/has-values/-/has-values-0.1.4.tgz",
+package-lock.json:18417:          "resolved": "http://localhost:4873/isarray/-/isarray-1.0.0.tgz",
+package-lock.json:18425:      "resolved": "http://localhost:4873/unzip-response/-/unzip-response-2.0.1.tgz", 
+package-lock.json:18431:      "resolved": "http://localhost:4873/upath/-/upath-1.2.0.tgz",
+package-lock.json:18437:      "resolved": "http://localhost:4873/update-notifier/-/update-notifier-2.5.0.tgz", 
+package-lock.json:18455:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:18464:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:18475:          "resolved": "http://localhost:4873/ci-info/-/ci-info-1.6.0.tgz",
+package-lock.json:18481:          "resolved": "http://localhost:4873/is-ci/-/is-ci-1.2.1.tgz",
+package-lock.json:18490:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:18501:      "resolved": "http://localhost:4873/uri-js/-/uri-js-4.2.2.tgz",
+package-lock.json:18509:      "resolved": "http://localhost:4873/urix/-/urix-0.1.0.tgz",
+package-lock.json:18515:      "resolved": "http://localhost:4873/url/-/url-0.11.0.tgz",
+package-lock.json:18525:          "resolved": "http://localhost:4873/punycode/-/punycode-1.3.2.tgz",
+package-lock.json:18533:      "resolved": "http://localhost:4873/url-parse/-/url-parse-1.4.7.tgz",
+package-lock.json:18543:      "resolved": "http://localhost:4873/url-parse-lax/-/url-parse-lax-1.0.0.tgz",
+package-lock.json:18552:      "resolved": "http://localhost:4873/urlgrey/-/urlgrey-0.4.4.tgz",
+package-lock.json:18558:      "resolved": "http://localhost:4873/use/-/use-3.1.1.tgz",
+package-lock.json:18564:      "resolved": "http://localhost:4873/useragent/-/useragent-2.3.0.tgz",
+package-lock.json:18574:          "resolved": "http://localhost:4873/lru-cache/-/lru-cache-4.1.5.tgz",
+package-lock.json:18584:          "resolved": "http://localhost:4873/yallist/-/yallist-2.1.2.tgz",
+package-lock.json:18592:      "resolved": "http://localhost:4873/util/-/util-0.11.1.tgz", 
+package-lock.json:18601:          "resolved": "http://localhost:4873/inherits/-/inherits-2.0.3.tgz",
+package-lock.json:18609:      "resolved": "http://localhost:4873/util-deprecate/-/util-deprecate-1.0.2.tgz",
+package-lock.json:18615:      "resolved": "http://localhost:4873/util-promisify/-/util-promisify-2.1.0.tgz",
+package-lock.json:18624:      "resolved": "http://localhost:4873/util.promisify/-/util.promisify-1.0.0.tgz",
+package-lock.json:18634:      "resolved": "http://localhost:4873/utils-merge/-/utils-merge-1.0.1.tgz",
+package-lock.json:18655:      "resolved": "http://localhost:4873/uuid/-/uuid-3.3.3.tgz",
+package-lock.json:18661:      "resolved":
+"http://localhost:4873/validate-npm-package-license/-/validate-npm-package-license-3.0.4.tgz",
+package-lock.json:18671:      "resolved":
+"http://localhost:4873/validate-npm-package-name/-/validate-npm-package-name-3.0.0.tgz",
+package-lock.json:18686:      "resolved": "http://localhost:4873/vary/-/vary-1.1.2.tgz",
+package-lock.json:18692:      "resolved": "http://localhost:4873/venn.js/-/venn.js-0.2.20.tgz",
+package-lock.json:18702:      "resolved": "http://localhost:4873/verror/-/verror-1.10.0.tgz",
+package-lock.json:18713:      "resolved": "http://localhost:4873/vfile/-/vfile-2.3.0.tgz",
+package-lock.json:18725:      "resolved": "http://localhost:4873/vfile-location/-/vfile-location-2.0.5.tgz",
+package-lock.json:18731:      "resolved": "http://localhost:4873/vfile-message/-/vfile-message-1.1.1.tgz",
+package-lock.json:18740:      "resolved": "http://localhost:4873/vm-browserify/-/vm-browserify-1.1.0.tgz",
+package-lock.json:18746:      "resolved": "http://localhost:4873/void-elements/-/void-elements-2.0.1.tgz",
+package-lock.json:18782:      "resolved": "http://localhost:4873/watchpack/-/watchpack-1.6.0.tgz",
+package-lock.json:18793:          "resolved": "http://localhost:4873/anymatch/-/anymatch-2.0.0.tgz",
+package-lock.json:18803:              "resolved": "http://localhost:4873/normalize-path/-/normalize-path-2.1.1.tgz", 
+package-lock.json:18814:          "resolved":
+"http://localhost:4873/binary-extensions/-/binary-extensions-1.13.1.tgz",
+package-lock.json:18820:          "resolved": "http://localhost:4873/braces/-/braces-2.3.2.tgz",
+package-lock.json:18838:          "resolved": "http://localhost:4873/chokidar/-/chokidar-2.1.8.tgz", 
+package-lock.json:18858:          "resolved": "http://localhost:4873/extend-shallow/-/extend-shallow-2.0.1.tgz",     
+package-lock.json:18867:          "resolved": "http://localhost:4873/fill-range/-/fill-range-4.0.0.tgz",
+package-lock.json:18879:          "resolved": "http://localhost:4873/fsevents/-/fsevents-1.2.9.tgz",
+package-lock.json:19427:          "resolved": "http://localhost:4873/is-binary-path/-/is-binary-path-1.0.1.tgz",     
+package-lock.json:19436:          "resolved": "http://localhost:4873/is-number/-/is-number-3.0.0.tgz",
+package-lock.json:19445:          "resolved": "http://localhost:4873/readdirp/-/readdirp-2.2.1.tgz",
+package-lock.json:19456:          "resolved": "http://localhost:4873/to-regex-range/-/to-regex-range-2.1.1.tgz",     
+package-lock.json:19468:      "resolved": "http://localhost:4873/wbuf/-/wbuf-1.7.3.tgz", 
+package-lock.json:19477:      "resolved":
+"http://localhost:4873/webdriver-js-extender/-/webdriver-js-extender-2.1.0.tgz",
+package-lock.json:19487:      "resolved": "http://localhost:4873/webpack/-/webpack-4.39.2.tgz",
+package-lock.json:19518:      "resolved":
+"http://localhost:4873/webpack-bundle-analyzer/-/webpack-bundle-analyzer-3.5.2.tgz",
+package-lock.json:19539:          "resolved": "http://localhost:4873/ansi-styles/-/ansi-styles-3.2.1.tgz",
+package-lock.json:19548:          "resolved": "http://localhost:4873/chalk/-/chalk-2.4.2.tgz",
+package-lock.json:19559:          "resolved": "http://localhost:4873/supports-color/-/supports-color-5.5.0.tgz",     
+package-lock.json:19570:      "resolved": "http://localhost:4873/webpack-core/-/webpack-core-0.6.9.tgz",
+package-lock.json:19580:          "resolved": "http://localhost:4873/source-list-map/-/source-list-map-0.1.8.tgz",   
+package-lock.json:19586:          "resolved": "http://localhost:4873/source-map/-/source-map-0.4.4.tgz",
+package-lock.json:19597:      "resolved":
+"http://localhost:4873/webpack-dev-middleware/-/webpack-dev-middleware-3.7.0.tgz",
+package-lock.json:19609:          "resolved": "http://localhost:4873/mime/-/mime-2.4.4.tgz",
+package-lock.json:19617:      "resolved": "http://localhost:4873/webpack-dev-server/-/webpack-dev-server-3.8.0.tgz", 
+package-lock.json:19658:          "resolved": "http://localhost:4873/ansi-regex/-/ansi-regex-3.0.0.tgz",
+package-lock.json:19664:          "resolved": "http://localhost:4873/anymatch/-/anymatch-2.0.0.tgz",
+package-lock.json:19674:              "resolved": "http://localhost:4873/normalize-path/-/normalize-path-2.1.1.tgz", 
+package-lock.json:19685:          "resolved":
+"http://localhost:4873/binary-extensions/-/binary-extensions-1.13.1.tgz",
+package-lock.json:19691:          "resolved": "http://localhost:4873/braces/-/braces-2.3.2.tgz",
+package-lock.json:19709:          "resolved": "http://localhost:4873/chokidar/-/chokidar-2.1.8.tgz",
+package-lock.json:19729:          "resolved": "http://localhost:4873/cliui/-/cliui-4.1.0.tgz", 
+package-lock.json:19740:              "resolved": "http://localhost:4873/strip-ansi/-/strip-ansi-4.0.0.tgz",
+package-lock.json:19751:          "resolved": "http://localhost:4873/extend-shallow/-/extend-shallow-2.0.1.tgz",     
+package-lock.json:19760:          "resolved": "http://localhost:4873/fill-range/-/fill-range-4.0.0.tgz",
+package-lock.json:19772:          "resolved": "http://localhost:4873/fsevents/-/fsevents-1.2.9.tgz",
+package-lock.json:20311:          "resolved": "http://localhost:4873/is-binary-path/-/is-binary-path-1.0.1.tgz",     
+package-lock.json:20320:          "resolved": "http://localhost:4873/is-number/-/is-number-3.0.0.tgz",
+package-lock.json:20329:          "resolved": "http://localhost:4873/readdirp/-/readdirp-2.2.1.tgz",
+package-lock.json:20340:          "resolved": "http://localhost:4873/supports-color/-/supports-color-6.1.0.tgz",     
+package-lock.json:20349:          "resolved": "http://localhost:4873/to-regex-range/-/to-regex-range-2.1.1.tgz",     
+package-lock.json:20359:          "resolved": "http://localhost:4873/yargs/-/yargs-12.0.5.tgz",
+package-lock.json:20381:      "resolved": "http://localhost:4873/webpack-log/-/webpack-log-2.0.0.tgz",
+package-lock.json:20391:      "resolved": "http://localhost:4873/webpack-merge/-/webpack-merge-4.2.1.tgz",
+package-lock.json:20400:      "resolved": "http://localhost:4873/webpack-sources/-/webpack-sources-1.4.3.tgz",       
+package-lock.json:20410:          "resolved": "http://localhost:4873/source-map/-/source-map-0.6.1.tgz",
+package-lock.json:20418:      "resolved":
+"http://localhost:4873/webpack-subresource-integrity/-/webpack-subresource-integrity-1.1.0-rc.6.tgz",
+package-lock.json:20427:      "resolved": "http://localhost:4873/websocket-driver/-/websocket-driver-0.7.3.tgz",     
+package-lock.json:20438:      "resolved":
+"http://localhost:4873/websocket-extensions/-/websocket-extensions-0.1.3.tgz",
+package-lock.json:20444:      "resolved": "http://localhost:4873/when/-/when-3.6.4.tgz",
+package-lock.json:20450:      "resolved": "http://localhost:4873/which/-/which-1.3.1.tgz", 
+package-lock.json:20459:      "resolved": "http://localhost:4873/which-module/-/which-module-2.0.0.tgz",
+package-lock.json:20497:      "resolved": "http://localhost:4873/widest-line/-/widest-line-2.0.1.tgz",
+package-lock.json:20506:      "resolved": "http://localhost:4873/window-size/-/window-size-0.1.0.tgz",
+package-lock.json:20517:      "resolved":
+"http://localhost:4873/wolfy87-eventemitter/-/wolfy87-eventemitter-5.1.0.tgz",
+package-lock.json:20528:      "resolved": "http://localhost:4873/wordwrap/-/wordwrap-0.0.2.tgz",
+package-lock.json:20533:      "resolved": "http://localhost:4873/worker-farm/-/worker-farm-1.7.0.tgz",
+package-lock.json:20542:      "resolved": "http://localhost:4873/worker-plugin/-/worker-plugin-3.2.0.tgz",
+package-lock.json:20551:      "resolved": "http://localhost:4873/wrap-ansi/-/wrap-ansi-2.1.0.tgz",
+package-lock.json:20561:          "resolved":
+"http://localhost:4873/is-fullwidth-code-point/-/is-fullwidth-code-point-1.0.0.tgz",
+package-lock.json:20570:          "resolved": "http://localhost:4873/string-width/-/string-width-1.0.2.tgz",
+package-lock.json:20583:      "resolved": "http://localhost:4873/wrappy/-/wrappy-1.0.2.tgz",
+package-lock.json:20588:      "resolved": "http://localhost:4873/write/-/write-0.2.1.tgz",
+package-lock.json:20597:      "resolved": "http://localhost:4873/write-file-atomic/-/write-file-atomic-2.4.3.tgz",   
+package-lock.json:20608:      "resolved": "http://localhost:4873/ws/-/ws-6.2.1.tgz",
+package-lock.json:20617:      "resolved": "http://localhost:4873/x-is-string/-/x-is-string-0.1.0.tgz",
+package-lock.json:20623:      "resolved": "http://localhost:4873/xdg-basedir/-/xdg-basedir-3.0.0.tgz", 
+package-lock.json:20653:      "resolved": "http://localhost:4873/xml2js/-/xml2js-0.4.22.tgz",
+package-lock.json:20664:          "resolved": "http://localhost:4873/sax/-/sax-1.2.4.tgz",
+package-lock.json:20672:      "resolved": "http://localhost:4873/xmlbuilder/-/xmlbuilder-11.0.1.tgz",
+package-lock.json:20683:      "resolved": "http://localhost:4873/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.5.tgz", 
+package-lock.json:20689:      "resolved": "http://localhost:4873/xtend/-/xtend-4.0.2.tgz",
+package-lock.json:20695:      "resolved": "http://localhost:4873/y18n/-/y18n-4.0.0.tgz",
+package-lock.json:20701:      "resolved": "http://localhost:4873/yallist/-/yallist-3.1.1.tgz",
+package-lock.json:20707:      "resolved": "http://localhost:4873/yargs/-/yargs-3.10.0.tgz",
+package-lock.json:20718:      "resolved": "http://localhost:4873/yargs-parser/-/yargs-parser-11.1.1.tgz",
+package-lock.json:20728:          "resolved": "http://localhost:4873/camelcase/-/camelcase-5.3.1.tgz",
+package-lock.json:20736:      "resolved": "http://localhost:4873/yeast/-/yeast-0.1.2.tgz",
+package-lock.json:20742:      "resolved": "http://localhost:4873/yn/-/yn-2.0.0.tgz",
+package-lock.json:20748:      "resolved": "http://localhost:4873/yup/-/yup-0.27.0.tgz",
+package-lock.json:20762:      "resolved": "http://localhost:4873/zone.js/-/zone.js-0.9.1.tgz",
  
-npm ERR! A complete log of this run can be found in:
-npm ERR!     C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T07_55_08_344Z-debug-0.log
-PS E:\NPISP-Project\LMS-260825> dir src\app\routes\a_Public_net
-dir : Cannot find path 'E:\NPISP-Project\LMS-260825\src\app\routes\a_Public_net' because it does not exist.
-+ dir src\app\routes\a_Public_net
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (E:\NPISP-Projec...es\a_Public_net:String) [Get-ChildItem], ItemNotFo  
-   undException
-    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand
- 
-PS E:\NPISP-Project\LMS-260825> dir srcc
-dir : Cannot find path 'E:\NPISP-Project\LMS-260825\srcc' because it does not exist.
-At line:1 char:1
-+ dir srcc
-+ ~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (E:\NPISP-Project\LMS-260825\srcc:String) [Get-ChildItem], ItemNotFou  
-   ndException
-    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand
- 
-PS E:\NPISP-Project\LMS-260825> dir src/app
+
+PS E:\NPISP-Project\LMS-260825> npm config list -l | Select-String "4873|proxy|registry"
+
+; https-proxy = null ; overridden by user
+metrics-registry = "https://registry.npmjs.org/"
+noproxy = [""]
+omit-lockfile-registry-resolved = false
+; proxy = null ; overridden by user
+; registry = "https://registry.npmjs.org/" ; overridden by user
+replace-registry-host = "npmjs"
+https-proxy = "http://HH0000268:Lemu%401717.@10.209.100.5:3128/"
+proxy = "http://HH0000268:Lemu%401717.@10.209.100.5:3128/"
+registry = "https://registry.npmjs.org/"
 
 
-    Directory: E:\NPISP-Project\LMS-260825\src\app
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
-d-----       04-03-2026  09.38 AM                core
-d-----       04-03-2026  09.38 AM                layout
-d-----       29-07-2026  08.54 AM                routes
-d-----       04-03-2026  09.38 AM                shared
--a----       26-08-2025  09.38 AM           1064 app.component.ts
--a----       26-08-2025  09.38 AM           4248 app.module.ts
--a----       26-08-2025  09.38 AM           2822 delon.module.ts
-
-
-PS E:\NPISP-Project\LMS-260825> dir src/app/routes/a_Public_net
-dir : Cannot find path 'E:\NPISP-Project\LMS-260825\src\app\routes\a_Public_net' because it does not exist. 
-At line:1 char:1
-+ dir src/app/routes/a_Public_net
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (E:\NPISP-Projec...es\a_Public_net:String) [Get-ChildItem], ItemNotFo  
-   undException
-    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand
- 
 PS E:\NPISP-Project\LMS-260825>
