@@ -1,539 +1,579 @@
-CREATE OR REPLACE PACKAGE BODY LMS.REPORTS
-AS
--- Package body
- PROCEDURE GET_LOG_REPORT(
-    V_SITE IN NUMBER,
-    V_VIRTUAL_NUMBER IN VARCHAR2,
-    V_COLUMN_NAME IN VARCHAR2,
-    V_START_DATE IN VARCHAR2,
-    V_END_DATE IN VARCHAR2,
-    L_START_PAGE IN VARCHAR2,
-    L_PAGE_SIZE IN VARCHAR2,
-    V_RES OUT VARCHAR2,
-    V_RESULT OUT VARCHAR2,
-    V_EMP_ID IN VARCHAR2,
-    P_CURSOR OUT SYS_REFCURSOR
-) IS
-BEGIN
-    OPEN P_CURSOR FOR
-  
-    WITH LICENSEDATA AS(
-    
-     	SELECT  A.ID,A.SITE,A.VIRTUAL_ID, U.ID AS USER_ID,U.EMP_ID  FROM C_LICENSE_MANAGE_T A  LEFT JOIN  C_USER_INFO_T  U ON A.SITE = U.SITE  WHERE  
-     	U.EMP_ID =V_EMP_ID AND   A.DEL_FLAG =0 
-     	
-     	AND (
---    (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
---    OR 
---    ((TRIM(U.DEPT) <> 'All' AND CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT)) AND U.DEL_FLAG = 0) 
---    OR 
---    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
-     	  (
-    (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
-    OR 
-    ((TRIM(U.DEPT) <> 'All' AND (CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT) OR A.RESPONSIBLE_DEPT_ID = U.DEPT)) AND U.DEL_FLAG = 0) 
-    OR 
-    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
-)
-)
 
-    ) 
-    SELECT
-        RN,
-        ROWSCOUNT,
-        VIRTUAL_ID,
-        SITE_NAME,
-        CASE 
-            WHEN COLUMN_NAME IN ('FIRST_RESPONSIBLE_DRI', 'RESPONSIBLE_DRI_ID') THEN UI_EMP_ID
-            ELSE BEFORE_DATA
-        END AS BEFORE_DATA,
-        CASE 
-            WHEN COLUMN_NAME IN ('FIRST_RESPONSIBLE_DRI', 'RESPONSIBLE_DRI_ID') THEN UD_EMP_ID 
-            ELSE AFTER_DATA
-        END AS AFTER_DATA,
-        BEFORE_DATA_VALUE,
-        AFTER_DATA_VALUE,
-        COLUMN_NAME,
-        RENAMED_COLUMN,
-        
-        ADD_DATE,
-        ADD_BY
-    FROM 
-        (
-        SELECT
-            ROW_NUMBER() OVER (ORDER BY A.ADD_DATE DESC) AS RN,
-            COUNT(1) OVER () AS ROWSCOUNT,
-            D.VIRTUAL_ID,
-            CASE
-                WHEN D.SITE = 69941 THEN 'FXCN'
-                WHEN D.SITE = 95326 THEN 'FXBL'
-                ELSE NULL
-            END AS SITE_NAME,
-            CASE 
-                WHEN B.ID IS NOT NULL THEN B.BASIC_CODE 
-                ELSE A.BEFORE_DATA
-            END AS BEFORE_DATA,
-            CASE 
-                WHEN C.ID IS NOT NULL THEN C.BASIC_CODE 
-                ELSE A.AFTER_DATA
-            END AS AFTER_DATA,
-            A.COLUMN_NAME,
-            A.BEFORE_DATA_VALUE,
-            A.AFTER_DATA_VALUE,
-            CASE 
-                WHEN A.COLUMN_NAME = 'NEW_LICENSE' THEN 'Whether it is a new License?'
-                WHEN A.COLUMN_NAME = 'REGION' THEN 'Region Name'
-                WHEN A.COLUMN_NAME = 'LICENCE_NO' THEN 'License Number'
-                WHEN A.COLUMN_NAME = 'ONE_TIME_CERTIFICATE' THEN 'Whether it is a one-time certification?'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_REQUIRED' THEN 'IF Required'
-                WHEN A.COLUMN_NAME = 'VALIDITY_STARTTIME' THEN 'Current License Validity from'
-                WHEN A.COLUMN_NAME = 'VALIDITY_ENDTIME' THEN 'Current License Validity To'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_FREQUENCY' THEN 'Certification Frequency (Month)'
-                WHEN A.COLUMN_NAME = 'EST_CERTI_DURATION' THEN 'Estimated Certificate Duration(Month)'
-                WHEN A.COLUMN_NAME = 'FIRST_RESPONSIBLE_DRI' THEN 'Staff Responsible of certification'
-                WHEN A.COLUMN_NAME = 'RESPONSIBLE_DRI_ID' THEN 'Responsible person for the Management'
-                WHEN A.COLUMN_NAME = 'ASSIST_DEPT_ID' THEN 'Which dept require assistance in applying License?'
-                WHEN A.COLUMN_NAME = 'THIRD_PARTY_AGENCY' THEN 'Have assisted in applying for licenses third party agency/organization'
-                WHEN A.COLUMN_NAME = 'ISSUING_INSTITUTION' THEN 'Issuing Department/Institution'
-                WHEN A.COLUMN_NAME = 'LICENSE_LEVEL' THEN 'License Level'
-                WHEN A.COLUMN_NAME = 'CERTI_LAW_REGULATION' THEN 'Whether it is a certificate required by laws and regulations'
-                WHEN A.COLUMN_NAME = 'APPLICATION_FEE' THEN 'Application Fee(INR)'
-                WHEN A.COLUMN_NAME = 'AUDIT_REQUIRED' THEN 'Are regular audits required during the validity period of the license?'
-                WHEN A.COLUMN_NAME = 'AUDIT_FREQUENCY_MONTH' THEN 'If it will be audited, how often will it be done? (Month)'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_NAME' THEN 'E-Certificate'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_URL' THEN 'E-Certificate URL'
-                WHEN A.COLUMN_NAME = 'REMARK' THEN 'Remark'
-                ELSE A.COLUMN_NAME
-            END AS RENAMED_COLUMN,
-          UD.EMP_ID AS UD_EMP_ID,
-            UI.EMP_ID AS UI_EMP_ID,
-            TO_CHAR(A.ADD_DATE, 'DD-MM-YYYY HH24:MI:SS') AS ADD_DATE,
-            A.ADD_BY
-        FROM
-            LMS.C_LICENSE_LOG_T A
-            LEFT JOIN lICENSEDATA D ON A.LICENSE_ID = D.ID
-            LEFT JOIN LMS.C_BASE_CODE_MANAGE_T B ON A.COLUMN_NAME IN ('REGION', 'ASSIST_DEPT_ID', 'THIRD_PARTY_AGENCY', 'ISSUING_INSTITUTION', 'LICENSE_LEVEL') 
-            AND A.BEFORE_DATA = CAST(B.ID AS VARCHAR2(50))
-            LEFT JOIN LMS.C_BASE_CODE_MANAGE_T C ON A.COLUMN_NAME IN ('REGION', 'ASSIST_DEPT_ID', 'THIRD_PARTY_AGENCY', 'ISSUING_INSTITUTION', 'LICENSE_LEVEL') 
-            AND A.AFTER_DATA = CAST(C.ID AS VARCHAR2(50))
-            LEFT JOIN LMS.C_USER_INFO_T UI ON A.COLUMN_NAME IN ('FIRST_RESPONSIBLE_DRI', 'RESPONSIBLE_DRI_ID') 
-            AND A.BEFORE_DATA = CAST(UI.ID AS VARCHAR2(50))
-            LEFT JOIN LMS.C_USER_INFO_T UD ON A.COLUMN_NAME IN ('FIRST_RESPONSIBLE_DRI', 'RESPONSIBLE_DRI_ID') 
-            AND A.AFTER_DATA = CAST(UD.ID AS VARCHAR2(50))
-        WHERE
-            D.SITE = NVL(V_SITE, D.SITE) 
-            AND D.VIRTUAL_ID = NVL(V_VIRTUAL_NUMBER, D.VIRTUAL_ID) 
-            AND A.DEL_FLAG = 0 AND A.COLUMN_NAME = NVL(V_COLUMN_NAME ,A.COLUMN_NAME)
-        AND (A.ADD_DATE >= TO_DATE(V_START_DATE, 'DD-MM-YYYY') OR
-                     V_START_DATE IS NULL)
-         AND (A.ADD_DATE <= TO_DATE(V_END_DATE, 'DD-MM-YYYY') + INTERVAL '1' DAY  OR
-                     V_END_DATE IS NULL)
-    )-- End date filter
-    WHERE
-        RN > (L_START_PAGE - 1) * L_PAGE_SIZE
-        AND RN <= (L_START_PAGE - 1) * L_PAGE_SIZE + L_PAGE_SIZE;
-
-    V_RES := '1';
-    V_RESULT := 'Success';
-
-    COMMIT;
-END;
-
-
-
- PROCEDURE GET_COLUMN_NAMES(
-  V_RES OUT VARCHAR2,
-    V_RESULT OUT VARCHAR2,
-    P_CURSOR OUT SYS_REFCURSOR
-   
-) IS
-BEGIN
-    OPEN P_CURSOR FOR
-    WITH COLUMNSS AS (
-    SELECT COLUMN_NAME 
-     FROM ALL_TAB_COLUMNS 
-    WHERE TABLE_NAME = 'C_LICENSE_MANAGE_T' 
-    AND OWNER = 'LMS'
-    )
-    
-    
-    SELECT 
-  A.COLUMN_NAME,
-            CASE 
-                WHEN A.COLUMN_NAME = 'NEW_LICENSE' THEN 'Whether it is a new License?'
-                WHEN A.COLUMN_NAME = 'REGION' THEN 'Region Name'
-                WHEN A.COLUMN_NAME = 'LICENCE_NO' THEN 'License Number'
-                WHEN A.COLUMN_NAME = 'ONE_TIME_CERTIFICATE' THEN 'Whether it is a one-time certification?'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_REQUIRED' THEN 'IF Required'
-                WHEN A.COLUMN_NAME = 'VALIDITY_STARTTIME' THEN 'Current License Validity from'
-                WHEN A.COLUMN_NAME = 'VALIDITY_ENDTIME' THEN 'Current License Validity To'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_FREQUENCY' THEN 'Certification Frequency (Month)'
-                WHEN A.COLUMN_NAME = 'EST_CERTI_DURATION' THEN 'Estimated Certificate Duration(Month)'
-                WHEN A.COLUMN_NAME = 'FIRST_RESPONSIBLE_DRI' THEN 'Staff Responsible of certification'
-                WHEN A.COLUMN_NAME = 'RESPONSIBLE_DRI_ID' THEN 'Responsible person for the Management'
-                WHEN A.COLUMN_NAME = 'ASSIST_DEPT_ID' THEN 'Which dept require assistance in applying License?'
-                WHEN A.COLUMN_NAME = 'THIRD_PARTY_AGENCY' THEN 'Have assisted in applying for licenses third party agency/organization'
-                WHEN A.COLUMN_NAME = 'ISSUING_INSTITUTION' THEN 'Issuing Department/Institution'
-                WHEN A.COLUMN_NAME = 'LICENSE_LEVEL' THEN 'License Level'
-                WHEN A.COLUMN_NAME = 'CERTI_LAW_REGULATION' THEN 'Whether it is a certificate required by laws and regulations'
-                WHEN A.COLUMN_NAME = 'APPLICATION_FEE' THEN 'Application Fee(INR)'
-                WHEN A.COLUMN_NAME = 'AUDIT_REQUIRED' THEN 'Are regular audits required during the validity period of the license?'
-                WHEN A.COLUMN_NAME = 'AUDIT_FREQUENCY_MONTH' THEN 'If it will be audited, how often will it be done? (Month)'
-                WHEN A.COLUMN_NAME = 'CERTIFICATE_NAME' THEN 'E-Certificate'
-            --    WHEN A.COLUMN_NAME = 'CERTIFICATE_URL' THEN 'E-Certificate URL'
-                WHEN A.COLUMN_NAME = 'REMARK' THEN 'Remark'
-                ELSE A.COLUMN_NAME
-            END AS RENAMED_COLUMN  
-        FROM
-           COLUMNSS A   WHERE A.COLUMN_NAME IN (
-    'NEW_LICENSE',
-    'REGION',
-    'LICENCE_NO',
-    'ONE_TIME_CERTIFICATE',
-    'CERTIFICATE_REQUIRED',
-    'VALIDITY_STARTTIME',
-    'VALIDITY_ENDTIME',
-    'CERTIFICATE_FREQUENCY',
-    'EST_CERTI_DURATION',
-    'FIRST_RESPONSIBLE_DRI',
-    'RESPONSIBLE_DRI_ID',
-    'ASSIST_DEPT_ID',
-    'THIRD_PARTY_AGENCY',
-    'ISSUING_INSTITUTION',
-    'LICENSE_LEVEL',
-    'CERTI_LAW_REGULATION',
-    'APPLICATION_FEE',
-    'AUDIT_REQUIRED',
-    'AUDIT_FREQUENCY_MONTH',
-    'CERTIFICATE_NAME',
- --   'CERTIFICATE_URL',
-    'REMARK'
-);  
-    V_RES := '1';
-    V_RESULT := 'Success';
-
-    COMMIT;
-END;
-
-
-
-
-
- PROCEDURE GET_DEPT_BASE_DASHBOARD_DETAIL (
-    V_EMP_ID   IN VARCHAR2,
-    V_SITE     IN NUMBER,
-    V_DEPT     IN NUMBER,
-    V_STATUS   IN NUMBER,
-    P_CURSOR   OUT SYS_REFCURSOR
-) IS 
-BEGIN 
-    OPEN P_CURSOR FOR 
-    WITH LICENSEDATA AS (
-        SELECT 
-        A.ID, A.SITE, A.VIRTUAL_ID, U.ID AS USER_ID, U.EMP_ID, 
-        A.STATUS, A.RESPONSIBLE_DEPT_ID ,A.DEL_FLAG ,A.FIRST_APPLY_DEPART,U."Role",U.DEPT 
-    FROM C_LICENSE_MANAGE_T A  
-    LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
-   WHERE U.EMP_ID = V_EMP_ID
-    AND A.DEL_FLAG = 0 
-    AND A.STATUS != 1201 --ADDED BY DINESH ON 
-  AND (
-   (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
-    OR 
-   ((TRIM(U.DEPT) <> 'All' AND (CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT) OR A.RESPONSIBLE_DEPT_ID = U.DEPT)) AND U.DEL_FLAG = 0) 
-   OR 
-    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
-)
-    )
-    SELECT 
-        ROW_NUMBER() OVER (ORDER BY B.ID) AS RN, 
-        COUNT(*) OVER () AS ROWSCOUNT,
-        B.BASIC_CODE AS DEPT, 
-        B.ID AS DEPTID,
-	  
-        A."Role",
-        COALESCE(COUNT(A.ID), 0) AS totalcount,
-        COALESCE(SUM(CASE WHEN A.STATUS = 4 THEN 1 ELSE 0 END), 0) AS EXPIRED_COUNT,
-        COALESCE(SUM(CASE WHEN A.STATUS = 3 THEN 1 ELSE 0 END), 0) AS TO_BE_NEWLY_APPLIED,
-        COALESCE(SUM(CASE WHEN A.STATUS = 2 THEN 1 ELSE 0 END), 0) AS NORMAL,
-        COALESCE(SUM(CASE WHEN A.STATUS = 5 THEN 1 ELSE 0 END), 0) AS SOON_TO_EXPIRE,
-        COALESCE(SUM(CASE WHEN A.STATUS = 6 THEN 1 ELSE 0 END), 0) AS IF_REQUIRED
-    FROM C_BASE_CODE_MANAGE_T B 
-    LEFT JOIN LICENSEDATA A 
-        ON (
-            (A.STATUS = 3 AND B.ID = A.FIRST_APPLY_DEPART) 
-            OR 
-            (A.STATUS <> 3 AND B.ID = A.RESPONSIBLE_DEPT_ID)
-        )
-    WHERE B.DEL_FLAG = 0 
-    AND B.TYPE_ID = 13
-    AND A.STATUS = NVL(V_STATUS, A.STATUS)
-    AND A.SITE = NVL(V_SITE,A.SITE)
-    AND B.ID = NVL(V_DEPT, B.ID)
-   AND (
-       (EXISTS (SELECT 1 FROM LICENSEDATA WHERE "Role" IN (16, 17))) 
-      OR 
-       (B.ID = A.DEPT)  -- Restrict to department if role is not 16 or 17
-   )
-    GROUP BY B.BASIC_CODE, B.ID,A."Role";
-END;
-
-
-
-
- PROCEDURE GET_DASHBOARD_DETAIL_MAIL (
-    V_EMP_ID   IN VARCHAR2,
-    V_SITE     IN VARCHAR2,
-    V_DEPT     IN NUMBER,
-    V_STATUS   IN NUMBER,
-    P_CURSOR   OUT SYS_REFCURSOR
-) IS 
-
-BEGIN 
-    OPEN P_CURSOR FOR 
-    WITH LICENSEDATA AS (
-        SELECT 
-        A.ID, A.SITE, A.VIRTUAL_ID, U.ID AS USER_ID, U.EMP_ID, 
-        A.STATUS, A.RESPONSIBLE_DEPT_ID ,A.DEL_FLAG ,A.FIRST_APPLY_DEPART,U."Role",U.DEPT 
-    FROM C_LICENSE_MANAGE_T A  
-    LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
-    WHERE U.EMP_ID = V_EMP_ID 
-    AND A.DEL_FLAG = 0 
-    AND A.STATUS != 1201 --ADDED BY DINESH ON 
-   AND (
-    (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
-    OR 
-    ((TRIM(U.DEPT) <> 'All' AND (CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT) OR A.RESPONSIBLE_DEPT_ID = U.DEPT)) AND U.DEL_FLAG = 0) 
-    OR 
-    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
-)
-    )
-    SELECT 
-        ROW_NUMBER() OVER (ORDER BY B.ID) AS RN, 
-        COUNT(*) OVER () AS ROWSCOUNT,
-        B.BASIC_CODE AS DEPT, 
-        B.ID AS DEPTID,
-        A."Role",
-        COALESCE(COUNT(A.ID), 0) AS totalcount,
-        COALESCE(SUM(CASE WHEN A.STATUS = 4 THEN 1 ELSE 0 END), 0) AS EXPIRED_COUNT,
-        COALESCE(SUM(CASE WHEN A.STATUS = 3 THEN 1 ELSE 0 END), 0) AS TO_BE_NEWLY_APPLIED,
-        COALESCE(SUM(CASE WHEN A.STATUS = 2 THEN 1 ELSE 0 END), 0) AS NORMAL,
-        COALESCE(SUM(CASE WHEN A.STATUS = 5 THEN 1 ELSE 0 END), 0) AS SOON_TO_EXPIRE,
-        COALESCE(SUM(CASE WHEN A.STATUS = 6 THEN 1 ELSE 0 END), 0) AS IF_REQUIRED
-    FROM C_BASE_CODE_MANAGE_T B 
-    LEFT JOIN LICENSEDATA A 
-        ON (
-            (A.STATUS = 3 AND B.ID = A.FIRST_APPLY_DEPART) 
-            OR 
-            (A.STATUS <> 3 AND B.ID = A.RESPONSIBLE_DEPT_ID)
-        )
-    WHERE B.DEL_FLAG = 0 
-    AND B.TYPE_ID = 13
-    AND A.STATUS = NVL(V_STATUS, A.STATUS)
-    AND INSTR(',' || V_SITE, ',' || A.SITE || ',') > 0 
---    AND A.SITE = NVL(V_SITE,A.SITE)
-    AND B.ID = NVL(V_DEPT, B.ID)
-    AND (
-        (EXISTS (SELECT 1 FROM LICENSEDATA WHERE "Role" IN (16, 17))) 
-        OR 
-        (B.ID = A.DEPT)  -- Restrict to department if role is not 16 or 17
-    )
-    GROUP BY B.BASIC_CODE, B.ID,A."Role";
-END;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---
--- PROCEDURE GET_DEPT_BASE_DASHBOARD_DETAIL (
---    V_EMP_ID   IN VARCHAR2,
---    V_SITE     IN NUMBER,
---    V_DEPT     IN NUMBER,
---    V_STATUS   IN NUMBER,
---    P_CURSOR   OUT SYS_REFCURSOR
---) IS 
---BEGIN 
---    OPEN P_CURSOR FOR 
---    WITH LICENSEDATA AS (
---        SELECT 
---            A.ID, A.SITE, A.VIRTUAL_ID, U.ID AS USER_ID, U.EMP_ID, 
---            A.STATUS, A.RESPONSIBLE_DEPT_ID, A.DEL_FLAG, A.FIRST_APPLY_DEPART, U."Role", U.DEPT 
---        FROM C_LICENSE_MANAGE_T A  
---        LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
---        WHERE (U.EMP_ID = V_EMP_ID OR V_EMP_ID IS NULL OR V_EMP_ID = '')
---          AND A.DEL_FLAG = 0 
---          AND (
---                (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
---                OR 
---                ((TRIM(U.DEPT) <> 'All' AND (CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT) OR A.RESPONSIBLE_DEPT_ID = U.DEPT)) 
---                AND U.DEL_FLAG = 0) 
---                OR 
---                (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
---          )
---    )
---    SELECT 
---        ROW_NUMBER() OVER (ORDER BY B.ID) AS RN, 
---        COUNT(*) OVER () AS ROWSCOUNT,
---        B.BASIC_CODE AS DEPT, 
---        B.ID AS DEPTID,
---        COALESCE(COUNT(A.ID), 0) AS totalcount,
---        COALESCE(SUM(CASE WHEN A.STATUS = 4 THEN 1 ELSE 0 END), 0) AS EXPIRED_COUNT,
---        COALESCE(SUM(CASE WHEN A.STATUS = 3 THEN 1 ELSE 0 END), 0) AS TO_BE_NEWLY_APPLIED,
---        COALESCE(SUM(CASE WHEN A.STATUS = 2 THEN 1 ELSE 0 END), 0) AS NORMAL,
---        COALESCE(SUM(CASE WHEN A.STATUS = 5 THEN 1 ELSE 0 END), 0) AS SOON_TO_EXPIRE,
---        COALESCE(SUM(CASE WHEN A.STATUS = 6 THEN 1 ELSE 0 END), 0) AS IF_REQUIRED
---    FROM C_BASE_CODE_MANAGE_T B 
---    LEFT JOIN LICENSEDATA A 
---        ON (
---            (A.STATUS = 3 AND B.ID = A.FIRST_APPLY_DEPART) 
---            OR 
---            (A.STATUS <> 3 AND B.ID = A.RESPONSIBLE_DEPT_ID)
---        )
---    WHERE B.DEL_FLAG = 0 
---      AND B.TYPE_ID = 13
---      AND A.STATUS = NVL(V_STATUS, A.STATUS)
---      AND A.SITE = NVL(V_SITE, A.SITE)
---      AND B.ID = NVL(V_DEPT, B.ID)
---      AND (
---            (EXISTS (SELECT 1 FROM LICENSEDATA WHERE "Role" IN (16, 17))) 
---            OR 
---            (B.ID = A.DEPT)  -- Restrict to department if role is not 16 or 17
---      )
---    GROUP BY B.BASIC_CODE, B.ID;
---END;
-
-
-PROCEDURE GET_DASHBOARD_SUMMARY(
-V_EMP_ID IN VARCHAR2,
-V_SITE IN NUMBER,
-V_DEPT IN  NUMBER,
-V_LICENSE_TYPE IN NUMBER ,
---V_STATUS IN NUMBER,
-P_CURSOR OUT SYS_REFCURSOR
-
-)IS 
+added 2160 packages, and audited 2247 packages in 10m
  
-BEGIN 
-	OPEN P_CURSOR FOR 
---  WITH LICENSEDATA AS (
---    SELECT 
---        A.ID, A.SITE, A.VIRTUAL_ID, U.ID AS USER_ID, U.EMP_ID, 
---        A.STATUS, A.RESPONSIBLE_DEPT_ID ,A.DEL_FLAG 
---    FROM C_LICENSE_MANAGE_T A  
---    LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
---    WHERE U.EMP_ID = V_EMP_ID
---    AND A.DEL_FLAG = 0 
---    AND (
---    (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
---    OR 
---    ((TRIM(U.DEPT) <> 'All' AND CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT)) AND U.DEL_FLAG = 0) 
---    OR 
---    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
---)
---
---)
---SELECT 
---    COALESCE(COUNT(*), 0) AS SUMMARY,
---    COALESCE(SUM(CASE WHEN A.STATUS = 4 THEN 1 ELSE 0 END), 0) AS EXPIRED_COUNT,
---    COALESCE(SUM(CASE WHEN A.STATUS = 3 THEN 1 ELSE 0 END), 0) AS TO_BE_NEWLY_APPLIED,
---    COALESCE(SUM(CASE WHEN A.STATUS = 2 THEN 1 ELSE 0 END), 0) AS NORMAL,
---    COALESCE(SUM(CASE WHEN A.STATUS = 5 THEN 1 ELSE 0 END), 0) AS SOON_TO_EXPIRE,
---    COALESCE(SUM(CASE WHEN A.STATUS = 6 THEN 1 ELSE 0 END), 0) AS IF_REQUIRED
---FROM LICENSEDATA A
---WHERE A.DEL_FLAG = 0 AND A.SITE = NVL(V_SITE,A.SITE)
---AND 
---(
---A.RESPONSIBLE_DEPT_ID =  V_DEPT OR V_DEPT IS NULL);
-	
-	SELECT 
-    COALESCE(COUNT(*), 0) AS SUMMARY,
-    COALESCE(SUM(CASE WHEN A.STATUS = 4 THEN 1 ELSE 0 END), 0) AS EXPIRED_COUNT,
-    COALESCE(SUM(CASE WHEN A.STATUS = 3 THEN 1 ELSE 0 END), 0) AS TO_BE_NEWLY_APPLIED,
-    COALESCE(SUM(CASE WHEN A.STATUS = 2 THEN 1 ELSE 0 END), 0) AS NORMAL,
-    COALESCE(SUM(CASE WHEN A.STATUS = 5 THEN 1 ELSE 0 END), 0) AS SOON_TO_EXPIRE,
-    COALESCE(SUM(CASE WHEN A.STATUS = 6 THEN 1 ELSE 0 END), 0) AS IF_REQUIRED
-FROM C_LICENSE_MANAGE_T A  
-LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
-WHERE U.EMP_ID = V_EMP_ID
-AND A.DEL_FLAG = 0 
-AND A.SITE = NVL(V_SITE,A.SITE)
-AND A.STATUS != 1201 --ADDED BY DINESH ON 6/6/25
- AND (
-        (A.STATUS = 3 AND (A.FIRST_APPLY_DEPART = V_DEPT OR V_DEPT IS NULL)) 
-        OR 
-        (A.STATUS <> 3 AND (A.RESPONSIBLE_DEPT_ID = V_DEPT OR V_DEPT IS NULL))
-    )
-AND (
-    (TRIM(U.DEPT) = 'All' AND U.DEL_FLAG = 0) 
-    OR 
-    ((TRIM(U.DEPT) <> 'All' AND CAST(
-        CASE WHEN A.STATUS = 3 THEN A.FIRST_APPLY_DEPART ELSE A.RESPONSIBLE_DEPT_ID END 
-        AS VARCHAR(50)) = TRIM(U.DEPT)) AND U.DEL_FLAG = 0) 
-    OR 
-    (A.RESPONSIBLE_DRI_ID = U.ID AND U.DEL_FLAG = 0)
-);
+176 packages are looking for funding
+  run `npm fund` for details
 
-END;
+183 vulnerabilities (12 low, 53 moderate, 96 high, 22 critical)
 
+To address issues that do not require attention, run:
+  npm audit fix
 
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
 
+Some issues need review, and may require choosing
+a different dependency.
 
+Run `npm audit` for details.
+PS E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree> npm ls lodash
+ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree 
+├─┬ @angular-devkit/build-angular@0.803.29
+│ ├─┬ @babel/core@7.8.7
+│ │ └── lodash@4.18.1 deduped
+│ ├─┬ source-map-loader@0.2.4
+│ │ └─┬ async@2.6.4
+│ │   └── lodash@4.18.1 deduped
+│ ├─┬ webpack-dev-server@3.11.0
+│ │ └─┬ http-proxy-middleware@0.19.1
+│ │   └── lodash@4.18.1 deduped
+│ └─┬ webpack-merge@4.2.1
+│   └── lodash@4.18.1 deduped
+├─┬ @angular/cli@8.3.29
+│ └─┬ inquirer@6.5.1
+│   └── lodash@4.18.1 deduped
+├─┬ @antv/data-set@0.10.2
+│ └─┬ dagre@0.8.5
+│   ├─┬ graphlib@2.1.8
+│   │ └── lodash@4.18.1 deduped
+│   └── lodash@4.18.1 deduped
+├─┬ karma@4.1.0
+│ ├── lodash@4.18.1
+│ └─┬ log4js@4.5.1
+│   └─┬ streamroller@1.0.6
+│     └── lodash@4.18.1 deduped
+├─┬ lint-staged@8.2.1
+│ ├── lodash@4.18.1 deduped
+│ └─┬ yup@0.27.0
+│   └── lodash@4.18.1 deduped
+├─┬ prettier-stylelint@0.4.2
+│ └─┬ stylelint@8.4.0
+│   ├── lodash@4.18.1 deduped
+│   ├─┬ postcss-reporter@5.0.0
+│   │ └── lodash@4.18.1 deduped
+│   └─┬ table@4.0.3
+│     └── lodash@4.18.1 deduped
+├─┬ quill-image-resize-module@3.0.0
+│ └── lodash@4.18.1 deduped
+├─┬ stylelint-config-rational-order@0.1.2
+│ ├─┬ stylelint-order@2.2.1
+│ │ ├── lodash@4.18.1 deduped
+│ │ └─┬ postcss-sorting@4.1.0
+│ │   └── lodash@4.18.1 deduped
+│ └─┬ stylelint@9.10.1
+│   └── lodash@4.18.1 deduped
+├─┬ stylelint-order@3.1.1
+│ ├── lodash@4.18.1 deduped
+│ └─┬ postcss-sorting@5.0.1
+│   └── lodash@4.18.1 deduped
+├─┬ stylelint@10.1.0
+│ ├── lodash@4.18.1 deduped
+│ ├─┬ postcss-reporter@6.0.1
+│ │ └── lodash@4.18.1 deduped
+│ └─┬ table@5.4.6
+│   └── lodash@4.18.1 deduped
+└─┬ webpack-bundle-analyzer@3.9.0
+  └── lodash@4.18.1 deduped
+ 
+PS E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree> npm start
+ 
+> ng-alain-pro@0.0.0 start
+> npm run color-less && ng serve -o --host 0.0.0.0 --port 4208
 
+ 
+> ng-alain-pro@0.0.0 color-less
+> node scripts/color-less.js
 
+error TypeError: Cannot read properties of undefined (reading 'slice') 
+    at generateTheme (E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree\node_modules\antd-theme-generator\index.js:414:14)
+    at Object.<anonymous> (E:\NPISP-Project\New folder (2)\LMS-Final-Req\LMS-260825-till-agree\scripts\color-less.js:49:1)
+    at Module._compile (node:internal/modules/cjs/loader:1198:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1252:10)
+    at Module.load (node:internal/modules/cjs/loader:1076:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:911:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
+    at node:internal/main/run_main_module:22:47
+WARNING: This is a simple server for use in testing or debugging Angular applications 
+locally. It hasn't been reviewed for security issues.
 
+Binding this server to an open connection can result in compromising your application or
+computer. Using a different host than the one passed to the "--host" flag might result in
+websocket connection issues. You might need to use "--disableHostCheck" if that's the
+case.
+10% building 3/3 modules 0 active(node:9428) [DEP0111] DeprecationWarning: Access to process.binding('http_parser') is deprecated. 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+i ｢wds｣: Project is running at http://0.0.0.0:4208/webpack-dev-server/
+i ｢wds｣: webpack output is served from /
+i ｢wds｣: 404s will fallback to //index.html
 
+chunk {main} main.js, main.js.map (main) 2.28 kB [initial] [rendered]
+chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 127 kB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
+chunk {scripts} scripts.js, scripts.js.map (scripts) 2.69 MB [entry] [rendered]
+chunk {styles} styles.js, styles.js.map (styles) 2.81 MB [initial] [rendered]
+chunk {vendor} vendor.js, vendor.js.map (vendor) 452 kB [initial] [rendered]
+Date: 2026-08-21T04:51:22.266Z - Hash: ff8f22c71ef15e87e180 - Time: 16198ms
 
-PROCEDURE GET_STATUS_COUNTS (
-    V_EMP_ID IN VARCHAR2,
-    V_SITE IN NUMBER,
-   -- V_DEPT IN VARCHAR2,
-    OUT_CURSOR OUT SYS_REFCURSOR
-) 
-IS 
-BEGIN
-    OPEN OUT_CURSOR FOR
-    WITH LICENSEDATA AS(
-    SELECT A.ID, A.SITE, A.VIRTUAL_ID, U.ID AS USER_ID, U.EMP_ID ,STATUS,A.RESPONSIBLE_DEPT_ID 
-    FROM C_LICENSE_MANAGE_T A  
-    LEFT JOIN C_USER_INFO_T U ON A.SITE = U.SITE  
-    WHERE U.EMP_ID = V_EMP_ID 
-    AND A.DEL_FLAG = 0 
-    AND (
-        TRIM(U.DEPT) = 'All'
-        OR 
-        (TRIM(U.DEPT) <> 'All' AND CAST(A.FIRST_APPLY_DEPART AS VARCHAR(50)) = TRIM(U.DEPT)
-        OR 
-        A.RESPONSIBLE_DRI_ID = U.ID
-    )
-    ))
+ERROR in node_modules/@types/jquery/misc.d.ts:7099:23 - error TS1005: ']' expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                           ~~
+node_modules/@types/jquery/misc.d.ts:7099:26 - error TS1005: ';' expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                              ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7099:33 - error TS1005: ';' expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                                     ~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7099:60 - error TS1005: ';' expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                                                                ~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7099:81 - error TS1005: ';' expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                                                                                     ~
+node_modules/@types/jquery/misc.d.ts:7099:82 - error TS1128: Declaration or statement expected.
+
+7099         [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+                                                                                      ~
+node_modules/@types/jquery/misc.d.ts:7112:19 - error TS1110: Type expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                       ~~~
+node_modules/@types/jquery/misc.d.ts:7112:43 - error TS1005: ';' expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                               ~
+node_modules/@types/jquery/misc.d.ts:7112:44 - error TS1128: Declaration or statement expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                ~
+node_modules/@types/jquery/misc.d.ts:7112:48 - error TS1005: ';' expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                    ~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7112:65 - error TS1005: '}' expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                                     ~
+node_modules/@types/jquery/misc.d.ts:7112:66 - error TS1128: Declaration or statement expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                                      ~
+node_modules/@types/jquery/misc.d.ts:7112:67 - error TS1128: Declaration or statement expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                                       ~
+node_modules/@types/jquery/misc.d.ts:7112:69 - error TS1005: ';' expected.
+
+7112             [K in `${EventType}.${string}`]: K extends `${infer P}.${string}`
+                                                                         ~
+node_modules/@types/jquery/misc.d.ts:7147:51 - error TS1005: ';' expected.
+
+7147         // No idea why it's necessary to include `object` in the union but otherwise TypeScript complains that
+                                                       ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7173:200 - error TS1005: ';' expected.
+
+7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
+behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
+in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
      
-    
-    
-    
-    
-    SELECT 'TOTAL' AS types, 'TOTAL' AS type_name, CAST(NULL AS VARCHAR2(50)) AS type_id, COUNT(*) AS counts
-FROM LICENSEDATA
-UNION ALL
-SELECT 'STATUS' AS types, S.BASIC_CODE AS type_name, CAST(A.STATUS AS VARCHAR2(50)) AS type_id, COUNT(A.ID) AS counts
-FROM LICENSEDATA A
-JOIN C_SP_BASE_CODE_MANAGE_T S ON A.STATUS = S.ID
-GROUP BY S.BASIC_CODE, A.STATUS
-UNION ALL
-SELECT 'DEPARTMENT' AS types, MD.BASIC_CODE AS type_name, CAST(A.RESPONSIBLE_DEPT_ID AS VARCHAR2(50)) AS type_id, COUNT(A.ID) AS counts
-FROM C_BASE_CODE_MANAGE_T MD 
-LEFT JOIN LICENSEDATA A ON A.RESPONSIBLE_DEPT_ID = MD.ID
-WHERE MD.TYPE_ID = 13
-GROUP BY MD.BASIC_CODE, A.RESPONSIBLE_DEPT_ID;
+                                                                         ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7173:262 - error TS1005: ';' expected.
 
-END GET_STATUS_COUNTS;
-END REPORTS;
+7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
+behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
+in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
+     
+
+    ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7173:297 - error TS1005: ';' expected.
+
+7173          * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the 
+behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored 
+in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
+     
+
+                                       ~~~~
+node_modules/@types/jquery/misc.d.ts:7175:21 - error TS1005: ';' expected.
+
+7175          * As with `fixHooks`, the special event hooks design assumes it will be very rare that two unrelated pieces of code want to process the same event name. Special event authors who need to modify events with existing hooks will need to take precautions to avoid introducing unwanted side-effects by clobbering those hooks.
+                         ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7185:196 - error TS1005: ';' expected.
+
+7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
+     
+                                                                     ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7185:258 - error TS1005: ';' expected.
+
+7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
+     
+
+~~~~~~
+node_modules/@types/jquery/misc.d.ts:7185:293 - error TS1005: ';' expected.
+
+7185      * The jQuery special event hooks are a set of per-event-name functions and properties that allow code to control the behavior of event processing within jQuery. The mechanism is similar to `fixHooks` in that the special event information is stored in `jQuery.event.special.NAME`, where `NAME` is the name of the special event. Event names are case sensitive.
+     
+
+                                   ~~~~
+node_modules/@types/jquery/misc.d.ts:7187:17 - error TS1005: ';' expected.
+
+7187      * As with `fixHooks`, the special event hooks design assumes it will be very rare that two unrelated pieces of code want 
+to process the same event name. Special event authors who need to modify events with existing hooks will need to take precautions to avoid introducing unwanted side-effects by clobbering those hooks.
+                     ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7193:122 - error TS1005: ';' expected.
+
+7193          * Indicates whether this event type should be bubbled when the `.trigger()` method is called; by default it is `false`, meaning that a triggered event will bubble to the element's parents up to the document (if attached to a document) and then to the window. Note that defining `noBubble` on an event will effectively prevent that event from being used for delegated events with 
+`.trigger()`.
+                                                                                                                              ~~~~~node_modules/@types/jquery/misc.d.ts:7193:289 - error TS1005: ';' expected.
+
+7193          * Indicates whether this event type should be bubbled when the `.trigger()` method is called; by default it is `false`, meaning that a triggered event will bubble to the element's parents up to the document (if attached to a document) and then to the window. Note that defining `noBubble` on an event will effectively prevent that event from being used for delegated events with 
+`.trigger()`.
+     
+
+                               ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7199:156 - error TS1005: ';' expected.
+
+7199          * When defined, these string properties specify that a special event should be handled like another event type until 
+the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
+     
+                             ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7199:218 - error TS1005: ';' expected.
+
+7199          * When defined, these string properties specify that a special event should be handled like another event type until 
+the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
+     
+                                                                                           ~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7205:156 - error TS1005: ';' expected.
+
+7205          * When defined, these string properties specify that a special event should be handled like another event type until 
+the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
+     
+                             ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7205:218 - error TS1005: ';' expected.
+
+7205[0m          * When defined, these string properties specify that a special event should be handled like another event type until the event is delivered. The `bindType` is used if the event is attached directly, and the `delegateType` is used for delegated events. These types are generally DOM event types, and _should not_ be a special event themselves.
+     
+                                                                                           ~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7211:229 - error TS1005: ';' expected.
+
+7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
+hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
+     
+                                                                                                      ~~~~
+node_modules/@types/jquery/misc.d.ts:7211:317 - error TS1005: ';' expected.
+
+7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
+hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
+     
+
+                                                           ~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7211:385 - error TS1005: ';' expected.
+
+7211          * The setup hook is called the first time an event of a particular type is attached to an element; this provides the 
+hook an opportunity to do processing that will apply to all events of this type on this element. The `this` keyword will be a reference to the element where the event is being attached and `eventHandle` is jQuery's event handler function. In most cases the `namespaces` argument should not be used, since it only represents the namespaces of the _first_ event being attached; subsequent events may not have this same namespaces.
+     
+
+                                                                                                                               ~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7213:203 - error TS1005: ';' expected.
+
+7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
+to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
+     
+                                                                            ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7213:286 - error TS1005: ';' expected.
+
+7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
+to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
+     
+
+                            ~~~~~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7213:308 - error TS1005: ';' expected. 
+
+7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
+to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
+     
+
+                                                  ~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7213:362 - error TS1005: ';' expected.
+
+7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
+to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
+     
+
+                                                                                                        ~~~~~
+node_modules/@types/jquery/misc.d.ts:7213:664 - error TS1005: ';' expected.
+
+7213          * This hook can perform whatever processing it desires, including attaching its own event handlers to the element or 
+to other elements and recording setup information on the element using the `jQuery.data()` method. If the setup hook wants jQuery to add a browser event (via `addEventListener` or `attachEvent`, depending on browser) it should return `false`. In all other cases, jQuery will not add the browser event, but will continue all its other bookkeeping for the event. This would be appropriate, for example, if the event was never fired by the browser but invoked by `.trigger()`. To attach the jQuery event handler in the setup hook, use the `eventHandle` argument.
+     
+
+
+
+
+             ~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7220:115 - error TS1005: ';' expected.
+
+7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
+                                                                                                                       ~~~~        
+node_modules/@types/jquery/misc.d.ts:7220:226 - error TS1005: ';' expected.
+
+7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
+     
+                                                                                                   ~~~~~
+node_modules/@types/jquery/misc.d.ts:7220:310 - error TS1005: ';' expected.
+
+7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
+     
+
+                                                    ~~~~~~~~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7220:335 - error TS1005: ';' expected.
+
+7220          * The teardown hook is called when the final event of a particular type is removed from an element. The `this` keyword will be a reference to the element where the event is being cleaned up. This hook should return `false` if it wants jQuery to remove the event from the browser's event system (via `removeEventListener` or `detachEvent`). In most cases, the setup and teardown hooks should return the same value.
+     
+
+                                                                             ~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7222:111 - error TS1005: ';' expected.
+
+7222          * If the setup hook attached event handlers or added data to an element through a mechanism such as `jQuery.data()`, 
+the teardown hook should reverse the process and remove them. jQuery will generally remove the data and events when an element is totally removed from the document, but failing to remove data or events on teardown will cause a memory leak if the element stays in the document.
+                                                                                                                   ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7229:123 - error TS1005: ';' expected.
+
+7229          * Each time an event handler is added to an element through an API such as `.on()`, jQuery calls this hook. The `this` keyword will be the element to which the event handler is being added, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
+                                                                                                                               ~~~~node_modules/@types/jquery/misc.d.ts:7229:209 - error TS1005: ';' expected.
+
+7229          * Each time an event handler is added to an element through an API such as `.on()`, jQuery calls this hook. The `this` keyword will be the element to which the event handler is being added, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
+     
+                                                                                  ~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7235:118 - error TS1005: ';' expected.
+
+7235          * When an event handler is removed from an element using an API such as `.off()`, this hook is called. The `this` keyword will be the element where the handler is being removed, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
+                                                                                                                          ~~~~     
+node_modules/@types/jquery/misc.d.ts:7235:197 - error TS1005: ';' expected.
+
+7235          * When an event handler is removed from an element using an API such as `.off()`, this hook is called. The `this` keyword will be the element where the handler is being removed, and the `handleObj` argument is as described in the section above. The return value of this hook is ignored.
+     
+                                                                      ~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7241:199 - error TS1005: ';' expected.
+
+7241          * Called when the `.trigger()` or `.triggerHandler()` methods are used to trigger an event for the special type from 
+code, as opposed to events that originate from within the browser. The `this` keyword will be the element being triggered, and the 
+event argument will be a `jQuery.Event` object constructed from the caller's input. At minimum, the event type, data, namespace, and target properties are set on the event. The data argument represents additional data passed by `.trigger()` if present.
+     
+                                                                        ~~~~
+node_modules/@types/jquery/misc.d.ts:7241:284 - error TS1005: ';' expected.
+
+7241          * Called when the `.trigger()` or `.triggerHandler()` methods are used to trigger an event for the special type from 
+code, as opposed to events that originate from within the browser. The `this` keyword will be the element being triggered, and the 
+event argument will be a `jQuery.Event` object constructed from the caller's input. At minimum, the event type, data, namespace, and target properties are set on the event. The data argument represents additional data passed by `.trigger()` if present.
+     
+
+                          ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7243:100 - error TS1005: ';' expected.
+
+7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
+the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
+call event handlers attached to parent elements.
+                                                                                                        ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7243:249 - error TS1005: ';' expected.
+
+7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
+the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
+call event handlers attached to parent elements.
+     
+                                                                                                                          ~~~~~    
+node_modules/@types/jquery/misc.d.ts:7243:278 - error TS1005: ';' expected.
+
+7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
+the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
+call event handlers attached to parent elements.
+     
+
+                    ~~~~~
+node_modules/@types/jquery/misc.d.ts:7243:341 - error TS1005: ';' expected.
+
+7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
+the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
+call event handlers attached to parent elements.
+     
+
+                                                                                   ~~~~~
+node_modules/@types/jquery/misc.d.ts:7243:601 - error TS1005: ';' expected.
+
+7243          * The trigger hook is called early in the process of triggering an event, just after the `jQuery.Event` object is constructed and before any handlers have been called. It can process the triggered event in any way, for example by calling `event.stopPropagation()` or `event.preventDefault()` before returning. If the hook returns `false`, jQuery does not perform any further event triggering actions and returns immediately. Otherwise, it performs the normal trigger processing, calling any event handlers for 
+the element and bubbling the event (unless propagation is stopped in advance or `noBubble` was specified for the special event) to 
+call event handlers attached to parent elements.
+     
+
+
+
+                                                                                 ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7250:202 - error TS1005: ';' expected.
+
+7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
+checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
+     
+                                                                           ~~~~~
+node_modules/@types/jquery/misc.d.ts:7250:272 - error TS1005: ';' expected.
+
+7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
+checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
+     
+
+              ~~~~~~
+node_modules/@types/jquery/misc.d.ts:7250:327 - 1merror TS1005: ';' expected.
+
+7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
+checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
+     
+
+                                                                     ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7250:478 - error TS1005: ';' expected.
+
+7250          * When the `.trigger()` method finishes running all the event handlers for an event, it also looks for and runs any method on the target object by the same name unless of the handlers called `event.preventDefault()`. So, `.trigger( "submit" )` will execute the `submit()` method on the element if one exists. When a `_default` hook is specified, the hook is called just prior to 
+checking for and executing the element's default method. If this hook returns the value `false` the element's default method will be called; otherwise it is not.
+     
+
+
+                                                                                         ~~~~~
+node_modules/@types/jquery/misc.d.ts:7257:340 - error TS1005: ';' expected.
+
+7257          * jQuery calls a handle hook when the event has occurred and jQuery would normally call the user's event handler specified by `.on()` or another event binding method. If the hook exists, jQuery calls it _instead_ of that event handler, passing it the event and any data passed from `.trigger()` if it was not a native event. The `this` keyword is the DOM element being handled, and `event.handleObj` property has the detailed event information.
+     
+
+                                                                                  ~~~~
+node_modules/@types/jquery/misc.d.ts:7257:393 - error TS1005: ';' expected.
+
+7257          * jQuery calls a handle hook when the event has occurred and jQuery would normally call the user's event handler specified by `.on()` or another event binding method. If the hook exists, jQuery calls it _instead_ of that event handler, passing it the event and any data passed from `.trigger()` if it was not a native event. The `this` keyword is the DOM element being handled, and `event.handleObj` property has the detailed event information.
+     
+
+
+    ~~~~~
+node_modules/@types/jquery/misc.d.ts:7259:134 - error TS1005: ';' expected.
+
+7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
+is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
+return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
+     
+       ~~~~~
+node_modules/@types/jquery/misc.d.ts:7259:636 - error TS1005: ';' expected.
+
+7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
+is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
+return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
+     
+
+
+
+                                                                                                                    ~~~~~~~~       
+node_modules/@types/jquery/misc.d.ts:7259:651 - error TS1005: ';' expected.
+
+7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
+is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
+return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
+     
+
+
+
+
+~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7259:794 - error TS1005: ';' expected.
+
+7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
+is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
+return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
+     
+
+
+
+
+
+            ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7259:809 - error TS1005: ';' expected.
+
+7259          * Based in the information it has, the handle hook should decide whether to call the original handler function which 
+is in `event.handleObj.handler`. It can modify information in the event object before calling the original handler, but _must restore_ that data before returning or subsequent unrelated event handlers may act unpredictably. In most cases, the handle hook should 
+return the result of the original handler, but that is at the discretion of the hook. The handle hook is unique in that it is the only special event function hook that is called under its original special event name when the type is mapped using `bindType` and `delegateType`. For that reason, it is almost always an error to have anything other than a handle hook present if the special event defines a `bindType` and `delegateType`, since those other hooks will never be called.
+     
+
+
+
+
+
+                           ~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7281:69 - error TS1005: ';' expected.
+
+7281      * Many of the special event hook functions below are passed a `handleObj` object that provides more information about the event, how it was attached, and its current state. This object and its contents should be treated as read-only data, and only the 
+properties below are documented for use by special event handlers.
+                                                                         ~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7286:40 - error TS1005: ';' expected.
+
+7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
+                                            ~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7286:90 - error TS1005: ';' expected.
+
+7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
+                                                                                              ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7286:104 - error TS1005: ';' expected.
+
+7286          * The type of event, such as `"click"`. When special event mapping is used via `bindType` or `delegateType`, this will be the mapped type.
+                                                                                                            ~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7290:76 - error TS1005: ';' expected.
+
+7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
+                                                                                ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7290:90 - error TS1005: ';' expected.
+
+7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
+                                                                                              ~~~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7290:155 - error TS1005: ';' expected.
+
+7290          * The original type name regardless of whether it was mapped via `bindType` or `delegateType`. So when a "pushy" event is mapped to "click" its `origType` would be "pushy".
+     
+                            ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7294:81 - error TS1005: ';' expected.
+
+7294          * Namespace(s), if any, provided when the event was attached, such as `"myPlugin"`. When multiple namespaces are given, they are separated by periods and sorted in ascending alphabetical order. If no namespaces are provided, this property is an empty string.
+                                                                                     ~~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7298:182 - error TS1005: ';' expected.
+
+7298          * For delegated events, this is the selector used to filter descendant elements and determine if the handler should be called. For directly bound events, this property is `null`.
+     
+                                                       ~~~~
+node_modules/@types/jquery/misc.d.ts:7302:75 - error TS1005: ';' expected.
+
+7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
+                                                                               ~
+node_modules/@types/jquery/misc.d.ts:7302:129 - error TS1005: ';' expected.
+
+7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
+     
+  ~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7302:159 - error TS1005: ';' expected.
+ 
+7302          * The data, if any, passed to jQuery during event binding, e.g. `{ myData: 42 }`. If the data argument was omitted or `undefined`, this property is `undefined` as well.
+     
+                                ~~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7306:78 - error TS1005: ';' expected.
+
+7306          * Event handler function passed to jQuery during event binding. If `false` was passed during event binding, the handler refers to a single shared function that simply returns `false`.
+                                                                                  ~~~~~
+node_modules/@types/jquery/misc.d.ts:7306:186 - error TS1005: ';' expected.
+
+7306          * Event handler function passed to jQuery during event binding. If `false` was passed during event binding, the handler refers to a single shared function that simply returns `false`.
+     
+                                                           ~~~~~
+node_modules/@types/jquery/misc.d.ts:7374:28 - error TS1005: ';' expected.
+
+7374 // Forward declaration of `Iterable<T>`.
+                                ~~~~~~~~
+node_modules/@types/jquery/misc.d.ts:7389:1 - error TS1160: Unterminated template literal.
+
+7389
+    
+
+** Angular Live Development Server is listening on 0.0.0.0:4208, open your browser on http://localhost:4208/ **
+i ｢wdm｣: Failed to compile. 
