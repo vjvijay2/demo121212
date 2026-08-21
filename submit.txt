@@ -1,65 +1,72 @@
-PS E:\Original Code\FMS\FMS> npm install @angular/material@8.2.3 @angular/cdk@8.2.3 --save   
-npm ERR! code ERESOLVE 
-npm ERR! ERESOLVE could not resolve 
+PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm install
+npm WARN old lockfile
+npm WARN old lockfile The package-lock.json file was created with an old version of npm,npm WARN old lockfile so supplemental metadata must be fetched from the registry.       
+npm WARN old lockfile
+npm WARN old lockfile This is a one-time fix-up, please be patient...
+npm WARN old lockfile
+npm WARN deprecated readdir-scoped-modules@1.1.0: This functionality has been moved to @npmcli/fs
+npm WARN deprecated osenv@0.1.5: This package is no longer supported. 
+npm WARN deprecated ini@1.3.5: Please update to ini >=1.3.6 to avoid a prototype pollution issue
+npm WARN deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported 
+npm WARN deprecated read-package-tree@5.3.1: The functionality that this package provided is now in @npmcli/arborist
+npm WARN deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported 
+npm WARN deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported 
+npm WARN deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported 
+npm WARN deprecated copy-concurrently@1.0.5: This package is no longer supported. 
+npm WARN deprecated glob@7.1.4: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm WARN deprecated circular-json@0.3.3: CircularJSON is in maintenance only, flatted is its successor.
+npm WARN deprecated browserslist@2.11.3: Browserslist 2 could fail on reading Browserslist >3.0 config used in other tools.
+npm WARN deprecated streamroller@1.0.6: 1.x is no longer supported. Please upgrade to 3.x or higher.
+npm WARN deprecated uuid@3.3.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm WARN deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+npm WARN deprecated log4js@4.5.1: 4.x is no longer supported. Please upgrade to 6.x or higher.
+npm WARN deprecated crypto-js@3.1.9-1: Active development of CryptoJS has been discontinued. This library is no longer maintained.
+npm WARN deprecated protractor@5.4.2: We have news to share - Protractor is deprecated and will reach end-of-life by Summer 2023. To learn more and find out about other options please refer to this post on the Angular blog. Thank you for using and contributing to 
+Protractor. https://goo.gle/state-of-e2e-in-angular
+npm WARN deprecated core-js-pure@3.21.1: core-js-pure@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js-pure.
+npm ERR! code ECONNREFUSED 
+npm ERR! syscall connect
+npm ERR! errno ECONNREFUSED
+npm ERR! FetchError: request to http://localhost:4873/yn/-/yn-2.0.0.tgz failed, reason: 
+connect ECONNREFUSED 127.0.0.1:4873
+npm ERR!     at ClientRequest.<anonymous> (C:\Program Files\nvm\v16.20.2\node_modules\npm\node_modules\minipass-fetch\lib\index.js:130:14)
+npm ERR!     at ClientRequest.emit (node:events:513:28)
+npm ERR!     at Socket.socketErrorListener (node:_http_client:494:9)
+npm ERR!     at Socket.emit (node:events:525:35)
+npm ERR!     at emitErrorNT (node:internal/streams/destroy:157:8)
+npm ERR!     at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+npm ERR!     at processTicksAndRejections (node:internal/process/task_queues:83:21)     
+npm ERR!  FetchError: request to http://localhost:4873/yn/-/yn-2.0.0.tgz failed, reason: connect ECONNREFUSED 127.0.0.1:4873
+npm ERR!     at ClientRequest.<anonymous> (C:\Program Files\nvm\v16.20.2\node_modules\npm\node_modules\minipass-fetch\lib\index.js:130:14)
+npm ERR!     at ClientRequest.emit (node:events:513:28) 
+npm ERR!     at Socket.socketErrorListener (node:_http_client:494:9)
+npm ERR!     at Socket.emit (node:events:525:35)
+npm ERR!     at emitErrorNT (node:internal/streams/destroy:157:8)
+npm ERR!     at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+npm ERR!     at processTicksAndRejections (node:internal/process/task_queues:83:21) {   
+npm ERR!   code: 'ECONNREFUSED',
+npm ERR!   errno: 'ECONNREFUSED',
+npm ERR!   syscall: 'connect',
+npm ERR!   address: '127.0.0.1',
+npm ERR!   port: 4873,
+npm ERR!   type: 'system'
+npm ERR! }
 npm ERR!
-npm ERR! While resolving: ng-zorro-antd@8.3.1
-npm ERR! Found: rxjs@6.4.0
-npm ERR! node_modules/rxjs
-npm ERR!   rxjs@"6.4.0" from @angular-devkit/architect@0.803.8
-npm ERR!   node_modules/@angular-devkit/architect
-npm ERR!     @angular-devkit/architect@"0.803.8" from @angular-devkit/build-angular@0.803.8  
-npm ERR!     node_modules/@angular-devkit/build-angular 
-npm ERR!       dev @angular-devkit/build-angular@"~0.803.1" from the root project
-npm ERR!     @angular-devkit/architect@"0.803.8" from @angular-devkit/build-webpack@0.803.8  
-npm ERR!     node_modules/@angular-devkit/build-webpack
-npm ERR!       @angular-devkit/build-webpack@"0.803.8" from @angular-devkit/build-angular@0.803.8
-npm ERR!       node_modules/@angular-devkit/build-angular
-npm ERR!         dev @angular-devkit/build-angular@"~0.803.1" from the root project
-npm ERR!     1 more (@angular/cli)
-npm ERR!   rxjs@"6.4.0" from @angular-devkit/build-angular@0.803.8
-npm ERR!   node_modules/@angular-devkit/build-angular
-npm ERR!     dev @angular-devkit/build-angular@"~0.803.1" from the root project
-npm ERR!   17 more (@angular-devkit/build-webpack, @angular-devkit/core, ...)
-npm ERR!
-npm ERR! Could not resolve dependency:
-npm ERR! peer rxjs@"^6.5.2" from ng-zorro-antd@8.3.1
-npm ERR! node_modules/ng-zorro-antd
-npm ERR!   ng-zorro-antd@"^8.2.1" from @delon/theme@8.4.0 
-npm ERR!   node_modules/@delon/theme
-npm ERR!     @delon/theme@"^8.4.0" from @delon/abc@8.4.0
-npm ERR!     node_modules/@delon/abc
-npm ERR!       @delon/abc@"^8.4.0" from great-zorroutils@8.0.1-alpha3
-npm ERR!       node_modules/great-zorroutils
-npm ERR!       1 more (the root project)
-npm ERR!     4 more (@delon/chart, @delon/form, great-zorroutils, the root project)
-npm ERR!   ng-zorro-antd@"^8.2.1" from great-zorroutils@8.0.1-alpha3
-npm ERR!   node_modules/great-zorroutils
-npm ERR!     great-zorroutils@"^8.0.1-alpha3" from the root project
-npm ERR!   1 more (the root project)
-npm ERR!
-npm ERR! Conflicting peer dependency: rxjs@6.6.7
-npm ERR! node_modules/rxjs
-npm ERR!   peer rxjs@"^6.5.2" from ng-zorro-antd@8.3.1
-npm ERR!   node_modules/ng-zorro-antd
-npm ERR!     ng-zorro-antd@"^8.2.1" from @delon/theme@8.4.0
-npm ERR!     node_modules/@delon/theme
-npm ERR!       @delon/theme@"^8.4.0" from @delon/abc@8.4.0
-npm ERR!       node_modules/@delon/abc
-npm ERR!         @delon/abc@"^8.4.0" from great-zorroutils@8.0.1-alpha3
-npm ERR!         node_modules/great-zorroutils
-npm ERR!         1 more (the root project)
-npm ERR!       4 more (@delon/chart, @delon/form, great-zorroutils, the root project)        
-npm ERR!     ng-zorro-antd@"^8.2.1" from great-zorroutils@8.0.1-alpha3
-npm ERR!     node_modules/great-zorroutils
-npm ERR!       great-zorroutils@"^8.0.1-alpha3" from the root project
-npm ERR!     1 more (the root project)
-npm ERR!
-npm ERR! Fix the upstream dependency conflict, or retry
-npm ERR! this command with --force, or --legacy-peer-deps
-npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
-npm ERR!
-npm ERR! See C:\Users\HH0023768\AppData\Local\npm-cache\eresolve-report.txt for a full report.
+npm ERR! If you are behind a proxy, please make sure that the
+npm ERR! 'proxy' config is set properly.  See: 'npm help config'
 
 npm ERR! A complete log of this run can be found in:
-npm ERR!     C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T10_47_19_052Z-debug-0.log
-PS E:\Original Code\FMS\FMS>  
+npm ERR!     C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-21T11_07_57_996Z-debug-0.log
+PS E:\NPISP-Project\New folder (3)\LMS mail manage>
+
+
+
+
+
+
+
+
+
+
+
