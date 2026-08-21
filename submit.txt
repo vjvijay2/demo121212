@@ -1,82 +1,30 @@
-第一步：检查是否安装了 Lodash
-方法一：查看 package.json
-打开项目根目录下的 package.json 文件，在 dependencies 或 devDependencies 字段里寻找 "lodash"
+Write-Host "================ LODASH ISM AUDIT ================" -ForegroundColor Cyan
 
-方法二：在终端使用命令检查
-使用 npm：运行 npm ls lodash -a 命令。它会打印出项目的依赖树，并高亮显示 Lodash 的安装版本。如果没安装，则会提示 (empty)
+Write-Host "`n[1] Lodash dependency tree" -ForegroundColor Yellow
+npm ls lodash --all
 
-使用 Yarn：运行 yarn list --pattern lodash。这个命令会搜索整个依赖树，不仅会告诉你是否安装，还会显示 Lodash 被哪些包依赖。
+Write-Host "`n[2] Lodash-es dependency tree" -ForegroundColor Yellow
+npm ls lodash-es --all
 
-第二步：检查代码中是否实际调用了 Lodash
-方法：搜索代码
-在项目源码目录（如 src 或 lib）中，搜索lodash，是否存在以下引用
-ES Module 语法：import _ from 'lodash' 或 import { get, debounce } from 'lodash'
-CommonJS 语法：const _ = require('lodash') 或 const { get } = require('lodash')
+Write-Host "`n[3] Checking old Lodash versions" -ForegroundColor Yellow
+npm ls lodash@4.17.4 --all
+npm ls lodash@4.17.21 --all
+npm ls lodash@4.17.23 --all
 
-如果package.json中没有直接声明lodash，但package-lock.json 里有搜索到lodash ，说明不是开发者主动安装的，而是作为间接依赖被其他几个主要工具或库引用的。常见的依赖包如下：
-@vue/cli-service  Vue CLI 核心服务
-@vue/eslint-config-typescript  ESLint 配置
-ant-design-vue  UI 组件库
-webpack-bundle-analyzer 打包分析工具
-@angular-devkit/build-angular  Angular构建工具
-@angular/cli    Angular CLI 工具
-ng-zorro-antd@18.0  UI 组件库
-stylelint   CSS 检查工具
-lint-staged  代码提交前检查
-prettier-stylelint   格式化工具
-quill-image-resize-module  Quill富文本编辑器中的图片支持拖拽调整大小
+Write-Host "`n[4] Checking Quill Image Resize Module" -ForegroundColor Yellow
+npm ls quill-image-resize-module --all
 
-第三步：更新lodash到最新版
-方法一：执行 npm install lodash@latest
-说明：只会安装直接依赖，不会改写第三方库带入的子依赖。
-备注：对依赖树进行分析发现，我们的项目lodash全部为间接依赖（传递依赖），如果只更新lodash，打包构建生成时第三方库有可能使用的还是有漏洞的旧版lodash。
+Write-Host "`n[5] Checking package.json for Lodash" -ForegroundColor Yellow
+Select-String -Path package.json -Pattern "lodash|lodash-es|quill-image-resize-module"
 
-方法二：使用 override 强制覆盖所有子依赖的版本（npm 8.3+才支持）
-package.json 添加 overrides，放在 json 根层级，和 dependencies、devDependencies 平级：
-{
-  "overrides": {
-    "lodash": "^4.18.1",
-    "lodash-es": "^4.18.1"  // 如果有使用lodash-es 时加上
-  }
-}
-然后执行：npm install
-备注：不会重装全部依赖，npm 只会处理被 overrides 影响的 lodash 子依赖，其余包保持原样。
+Write-Host "`n[6] Searching source code for Lodash usage" -ForegroundColor Yellow
+Get-ChildItem .\src -Recurse -Include *.ts,*.js,*.html -ErrorAction SilentlyContinue |
+Select-String -Pattern "lodash|lodash-es|from ['""]lodash|require\(['""]lodash|quill-image-resize-module|ImageResize|imageResize"
 
-第四部：再次查看确认lodash版本
-1. npm ls lodash –a  
-完整查看全部依赖，确认没有任何lodash 4.0.0 至 4.17.x 版本
-2. 检查 package lock.json
-确认 lodash和lodash-es的版本号是最新版本4.18.1
-3. 执行构建打包：npm run build
-打开 dist 下面的 js 文件，如果搜索不到lodash旧版本字符串（比如"4.17.21"），此时漏洞版本 lodash 完全不存在。
+Write-Host "`n[7] Checking package-lock.json for old Lodash versions" -ForegroundColor Yellow
+Select-String -Path package-lock.json -Pattern "4.17.4|4.17.21|4.17.23"
 
-第五步：测试验证
-在升级后，重新运行项目，进行充分的功能测试验证，最后再执行构建命令打包更新上线。
+Write-Host "`n[8] npm audit summary" -ForegroundColor Yellow
+npm audit --omit=dev
 
-注意事项：
-1. lodash es 和 lodash 
-lodash es 和 lodash是两个独立包，如果业务中有使用lodash es，要单独确认它的版本，升级lodash不会自动更新 lodash es。
-更新lodash-es到最新版：
-npm install lodash-es@latest
-
-2. quill image resize module
-是一个用于 Quill.js 富文本编辑器的扩展模块，主要功能是让编辑器中的图片支持拖拽调整大小。
-更新完成后，该包自己子 node_modules 下嵌套的仍然是 lodash@4.17.4，因为安装时锁死了 4.17.4，导致即使根目录有更新的 Lodash，npm 仍然会在该包的 node_modules 下嵌套安装一个旧版本。
-
-方法1：卸载老旧不再维护的 quill‑image‑resize‑module
-全局源码搜索关键词：quill-image-resize-module、ImageResize、modules/imageResize、imageResize，如果搜不到任何匹配，则没有引用这个包，项目没有使用该插件，可以直接执行命令卸载
-卸载：npm uninstall quill-image-resize-module
-
-方法2：替换成quill-image-resize-module-rebuild
-它主要是为了解决原版模块在现代前端工程化中的导出（export）问题。
-卸载原包：npm uninstall quill-image-resize-module
-安装 rebuild 版本：npm install quill-image-resize-module-rebuild
-
-方法3：升级迁移 
-1. @mgreminger/quill-image-resize-module：这是官方原版的一个活跃分支，专为 Quill v2 设计，由社区积极维护
-npm install @mgreminger/quill-image-resize-module
-
-2. quill-image-resizor：这是一个为 Quill v2 重构的流行分支，支持图片、视频、iframe 等多种元素的缩放
-npm install quill-image-resizor
-
-讯小通vue3-xxt 更新lodash 之后，项目的依赖树如下：
+Write-Host "`n================ AUDIT COMPLETE ================" -ForegroundColor Cyan
