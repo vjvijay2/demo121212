@@ -1,46 +1,64 @@
-{
-  "compileOnSave": false,
-  "compilerOptions": {
-    "downlevelIteration": true,
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "baseUrl": "./",
-    "paths": {
-      "@shared": [
-        "src/app/shared/index"
-      ],
-      "@shared/*": [
-        "src/app/shared/*"
-      ],
-      "@core": [
-        "src/app/core/index"
-      ],
-      "@core/*": [
-        "src/app/core/*"
-      ],
-      "@env/*": [
-        "src/environments/*"
-      ],
-      "@brand": [
-        "src/app/layout/pro/index"
-      ],
-      "@brand/*": [
-        "src/app/layout/pro/*"
-      ]
+
+export let ouacServiceUrl: string;//一賬通url
+export let serviceUrl: string;//服務器url--一直調用正式url
+export let iwxServiceUrl: string;//愛萬象url,一直調用正式url
+export let iwxServiceUrl2: string;//愛萬象url,一直調用正式url
+export let iwxServiceUrlNew: string;//愛萬象url,區分正式和測試url
+export let toolsServiceUrl: string = "";//工具箱url,一直調用正式url
+export let toolsServiceUrlNew: string = "";//工具箱url,區分正式和測試url
+export let uploadFileServiceUrl: string = "";//上傳附件url,區分正式和測試url
+export let uploadFileServiceUrlNew: string = "";//上傳附件url,區分正式和測試url
+export let iwxServiceUrlNew1: string;//愛萬象url,區分正式和測試url
+((doc) => {
+    urlManage();
+})(document)
+
+function urlManage() {
+    iwxServiceUrlNew1 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    iwxServiceUrl2 = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+    serviceUrl = "https://ipocket.idpbgind.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
+    ouacServiceUrl = "https://ouac.idpbgind.efoxconn.com?SysCode=LMS_INDIA&NewVersion=V401";//正式
+    toolsServiceUrl = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
+    uploadFileServiceUrl = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
+   // iwxServiceUrlNew ="https://microservice.abgind.foxconn.com/india/gateway";
+    if (window.location.host == "lms.idpbgind.efoxconn.com" || window.location.host == "10.208.193.124:8000"  || window.location.host== "10.208.192.44:9001" ||
+  window.location.host == "10.209.110.101:4207" ||window.location.host == "10.209.110.94:4207"
+  || window.location.host == "10.209.122.166:4209"
+   || window.location.host == "localhost:4207"
+    ) {
+        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        toolsServiceUrlNew = "https://mshr.idpbgind.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrlNew = "https://service.idpbgind.efoxconn.com:4443/FileWebService.asmx";//正式
+    } else if (window.location.host == "lms.idpbgtn.efoxconn.com") {
+        serviceUrl = "https://ipocket.idpbgtn.efoxconn.com:4443/springboot-indiaEisp-pg";//正式
+        ouacServiceUrl = "https://ouac.idpbgtn.efoxconn.com?SysCode=LMS_INDIA";//正式
+        toolsServiceUrl = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrl = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
+
+        iwxServiceUrlNew = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        iwxServiceUrl = "https://microservice.abgind.foxconn.com/india/gateway";//正式
+        toolsServiceUrlNew = "https://mshr.idpbgtn.efoxconn.com/APIO/api2/N";//正式
+        uploadFileServiceUrlNew = "https://service.idpbgtn.efoxconn.com:4443/FileWebService.asmx";//正式
+    } 
+    
+    else if (window.location.host=='http://10.209.122.166:4208'){
+           iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
+           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
+        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
+        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
+    }  else {
+        iwxServiceUrlNew = "http://10.208.193.125:8086/gateway/manager";  //測試//3:18
+           iwxServiceUrl = "http://10.208.193.125:8086/gateway/manager";//正式
+        toolsServiceUrlNew = "http://10.208.193.152/APIFurnace/api2/N";//測試
+        uploadFileServiceUrlNew = "http://10.208.193.124:5689/FileWebService.asmx";//測試
+
+        if(window.location.protocol=="http:"){
+            ouacServiceUrl ="http://ouac.idpbgind.efoxconn.com:8080/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證測試網址
+        }else{
+            ouacServiceUrl ="https://ouac.idpbgind.efoxconn.com/?SysCode=LMS_INDIA&NewVersion=V401";//一賬通多因子認證正式網址 
+        }
     }
-  }
+
 }
