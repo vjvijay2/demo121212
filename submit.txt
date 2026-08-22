@@ -1,70 +1,46 @@
-Run `npm audit` for details.
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm list wangeditor
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (3)\LMS mail manage
-└── wangeditor@4.7.8
-
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm start
-
-> ng-alain-pro@0.0.0 start
-> npm run color-less && ng serve -o --host 0.0.0.0 --port 4207
-
-
-> ng-alain-pro@0.0.0 color-less
-> node scripts/color-less.js
-
-(node:15284) [DEP0128] DeprecationWarning: Invalid 'main' field in 'E:\NPISP-Project\New folder (3)\LMS mail manage\node_modules\less-bundle-promise\package.json' of 'build/index.js'. Please either fix that or report it to the module 
-author
-(Use `node --trace-deprecation ...` to show where the warning was created)
-�🌈 Theme generated successfully. OutputFile: E:\NPISP-Project\New folder (3)\LMS mail manage\src\assets\alain-pro.l
-s
-Browserslist: caniuse-lite is outdated. Please run next command `npm update` 
-WARNING: This is a simple server for use in testing or debugging Angular applications 
-locally. It hasn't been reviewed for security issues.
-
-Binding this server to an open connection can result in compromising your application or
-computer. Using a different host than the one passed to the "--host" flag might result in
-websocket connection issues. You might need to use "--disableHostCheck" if that's the
-case.
-10% building 3/3 modules 0 activei ｢wds｣: Project is running at http://0.0.0.0:4207/webpack-dev-server/ 
-i ｢wds｣: webpack output is served from /
-i ｢wds｣: 404s will fallback to //index.html
-
-chunk {main} main.js, main.js.map (main) 2.03 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 122 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
-chunk {scripts} scripts.js, scripts.js.map (scripts) 2.43 MB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 2.79 MB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 339 kB [initial] [rendered]
-Date: 2026-08-22T06:02:27.841Z - Hash: 964af9522127becfebf9 - Time: 33329ms
-
-ERROR in node_modules/wangeditor/dist/editor/history/index.d.ts:18:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-18     get size(): number[];
-           ~~~~
-node_modules/wangeditor/dist/menus/menu-constructors/DropList.d.ts:33:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-33     get isShow(): boolean;
-           ~~~~~~
-node_modules/wangeditor/dist/menus/menu-constructors/Menu.d.ts:35:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-35     get isActive(): boolean;
-           ~~~~~~~~
-node_modules/wangeditor/dist/menus/menu-constructors/Tooltip.d.ts:39:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-39     get isShow(): boolean;
-           ~~~~~~
-node_modules/wangeditor/dist/utils/dom-core.d.ts:14:64 - error TS2716: Type parameter 'T' has a circular default.    
-
-14 export declare class DomElement<T extends DomElementSelector = DomElementSelector> {
-                                                                  ~~~~~~~~~~~~~~~~~~
-node_modules/wangeditor/dist/utils/dom-core.d.ts:28:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-28     get id(): string;
-           ~~
-node_modules/wangeditor/dist/utils/observer/mutation.d.ts:32:9 - error TS1086: An accessor cannot be declared in an ambient context.
-
-32     get target(): Node | undefined;
-           ~~~~~~
-
-** Angular Live Development Server is listening on 0.0.0.0:4207, open your browser on http://localhost:4207/ **      
-i ｢wdm｣: Failed to compile. 
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@shared": [
+        "src/app/shared/index"
+      ],
+      "@shared/*": [
+        "src/app/shared/*"
+      ],
+      "@core": [
+        "src/app/core/index"
+      ],
+      "@core/*": [
+        "src/app/core/*"
+      ],
+      "@env/*": [
+        "src/environments/*"
+      ],
+      "@brand": [
+        "src/app/layout/pro/index"
+      ],
+      "@brand/*": [
+        "src/app/layout/pro/*"
+      ]
+    }
+  }
+}
