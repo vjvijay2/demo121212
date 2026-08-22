@@ -1,76 +1,158 @@
-
-** Angular Live Development Server is listening on 0.0.0.0:4207, open your browser on http://localhost:4207/ **
-i ｢wdm｣: Failed to compile.
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> ^C
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> ^C
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm list typescript
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (3)\LMS mail manage
-├─┬ @angular-devkit/build-angular@0.803.8
-│ ├─┬ @angular-devkit/build-optimizer@0.803.8
-│ │ └── typescript@3.5.3 deduped
-│ ├─┬ @ngtools/webpack@8.3.8
-│ │ └── typescript@3.5.3 deduped
-│ └── typescript@3.5.3 deduped
-├─┬ @angular/compiler-cli@8.2.9
-│ └── typescript@3.5.3 deduped
-├─┬ tslint@5.15.0
-│ ├─┬ tsutils@2.29.0
-│ │ └── typescript@3.5.3 deduped
-│ └── typescript@3.5.3 deduped
-└── typescript@3.5.3
-
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm list wangeditor
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (3)\LMS mail manage
-└── wangeditor@4.7.12
-
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm list @angular/core
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (3)\LMS mail manage 
-├─┬ @agm/core@1.0.0
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/animations@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/cdk@8.2.3
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/common@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├── @angular/core@8.2.9
-├─┬ @angular/forms@8.2.9
-│ └── @angular/core@8.2.9 deduped
-├─┬ @angular/material@12.2.1
-├─┬ @angular/platform-browser-dynamic@8.2.9
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ @angular/platform-browser@8.2.9
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ @angular/router@8.2.9
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ @ngx-translate/core@11.0.1
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ @swimlane/ngx-charts@12.0.1
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ codelyzer@5.1.2
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ great-zorroutils@8.0.1-alpha3
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-├─┬ ng-zorro-antd@8.3.1
-│ ├─┬ @angular/cdk@8.2.3
-│ │ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material, "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-│ ├── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material
-│ └─┬ @ant-design/icons-angular@8.0.3
-│   └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material, "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-├─┬ ngx-cookie-service@11.0.2
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material, "^11.0.2" from node_modules/ngx-cookie-service
-├─┬ ngx-image-gallery@1.3.1
-│ └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material, "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-└─┬ ngx-trend@4.0.0
-  └── @angular/core@8.2.9 deduped invalid: "^12.0.0 || ^13.0.0-0" from node_modules/@angular/material, "^11.0.2" from node_modules/ngx-cookie-service, "^4.0.0" from node_modules/ngx-image-gallery
-
-npm ERR! code ELSPROBLEMS
-npm ERR! invalid: @angular/core@8.2.9 E:\NPISP-Project\New folder (3)\LMS mail manage\node_modules\@angular\core
-
-npm ERR! A complete log of this run can be found in:
-npm ERR!     C:\Users\HH0023768\AppData\Local\npm-cache\_logs\2026-08-22T04_25_54_514Z-debug-0.log
-PS E:\NPISP-Project\New folder (3)\LMS mail manage> npm list @angular/cli
-ng-alain-pro@0.0.0 E:\NPISP-Project\New folder (3)\LMS mail manage 
-└── @angular/cli@8.3.8
-
-PS E:\NPISP-Project\New folder (3)\LMS mail manage>  
+{
+  "name": "ng-alain-pro",
+  "version": "0.0.0",
+  "description": "Ng-alain business theme, ng-zorro-antd admin panel front-end framework",
+  "author": "cipchk <cipchk@qq.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ng-alain/ng-alain.git"
+  },
+  "homepage": "https://e.ng-alain.com/theme/pro",
+  "scripts": {
+    "ng": "ng",
+    "start": "npm run color-less && ng serve -o --host 0.0.0.0 --port 4207",
+    "hmr": "npm run color-less && ng serve -c=hmr --host=0.0.0.0",
+    "build": "npm run color-less && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --output-Path ./dist-LMS && javascript-obfuscator ./dist-LMS --output ./dist-LMS --compact true --self-defending true",
+    "buildpublish": "npm run color-less && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --output-Path d:/publish/dist-LMS",
+    "analyze": "node --max_old_space_size=5120 ./node_modules/@angular/cli/bin/ng build --prod --stats-json",
+    "lint": "npm run lint:ts && npm run lint:style",
+    "lint:ts": "tslint -p tsconfig.app.json -c tslint.json \"src/**/*.ts\" --fix",
+    "lint:style": "stylelint \"src/**/*.less\" --syntax less --fix",
+    "lint-staged": "lint-staged",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json",
+    "e2e": "ng e2e",
+    "test": "ng test --watch",
+    "test-coverage": "ng test --code-coverage --watch=false",
+    "color-less": "node scripts/color-less.js",
+    "icon": "ng g ng-alain:plugin icon"
+  },
+  "dependencies": {
+    "@agm/core": "^1.0.0-beta.5",
+    "@angular/animations": "~8.2.3",
+    "@angular/cdk": "^8.2.3",
+    "@angular/common": "~8.2.3",
+    "@angular/compiler": "~8.2.3",
+    "@angular/core": "~8.2.3",
+    "@angular/forms": "~8.2.3",
+    "@angular/material": "^12.2.1",
+    "@angular/platform-browser": "~8.2.3",
+    "@angular/platform-browser-dynamic": "~8.2.3",
+    "@angular/router": "~8.2.3",
+    "@antv/data-set": "^0.10.2",
+    "@antv/g2": "^3.5.3",
+    "@antv/g2-plugin-slider": "^2.1.1",
+    "@delon/abc": "^8.4.0",
+    "@delon/acl": "^8.4.0",
+    "@delon/auth": "^8.4.0",
+    "@delon/cache": "^8.4.0",
+    "@delon/chart": "^8.4.0",
+    "@delon/form": "^8.4.0",
+    "@delon/mock": "^8.4.0",
+    "@delon/theme": "^8.4.0",
+    "@delon/util": "^8.4.0",
+    "@fullcalendar/core": "^4.3.0",
+    "@fullcalendar/daygrid": "^4.3.0",
+    "@fullcalendar/interaction": "^4.3.0",
+    "@fullcalendar/list": "^4.3.0",
+    "@fullcalendar/timegrid": "^4.3.0",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
+    "@swimlane/ngx-charts": "^12.0.1",
+    "@types/jquery": "^3.3.31",
+    "ajv": "^6.10.2",
+    "angular-baidu-maps": "^3.0.0",
+    "classlist.js": "^1.1.20150312",
+    "crypto-js": "^3.1.9-1",
+    "element-closest": "^3.0.1",
+    "file-saver": "^2.0.2",
+    "great-zorroutils": "^8.0.1-alpha3",
+    "jquery": "^3.6.0",
+    "jquery-ui": "^1.13.2",
+    "js-base64": "^2.5.1",
+    "jspdf": "^2.5.1",
+    "lodash": "^4.18.1",
+    "masonry-layout": "^4.2.2",
+    "moment": "^2.29.4",
+    "ng-zorro-antd": "^8.2.1",
+    "ngx-cookie-service": "^11.0.2",
+    "ngx-countdown": "^3.2.0",
+    "ngx-image-gallery": "^1.3.1",
+    "ngx-trend": "^4.0.0",
+    "perfect-scrollbar": "^1.4.0",
+    "qrious": "^4.0.2",
+    "quill": "^1.3.6",
+    "quill-image-resize-module": "^3.0.0",
+    "rxjs": "~6.4.0",
+    "screenfull": "^4.2.1",
+    "tslib": "^1.10.0",
+    "wangeditor": "^4.7.12",
+    "zone.js": "~0.9.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~0.803.1",
+    "@angular/cli": "~8.3.1",
+    "@angular/compiler-cli": "~8.2.3",
+    "@angular/language-service": "~8.2.3",
+    "@angularclass/hmr": "^2.1.3",
+    "@delon/testing": "^8.4.0",
+    "@types/jasmine": "~3.3.8",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/js-base64": "^2.3.1",
+    "@types/jszip": "^3.1.6",
+    "@types/mockjs": "^1.0.2",
+    "@types/node": "~8.9.4",
+    "antd-theme-generator": "^1.1.7",
+    "codecov": "^3.5.0",
+    "codelyzer": "^5.0.0",
+    "husky": "^3.0.4",
+    "jasmine-core": "~3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "javascript-obfuscator": "^4.1.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
+    "less-bundle-promise": "^1.0.7",
+    "lint-staged": "^8.2.1",
+    "mockjs": "^1.0.1-beta3",
+    "ng-alain": "^8.4.0",
+    "ng-alain-codelyzer": "^0.0.1",
+    "prettier": "^1.18.2",
+    "prettier-stylelint": "^0.4.2",
+    "protractor": "~5.4.0",
+    "stylelint": "^10.1.0",
+    "stylelint-config-prettier": "^5.2.0",
+    "stylelint-config-rational-order": "^0.1.2",
+    "stylelint-config-standard": "^18.3.0",
+    "stylelint-declaration-block-no-ignored-properties": "^2.1.0",
+    "stylelint-order": "^3.0.0",
+    "ts-node": "~7.0.0",
+    "tslint": "~5.15.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "~3.5.3",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "xlsx": "^0.15.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "src/**/*.ts": [
+        "npm run lint:ts",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "src/assets/*"
+    ]
+  },
+  "private": true,
+  "theme": {
+    "name": "pro",
+    "version": "8.2.0"
+  }
+}
